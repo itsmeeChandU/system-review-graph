@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "system-review-graph"
-version = "0.5.3"
+version = "0.5.4"
 description = "Generate system-level review graphs: what a repo actually does, not just what code exists."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -16,21 +16,15 @@ keywords = [
   "architecture",
   "audit",
   "code-review",
-  "codebase-map",
   "developer-tools",
-  "agent-tools",
-  "architecture-graph",
-  "monorepo",
+  "documentation",
   "mcp",
   "repo-map",
-  "system-design",
-  "system-architecture",
-  "system-review",
+  "reverse-engineering",
   "software-architecture",
   "software-audit",
-  "technical-documentation",
-  "documentation",
-  "reverse-engineering",
+  "system-design",
+  "system-review",
   "mermaid"
 ]
 classifiers = [

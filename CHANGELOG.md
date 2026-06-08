@@ -4,6 +4,16 @@ All notable changes to System Review Graph are documented here.
 
 ## Unreleased
 
+## 0.5.4 - 2026-06-08
+
+Changed:
+
+- Reduced the README badge strip to the highest-signal PyPI, CI, Python,
+  license, MCP, system map, scanner, blueprint, and Linux atlas badges.
+- Removed immature/noisy launch badges and the PyPI download-stats link from
+  the README until download statistics are meaningful.
+- Tightened PyPI keywords to a smaller set of stronger discovery tags.
+
 ## 0.5.3 - 2026-06-08
 
 Added:

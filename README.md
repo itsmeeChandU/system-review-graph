@@ -8,25 +8,17 @@
 
 <p align="center">
   <a href="https://pypi.org/project/system-review-graph/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/system-review-graph.svg?color=1456cc"></a>
-  <a href="https://pypistats.org/packages/system-review-graph"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/system-review-graph.svg?color=176b78"></a>
   <a href="https://github.com/itsmeeChandU/system-review-graph/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/itsmeeChandU/system-review-graph/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-2f855a.svg"></a>
-  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/CITATION.cff"><img alt="Citation metadata" src="https://img.shields.io/badge/citation-CITATION.cff-b8872f.svg"></a>
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-234b6d.svg">
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-2f855a.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/MCP.md"><img alt="MCP server" src="https://img.shields.io/badge/MCP-agent--ready-176b78.svg"></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/METHODOLOGY.md"><img alt="Manifest first" src="https://img.shields.io/badge/method-manifest--first-172033.svg"></a>
-  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/METHODOLOGY.md"><img alt="System not code only" src="https://img.shields.io/badge/maps-system%20%3E%20code-176b78.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/METHODOLOGY.md"><img alt="System map" src="https://img.shields.io/badge/maps-system%20%3E%20code-176b78.svg"></a>
   <a href="#language-and-project-surface-support"><img alt="Mixed language scanner" src="https://img.shields.io/badge/scanner-mixed--language-d7a441.svg"></a>
   <a href="#depth-levels"><img alt="Blueprint depth" src="https://img.shields.io/badge/depth-blueprint-172033.svg"></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/MCP.md"><img alt="MCP server" src="https://img.shields.io/badge/MCP-agent--ready-176b78.svg"></a>
   <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/examples/actual_repos/linux_kernel/reports/system_review_graph.md"><img alt="Linux atlas example" src="https://img.shields.io/badge/example-Linux%20atlas-2f855a.svg"></a>
-  <a href="#quick-start"><img alt="Quick start" src="https://img.shields.io/badge/quick%20start-get%20started-d7a441.svg"></a>
-  <a href="#credit-citation-and-license"><img alt="Credit preserved" src="https://img.shields.io/badge/credit-preserved-b8872f.svg"></a>
 </p>
 
 Generate system-level review graphs: what a repo actually does, not just what
@@ -546,7 +538,6 @@ Visual assets:
 Package links:
 
 - [PyPI package](https://pypi.org/project/system-review-graph/)
-- [PyPI download stats](https://pypistats.org/packages/system-review-graph)
 
 ## Discoverability
 
