@@ -2,6 +2,22 @@
 
 All notable changes to System Review Graph are documented here.
 
+## 0.3.0 - 2026-06-08
+
+Large-repository atlas release.
+
+Added:
+
+- `child_maps` manifest support for map-of-maps reports.
+- Map-of-maps Mermaid visualization and child-map tables in Markdown and HTML reports.
+- Atlas links in Mermaid relationship graphs and Graphviz DOT output.
+- `scan --atlas` for root atlases plus child subsystem manifests.
+- `scan --atlas --build-reports` for root and child report generation.
+- `system-review-graph-mcp` stdio MCP server.
+- MCP tools for validate, doctor, build, scan, and atlas-context loading.
+- CI template step for merge-time system atlas regeneration.
+- Linux kernel atlas stress-test example.
+
 ## 0.2.0 - 2026-06-08
 
 Roadmap completion release.

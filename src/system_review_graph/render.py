@@ -43,6 +43,17 @@ def _label(value: str) -> str:
     return value.replace('"', "'")
 
 
+def _report_relative_child_manifest_path(report_path: str, manifest_path: str) -> str:
+    if (
+        report_path.startswith("../")
+        and manifest_path
+        and not manifest_path.startswith("../")
+        and "://" not in manifest_path
+    ):
+        return f"../{manifest_path}"
+    return manifest_path
+
+
 def _relation(value: str) -> str:
     return value.replace("_", " ")
 
@@ -58,6 +69,7 @@ def _label_map(graph: SystemReviewGraph) -> dict[str, str]:
     labels.update({gate.gate_id: gate.name for gate in graph.gates})
     labels.update({step.step_id: step.name for step in graph.workflows})
     labels.update({schema.name: schema.name for schema in graph.schemas})
+    labels.update({child_map.map_id: child_map.name for child_map in graph.child_maps})
     return labels
 
 
@@ -96,6 +108,24 @@ def render_lifecycle_mermaid(graph: SystemReviewGraph) -> str:
             )
     if len(lines) == 1:
         lines.append('  empty["No workflow steps declared"]')
+    return "\n".join(lines)
+
+
+def render_child_maps_mermaid(graph: SystemReviewGraph) -> str:
+    """Render a root atlas -> child subsystem maps graph."""
+
+    lines = ["flowchart TD", f'  root["{_label(graph.title)}"]']
+    for child_map in graph.child_maps:
+        node = _node_id(f"child_{child_map.map_id}")
+        label = child_map.name
+        if child_map.status:
+            label = f"{label}\\n{child_map.status}"
+        lines.append(f'  root --> {node}["{_label(label)}"]')
+        for system_id in child_map.systems[:8]:
+            system_node = _node_id(f"child_{child_map.map_id}_{system_id}")
+            lines.append(f'  {node} --> {system_node}["{_label(system_id)}"]')
+    if len(lines) == 2:
+        lines.append('  empty["No child maps declared"]')
     return "\n".join(lines)
 
 
@@ -161,6 +191,10 @@ def render_mermaid(graph: SystemReviewGraph) -> str:
         lines.append(
             f'  {source}["{source_label}"] -- "{label}" --> {target}["{target_label}"]'
         )
+    for child_map in graph.child_maps[:40]:
+        target = _node_id(child_map.map_id)
+        target_label = _label(labels.get(child_map.map_id, child_map.name))
+        lines.append(f'  root_atlas["Atlas"] -- "links to" --> {target}["{target_label}"]')
     return "\n".join(lines)
 
 
@@ -184,6 +218,12 @@ def render_graphviz_dot(graph: SystemReviewGraph) -> str:
         lines.append(f'  {source} [label="{source_label}"];')
         lines.append(f'  {target} [label="{target_label}"];')
         lines.append(f'  {source} -> {target} [label="{relation}"];')
+    for child_map in graph.child_maps:
+        target = _node_id(child_map.map_id)
+        target_label = child_map.name.replace('"', "'")
+        lines.append('  root_atlas [label="Atlas"];')
+        lines.append(f'  {target} [label="{target_label}"];')
+        lines.append(f'  root_atlas -> {target} [label="links to"];')
     lines.append("}")
     return "\n".join(lines)
 
@@ -213,6 +253,47 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
         for system in graph.systems
     )
     review_questions = "\n".join(f"<li>{escape(item)}</li>" for item in graph.review_questions)
+    child_report_href = {
+        child_map.map_id: escape(child_map.report_path or child_map.path)
+        for child_map in graph.child_maps
+    }
+    child_manifest_href = {
+        child_map.map_id: escape(
+            _report_relative_child_manifest_path(child_map.report_path, child_map.path)
+        )
+        for child_map in graph.child_maps
+    }
+    child_rows = "\n".join(
+        f"""
+        <tr>
+          <td><a href="{child_report_href[child_map.map_id]}">{escape(child_map.name)}</a></td>
+          <td><a href="{child_manifest_href[child_map.map_id]}">manifest</a></td>
+          <td>{escape(child_map.status)}</td>
+          <td>{escape(child_map.scope)}</td>
+          <td>{escape(child_map.review_hint)}</td>
+        </tr>
+        """
+        for child_map in graph.child_maps
+    )
+    child_map_section = (
+        f"""
+        <section>
+          <h2>Map Of Maps</h2>
+          <pre class="mermaid">{escape(render_child_maps_mermaid(graph))}</pre>
+          <table>
+            <thead>
+              <tr>
+                <th>Child map</th><th>Manifest</th><th>Status</th>
+                <th>Scope</th><th>Review hint</th>
+              </tr>
+            </thead>
+            <tbody>{child_rows}</tbody>
+          </table>
+        </section>
+        """
+        if graph.child_maps
+        else ""
+    )
     artifact_map = (
         f"""
         <section>
@@ -237,7 +318,7 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
         if depth == "deep"
         else ""
     )
-    return f"""<!doctype html>
+    html = f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -271,6 +352,8 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
     .card {{ padding: 18px; border: 1px solid #dbe3ee; border-radius: 10px; background: #fbfdff; }}
     dt {{ font-weight: 700; margin-top: 10px; }}
     dd {{ margin-left: 0; color: #465466; }}
+    table {{ border-collapse: collapse; width: 100%; }}
+    th, td {{ border-bottom: 1px solid #dbe3ee; padding: 10px 8px; text-align: left; }}
     a {{ color: #1456cc; }}
   </style>
 </head>
@@ -299,6 +382,7 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
       <h2>Lifecycle Map</h2>
       <pre class="mermaid">{escape(render_lifecycle_mermaid(graph))}</pre>
     </section>
+    {child_map_section}
     {artifact_map}
     {relationship_graph}
     <section>
@@ -317,9 +401,21 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
 </body>
 </html>
 """
+    return "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
 
 
 def _add_visuals(lines: list[str], graph: SystemReviewGraph, depth: str) -> None:
+    if graph.child_maps:
+        lines.extend(
+            [
+                "",
+                "## Map Of Maps",
+                "",
+                "```mermaid",
+                render_child_maps_mermaid(graph),
+                "```",
+            ]
+        )
     lines.extend(
         [
             "",
@@ -369,6 +465,7 @@ def _add_expansion_index(lines: list[str], graph: SystemReviewGraph, depth: str)
             "| Level | Use It To Answer | Report Section |",
             "|---|---|---|",
             _row(["0. Situation", "What is true now?", "Current Truth"]),
+            _row(["0.5. Atlas", "Which child map should I open next?", "Map Of Maps"]),
             _row(["1. Flow", "How does the system move end to end?", "Lifecycle Map"]),
             _row(
                 [
@@ -502,6 +599,37 @@ def _add_system_details(lines: list[str], graph: SystemReviewGraph, depth: str) 
                     )
                 )
             lines.append("")
+
+
+def _add_child_maps(lines: list[str], graph: SystemReviewGraph) -> None:
+    if not graph.child_maps:
+        return
+    lines.extend(
+        [
+            "",
+            "## Child Maps",
+            "",
+            "| Map | Manifest | Status | Scope | Systems | Review Hint |",
+            "|---|---|---|---|---|---|",
+        ]
+    )
+    for child_map in graph.child_maps:
+        link_path = child_map.report_path or child_map.path
+        link = f"[{child_map.name}]({link_path})" if link_path else child_map.name
+        manifest_path = _report_relative_child_manifest_path(child_map.report_path, child_map.path)
+        manifest_link = f"[manifest]({manifest_path})" if manifest_path else ""
+        lines.append(
+            _row(
+                [
+                    link,
+                    manifest_link,
+                    child_map.status,
+                    child_map.scope,
+                    ", ".join(child_map.systems),
+                    child_map.review_hint,
+                ]
+            )
+        )
 
 
 def _add_artifacts(lines: list[str], graph: SystemReviewGraph) -> None:
@@ -660,6 +788,7 @@ def render_markdown(graph: SystemReviewGraph, depth: str = "deep") -> str:
                 ]
             )
         )
+    _add_child_maps(lines, graph)
     if depth in {"standard", "deep"}:
         _add_system_details(lines, graph, depth)
         _add_artifacts(lines, graph)

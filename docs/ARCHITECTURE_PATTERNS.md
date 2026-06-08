@@ -29,6 +29,26 @@ Map:
 The built-in `scan` command detects broad language/build/test/doc surfaces and
 creates a starter manifest. It does not claim to prove runtime behavior.
 
+## Huge Repository Or Monorepo
+
+Map:
+
+- root repository -> atlas,
+- top-level packages/directories -> child maps,
+- child maps -> local systems, artifacts, schemas, gates, and review questions,
+- changed child maps -> pull-request review focus,
+- CI regeneration -> architecture drift signal.
+
+Use:
+
+```bash
+system-review-graph scan --repo . --atlas --out reports/system-review-atlas --build-reports
+```
+
+This is useful for kernels, database engines, browser engines, platform
+monorepos, language runtimes, and company-internal source trees where one flat
+graph would hide the important context.
+
 ## Web Application
 
 Map:

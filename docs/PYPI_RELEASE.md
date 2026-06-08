@@ -24,10 +24,11 @@ python -m twine check dist/*
 ```bash
 python -m venv /tmp/srg-test
 source /tmp/srg-test/bin/activate
-python -m pip install dist/system_review_graph-0.2.0-py3-none-any.whl
+python -m pip install dist/system_review_graph-0.3.0-py3-none-any.whl
 system-review-graph list-examples
 system-review-graph init-example --example fictional_ai_ops --out-dir /tmp/srg-example --force
 system-review-graph build --manifest /tmp/srg-example/system_review_manifest.json --out-dir /tmp/srg-report
+printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"smoke","version":"1"}}}' | system-review-graph-mcp
 ```
 
 ## Upload

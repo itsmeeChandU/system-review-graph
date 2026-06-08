@@ -89,6 +89,22 @@ class GraphEdge:
 
 
 @dataclass(frozen=True)
+class ChildMap:
+    """A linked subsystem map in a larger system atlas."""
+
+    map_id: str
+    name: str
+    path: str
+    report_path: str = ""
+    purpose: str = ""
+    scope: str = ""
+    owner: str = ""
+    systems: list[str] = field(default_factory=list)
+    status: str = "inferred"
+    review_hint: str = ""
+
+
+@dataclass(frozen=True)
 class SystemReviewGraph:
     """Complete system review graph plus report-ready metadata."""
 
@@ -102,6 +118,7 @@ class SystemReviewGraph:
     gates: list[DecisionGate]
     workflows: list[WorkflowStep]
     edges: list[GraphEdge]
+    child_maps: list[ChildMap]
     current_truth: dict[str, Any]
     bigger_picture: str
     source_links: list[dict[str, str]]

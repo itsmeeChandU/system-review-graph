@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linux Kernel System Review Atlas</title>
+  <style>
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      margin: 0;
+      color: #18202a;
+      background: #f8fafc;
+    }
+    header { padding: 40px 32px; background: #172033; color: white; }
+    main { max-width: 1120px; margin: 0 auto; padding: 28px; }
+    section {
+      margin: 24px 0;
+      padding: 24px;
+      background: white;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+    }
+    h1, h2, h3 { line-height: 1.2; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .pill { padding: 6px 10px; border: 1px solid rgba(255,255,255,.32); border-radius: 999px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .card { padding: 18px; border: 1px solid #dbe3ee; border-radius: 10px; background: #fbfdff; }
+    dt { font-weight: 700; margin-top: 10px; }
+    dd { margin-left: 0; color: #465466; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #dbe3ee; padding: 10px 8px; text-align: left; }
+    a { color: #1456cc; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Linux Kernel System Review Atlas</h1>
+    <p>Map-of-maps generated for a large repository: root atlas links to subsystem manifests.</p>
+    <div class="meta">
+      <span class="pill">Depth: overview</span>
+      <span class="pill">Systems: 24</span>
+      <span class="pill">Artifacts: 24</span>
+      <span class="pill">Gates: 1</span>
+      <span class="pill">Workflows: 4</span>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>Bigger Picture</h2>
+      <p>This is a large-repository map-of-maps stress test for System Review Graph. It uses real Linux kernel tracked paths to create a root atlas and child subsystem maps. The example is useful for orientation, CI drift checks, and reviewer routing, but it is not an official Linux maintainer audit and does not prove runtime behavior.</p>
+    </section>
+    <section>
+      <h2>Source Links</h2>
+      <ul><li><a href="https://github.com/torvalds/linux">Linux kernel repository</a> - Public source repository used for the path-tree stress test.</li>
+<li><a href="https://github.com/torvalds/linux/commit/2d3090a8aeb596a26935db0955d46c9a5db5c6ce">Linux kernel commit 2d3090a</a> - Merge tag &#x27;v7.1-p5&#x27; of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6</li></ul>
+    </section>
+    <section>
+      <h2>Lifecycle Map</h2>
+      <pre class="mermaid">flowchart LR
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;]
+  open_child_maps[&quot;Open Child Maps&quot;]
+  refine_atlas[&quot;Refine Atlas&quot;]
+  regenerate_on_merge[&quot;Regenerate On Merge&quot;]
+  scan_root_boundaries --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  open_child_maps --&gt; refine_atlas[&quot;Refine Atlas&quot;]
+  refine_atlas --&gt; regenerate_on_merge[&quot;Regenerate On Merge&quot;]</pre>
+    </section>
+
+        <section>
+          <h2>Map Of Maps</h2>
+          <pre class="mermaid">flowchart TD
+  root[&quot;Linux Kernel System Review Atlas&quot;]
+  root --&gt; child_arch[&quot;arch/ subsystem map\ninferred_from_source_tree&quot;]
+  child_arch --&gt; child_arch_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_block[&quot;block/ subsystem map\ninferred_from_source_tree&quot;]
+  child_block --&gt; child_block_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_certs[&quot;certs/ subsystem map\ninferred_from_source_tree&quot;]
+  child_certs --&gt; child_certs_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_crypto[&quot;crypto/ subsystem map\ninferred_from_source_tree&quot;]
+  child_crypto --&gt; child_crypto_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_documentation[&quot;Documentation/ subsystem map\ninferred_from_source_tree&quot;]
+  child_documentation --&gt; child_documentation_python[&quot;python&quot;]
+  child_documentation --&gt; child_documentation_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_drivers[&quot;drivers/ subsystem map\ninferred_from_source_tree&quot;]
+  child_drivers --&gt; child_drivers_c_cpp[&quot;c_cpp&quot;]
+  child_drivers --&gt; child_drivers_rust[&quot;rust&quot;]
+  root --&gt; child_fs[&quot;fs/ subsystem map\ninferred_from_source_tree&quot;]
+  child_fs --&gt; child_fs_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_include[&quot;include/ subsystem map\ninferred_from_source_tree&quot;]
+  child_include --&gt; child_include_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_init[&quot;init/ subsystem map\ninferred_from_source_tree&quot;]
+  child_init --&gt; child_init_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_io_uring[&quot;io_uring/ subsystem map\ninferred_from_source_tree&quot;]
+  child_io_uring --&gt; child_io_uring_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_ipc[&quot;ipc/ subsystem map\ninferred_from_source_tree&quot;]
+  child_ipc --&gt; child_ipc_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_kernel[&quot;kernel/ subsystem map\ninferred_from_source_tree&quot;]
+  child_kernel --&gt; child_kernel_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_lib[&quot;lib/ subsystem map\ninferred_from_source_tree&quot;]
+  child_lib --&gt; child_lib_c_cpp[&quot;c_cpp&quot;]
+  child_lib --&gt; child_lib_rust[&quot;rust&quot;]
+  root --&gt; child_mm[&quot;mm/ subsystem map\ninferred_from_source_tree&quot;]
+  child_mm --&gt; child_mm_c_cpp[&quot;c_cpp&quot;]
+  child_mm --&gt; child_mm_rust[&quot;rust&quot;]
+  root --&gt; child_net[&quot;net/ subsystem map\ninferred_from_source_tree&quot;]
+  child_net --&gt; child_net_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_rust[&quot;rust/ subsystem map\ninferred_from_source_tree&quot;]
+  child_rust --&gt; child_rust_c_cpp[&quot;c_cpp&quot;]
+  child_rust --&gt; child_rust_rust[&quot;rust&quot;]
+  root --&gt; child_samples[&quot;samples/ subsystem map\ninferred_from_source_tree&quot;]
+  child_samples --&gt; child_samples_c_cpp[&quot;c_cpp&quot;]
+  child_samples --&gt; child_samples_rust[&quot;rust&quot;]
+  root --&gt; child_scripts[&quot;scripts/ subsystem map\ninferred_from_source_tree&quot;]
+  child_scripts --&gt; child_scripts_python[&quot;python&quot;]
+  child_scripts --&gt; child_scripts_c_cpp[&quot;c_cpp&quot;]
+  child_scripts --&gt; child_scripts_rust[&quot;rust&quot;]
+  root --&gt; child_security[&quot;security/ subsystem map\ninferred_from_source_tree&quot;]
+  child_security --&gt; child_security_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_sound[&quot;sound/ subsystem map\ninferred_from_source_tree&quot;]
+  child_sound --&gt; child_sound_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_tools[&quot;tools/ subsystem map\ninferred_from_source_tree&quot;]
+  child_tools --&gt; child_tools_python[&quot;python&quot;]
+  child_tools --&gt; child_tools_c_cpp[&quot;c_cpp&quot;]
+  child_tools --&gt; child_tools_rust[&quot;rust&quot;]
+  root --&gt; child_usr[&quot;usr/ subsystem map\ninferred_from_source_tree&quot;]
+  child_usr --&gt; child_usr_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_virt[&quot;virt/ subsystem map\ninferred_from_source_tree&quot;]
+  child_virt --&gt; child_virt_c_cpp[&quot;c_cpp&quot;]
+  root --&gt; child_licenses[&quot;LICENSES/ subsystem map\ninferred_from_source_tree&quot;]</pre>
+          <table>
+            <thead>
+              <tr>
+                <th>Child map</th><th>Manifest</th><th>Status</th>
+                <th>Scope</th><th>Review hint</th>
+              </tr>
+            </thead>
+            <tbody>
+        <tr>
+          <td><a href="../subsystems/arch/reports/system_review_graph.md">arch/ subsystem map</a></td>
+          <td><a href="../subsystems/arch/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>arch</td>
+          <td>Open subsystems/arch/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/block/reports/system_review_graph.md">block/ subsystem map</a></td>
+          <td><a href="../subsystems/block/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>block</td>
+          <td>Open subsystems/block/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/certs/reports/system_review_graph.md">certs/ subsystem map</a></td>
+          <td><a href="../subsystems/certs/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>certs</td>
+          <td>Open subsystems/certs/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/crypto/reports/system_review_graph.md">crypto/ subsystem map</a></td>
+          <td><a href="../subsystems/crypto/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>crypto</td>
+          <td>Open subsystems/crypto/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/documentation/reports/system_review_graph.md">Documentation/ subsystem map</a></td>
+          <td><a href="../subsystems/documentation/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>Documentation</td>
+          <td>Open subsystems/documentation/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/drivers/reports/system_review_graph.md">drivers/ subsystem map</a></td>
+          <td><a href="../subsystems/drivers/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>drivers</td>
+          <td>Open subsystems/drivers/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/fs/reports/system_review_graph.md">fs/ subsystem map</a></td>
+          <td><a href="../subsystems/fs/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>fs</td>
+          <td>Open subsystems/fs/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/include/reports/system_review_graph.md">include/ subsystem map</a></td>
+          <td><a href="../subsystems/include/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>include</td>
+          <td>Open subsystems/include/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/init/reports/system_review_graph.md">init/ subsystem map</a></td>
+          <td><a href="../subsystems/init/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>init</td>
+          <td>Open subsystems/init/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/io_uring/reports/system_review_graph.md">io_uring/ subsystem map</a></td>
+          <td><a href="../subsystems/io_uring/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>io_uring</td>
+          <td>Open subsystems/io_uring/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/ipc/reports/system_review_graph.md">ipc/ subsystem map</a></td>
+          <td><a href="../subsystems/ipc/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>ipc</td>
+          <td>Open subsystems/ipc/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/kernel/reports/system_review_graph.md">kernel/ subsystem map</a></td>
+          <td><a href="../subsystems/kernel/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>kernel</td>
+          <td>Open subsystems/kernel/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/lib/reports/system_review_graph.md">lib/ subsystem map</a></td>
+          <td><a href="../subsystems/lib/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>lib</td>
+          <td>Open subsystems/lib/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/mm/reports/system_review_graph.md">mm/ subsystem map</a></td>
+          <td><a href="../subsystems/mm/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>mm</td>
+          <td>Open subsystems/mm/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/net/reports/system_review_graph.md">net/ subsystem map</a></td>
+          <td><a href="../subsystems/net/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>net</td>
+          <td>Open subsystems/net/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/rust/reports/system_review_graph.md">rust/ subsystem map</a></td>
+          <td><a href="../subsystems/rust/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>rust</td>
+          <td>Open subsystems/rust/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/samples/reports/system_review_graph.md">samples/ subsystem map</a></td>
+          <td><a href="../subsystems/samples/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>samples</td>
+          <td>Open subsystems/samples/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/scripts/reports/system_review_graph.md">scripts/ subsystem map</a></td>
+          <td><a href="../subsystems/scripts/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>scripts</td>
+          <td>Open subsystems/scripts/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/security/reports/system_review_graph.md">security/ subsystem map</a></td>
+          <td><a href="../subsystems/security/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>security</td>
+          <td>Open subsystems/security/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/sound/reports/system_review_graph.md">sound/ subsystem map</a></td>
+          <td><a href="../subsystems/sound/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>sound</td>
+          <td>Open subsystems/sound/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/tools/reports/system_review_graph.md">tools/ subsystem map</a></td>
+          <td><a href="../subsystems/tools/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>tools</td>
+          <td>Open subsystems/tools/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/usr/reports/system_review_graph.md">usr/ subsystem map</a></td>
+          <td><a href="../subsystems/usr/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>usr</td>
+          <td>Open subsystems/usr/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/virt/reports/system_review_graph.md">virt/ subsystem map</a></td>
+          <td><a href="../subsystems/virt/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>virt</td>
+          <td>Open subsystems/virt/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+
+
+        <tr>
+          <td><a href="../subsystems/licenses/reports/system_review_graph.md">LICENSES/ subsystem map</a></td>
+          <td><a href="../subsystems/licenses/system_review_manifest.json">manifest</a></td>
+          <td>inferred_from_source_tree</td>
+          <td>LICENSES</td>
+          <td>Open subsystems/licenses/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.</td>
+        </tr>
+        </tbody>
+          </table>
+        </section>
+
+
+
+    <section>
+      <h2>Systems</h2>
+      <div class="grid">
+        <article class="card" id="arch">
+          <h3>arch/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="block">
+          <h3>block/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="certs">
+          <h3>certs/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="crypto">
+          <h3>crypto/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="documentation">
+          <h3>Documentation/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="drivers">
+          <h3>drivers/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="fs">
+          <h3>fs/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="include">
+          <h3>include/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="init">
+          <h3>init/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="io_uring">
+          <h3>io_uring/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="ipc">
+          <h3>ipc/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="kernel">
+          <h3>kernel/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="lib">
+          <h3>lib/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="mm">
+          <h3>mm/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="net">
+          <h3>net/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="rust">
+          <h3>rust/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="samples">
+          <h3>samples/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="scripts">
+          <h3>scripts/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="security">
+          <h3>security/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="sound">
+          <h3>sound/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="tools">
+          <h3>tools/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="usr">
+          <h3>usr/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="virt">
+          <h3>virt/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+
+
+        <article class="card" id="licenses">
+          <h3>LICENSES/</h3>
+          <p>Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.</p>
+          <dl>
+            <dt>Architecture</dt><dd>top-level source-tree subsystem</dd>
+            <dt>Lifecycle</dt><dd>open child map -&gt; inspect source surfaces -&gt; refine real workflows</dd>
+            <dt>Boundary</dt><dd>Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review.</dd>
+          </dl>
+        </article>
+        </div>
+    </section>
+    <section>
+      <h2>Review Questions</h2>
+      <ul><li>Which child maps changed since the last merge?</li>
+<li>Which subsystem boundary is too broad and needs splitting?</li>
+<li>Which subsystem lacks workflow, gate, schema, or test evidence?</li>
+<li>Can reviewers reproduce the map from the declared rebuild recipe?</li>
+<li>Where does the atlas overclaim beyond source-surface evidence?</li></ul>
+    </section>
+  </main>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, securityLevel: 'strict' });
+  </script>
+</body>
+</html>

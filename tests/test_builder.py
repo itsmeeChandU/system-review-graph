@@ -91,3 +91,37 @@ def test_validation_catches_duplicates_and_bad_edges():
 
     assert "duplicate system_id: system" in errors
     assert "edges[0] references unknown target node missing" in errors
+
+
+def test_child_maps_render_as_atlas_section():
+    manifest = {
+        "title": "Atlas",
+        "systems": [
+            {"system_id": "kernel", "name": "kernel/", "purpose": "Kernel core"},
+            {"system_id": "drivers", "name": "drivers/", "purpose": "Drivers"},
+        ],
+        "artifacts": [],
+        "schemas": [],
+        "decision_gates": [],
+        "workflows": [],
+        "child_maps": [
+            {
+                "map_id": "drivers",
+                "name": "drivers/ subsystem map",
+                "path": "subsystems/drivers/system_review_manifest.json",
+                "report_path": "../subsystems/drivers/reports/system_review_graph.md",
+                "systems": ["c_cpp"],
+                "status": "inferred_from_source_tree",
+            }
+        ],
+    }
+
+    errors = validate_manifest(manifest)
+    graph = build_system_review(manifest)
+    markdown = render_markdown(graph, depth="overview")
+
+    assert errors == []
+    assert graph.child_maps[0].map_id == "drivers"
+    assert graph.child_maps[0].report_path.endswith("system_review_graph.md")
+    assert "## Map Of Maps" in markdown
+    assert "## Child Maps" in markdown

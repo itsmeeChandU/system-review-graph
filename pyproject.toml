@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "system-review-graph"
-version = "0.2.0"
+version = "0.3.0"
 description = "Generate system-level review graphs: what a repo actually does, not just what code exists."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -51,6 +51,7 @@ Security = "https://github.com/itsmeeChandU/system-review-graph/blob/main/SECURI
 
 [project.scripts]
 system-review-graph = "system_review_graph.cli:main"
+system-review-graph-mcp = "system_review_graph.mcp_server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/system_review_graph"]

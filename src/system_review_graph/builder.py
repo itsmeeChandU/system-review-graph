@@ -7,6 +7,7 @@ from typing import Any
 
 from system_review_graph.models import (
     Artifact,
+    ChildMap,
     DecisionGate,
     GraphEdge,
     SchemaContract,
@@ -107,6 +108,21 @@ def _edge(row: dict[str, Any]) -> GraphEdge:
     )
 
 
+def _child_map(row: dict[str, Any]) -> ChildMap:
+    return ChildMap(
+        map_id=str(row.get("map_id") or ""),
+        name=str(row.get("name") or ""),
+        path=str(row.get("path") or ""),
+        report_path=str(row.get("report_path") or ""),
+        purpose=str(row.get("purpose") or ""),
+        scope=str(row.get("scope") or ""),
+        owner=str(row.get("owner") or ""),
+        systems=[str(item) for item in _list(row.get("systems"))],
+        status=str(row.get("status") or "inferred"),
+        review_hint=str(row.get("review_hint") or ""),
+    )
+
+
 def _derived_edges(systems: list[SystemNode], workflows: list[WorkflowStep]) -> list[GraphEdge]:
     edges: list[GraphEdge] = []
     for system in systems:
@@ -167,6 +183,7 @@ def build_system_review(manifest: dict[str, Any]) -> SystemReviewGraph:
     workflows = [_workflow(row) for row in _list(manifest.get("workflows"))]
     systems = [_system(row) for row in _list(manifest.get("systems"))]
     explicit_edges = [_edge(row) for row in _list(manifest.get("edges"))]
+    child_maps = [_child_map(row) for row in _list(manifest.get("child_maps"))]
     derived_edges = _derived_edges(systems, workflows)
     return SystemReviewGraph(
         title=str(manifest.get("title") or "System Review Graph"),
@@ -185,6 +202,7 @@ def build_system_review(manifest: dict[str, Any]) -> SystemReviewGraph:
         gates=gates,
         workflows=workflows,
         edges=[*explicit_edges, *derived_edges],
+        child_maps=child_maps,
         current_truth=_dict(manifest.get("current_truth")),
         bigger_picture=str(manifest.get("bigger_picture") or ""),
         source_links=[_dict(row) for row in _list(manifest.get("source_links"))],

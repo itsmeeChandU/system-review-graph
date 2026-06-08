@@ -17,6 +17,7 @@ System Review Graph uses a JSON manifest. The manifest is deliberately simple so
 | `decision_gates` | array | Rules that advance, block, route, or require review. |
 | `workflows` | array | Lifecycle steps. |
 | `edges` | array | Optional explicit graph edges. |
+| `child_maps` | array | Optional linked subsystem maps for large-repo atlases. |
 | `source_links` | array | Public links used for a public-safe report. |
 | `architecture_patterns` | array | How different project styles map into this model. |
 | `walkthroughs` | array | Human-readable examples. |
@@ -137,6 +138,30 @@ sanitized internal references.
   "notes": "Primary public source used for paths and architecture surfaces."
 }
 ```
+
+## Child Maps
+
+Use `child_maps` when one flat graph would hide the system. A root atlas can
+link child manifests for subsystems, monorepo packages, kernel directories,
+microservice families, or product lanes.
+
+```json
+{
+  "map_id": "drivers",
+  "name": "drivers/ subsystem map",
+  "path": "subsystems/drivers/system_review_manifest.json",
+  "report_path": "../subsystems/drivers/reports/system_review_graph.md",
+  "purpose": "Drill-down map generated from this top-level repository directory.",
+  "scope": "drivers/",
+  "systems": ["c_cpp"],
+  "status": "inferred_from_source_tree",
+  "review_hint": "Open this child map to refine exact workflows, ownership, tests, and gates."
+}
+```
+
+The root atlas stays small. The child maps carry local detail. This is useful
+when an AI agent, reviewer, or new maintainer needs one uploadable map that
+points to the rest of the context.
 
 ## Review Questions
 

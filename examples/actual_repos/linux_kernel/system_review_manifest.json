@@ -1,0 +1,1572 @@
+{
+  "architecture_patterns": [
+    {
+      "mapping": "Create a small root atlas, link child maps by subsystem boundary, and regenerate reports in CI.",
+      "name": "Map-of-maps for huge repositories",
+      "redaction": "Publish path-level maps, sanitized contracts, and review hints.",
+      "works_for": "Monorepos, kernels, platform repos, multi-language systems"
+    },
+    {
+      "mapping": "Run atlas scan/build in CI, diff the generated report, and route changed subsystem maps to reviewers.",
+      "name": "Merge-time system drift check",
+      "redaction": "Keep private data and secrets out of manifests; expose interfaces only.",
+      "works_for": "Projects that want architecture reports on every merge"
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "arch_child_map",
+      "kind": "child_system_map",
+      "name": "arch/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/arch/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "block_child_map",
+      "kind": "child_system_map",
+      "name": "block/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/block/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "certs_child_map",
+      "kind": "child_system_map",
+      "name": "certs/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/certs/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "crypto_child_map",
+      "kind": "child_system_map",
+      "name": "crypto/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/crypto/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "documentation_child_map",
+      "kind": "child_system_map",
+      "name": "Documentation/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/documentation/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "drivers_child_map",
+      "kind": "child_system_map",
+      "name": "drivers/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/drivers/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "fs_child_map",
+      "kind": "child_system_map",
+      "name": "fs/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/fs/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "include_child_map",
+      "kind": "child_system_map",
+      "name": "include/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/include/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "init_child_map",
+      "kind": "child_system_map",
+      "name": "init/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/init/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "io_uring_child_map",
+      "kind": "child_system_map",
+      "name": "io_uring/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/io_uring/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "ipc_child_map",
+      "kind": "child_system_map",
+      "name": "ipc/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/ipc/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "kernel_child_map",
+      "kind": "child_system_map",
+      "name": "kernel/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/kernel/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "lib_child_map",
+      "kind": "child_system_map",
+      "name": "lib/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/lib/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "mm_child_map",
+      "kind": "child_system_map",
+      "name": "mm/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/mm/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "net_child_map",
+      "kind": "child_system_map",
+      "name": "net/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/net/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "rust_child_map",
+      "kind": "child_system_map",
+      "name": "rust/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/rust/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "samples_child_map",
+      "kind": "child_system_map",
+      "name": "samples/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/samples/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "scripts_child_map",
+      "kind": "child_system_map",
+      "name": "scripts/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/scripts/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "security_child_map",
+      "kind": "child_system_map",
+      "name": "security/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/security/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "sound_child_map",
+      "kind": "child_system_map",
+      "name": "sound/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/sound/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "tools_child_map",
+      "kind": "child_system_map",
+      "name": "tools/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/tools/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "usr_child_map",
+      "kind": "child_system_map",
+      "name": "usr/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/usr/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "virt_child_map",
+      "kind": "child_system_map",
+      "name": "virt/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/virt/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    },
+    {
+      "artifact_id": "licenses_child_map",
+      "kind": "child_system_map",
+      "name": "LICENSES/ Child System Map",
+      "owner": "unknown",
+      "path": "subsystems/licenses/system_review_manifest.json",
+      "purpose": "Machine-readable child map for a top-level subsystem boundary.",
+      "redaction": "safe_to_share",
+      "schema": "SubsystemMap"
+    }
+  ],
+  "bigger_picture": "This is a large-repository map-of-maps stress test for System Review Graph. It uses real Linux kernel tracked paths to create a root atlas and child subsystem maps. The example is useful for orientation, CI drift checks, and reviewer routing, but it is not an official Linux maintainer audit and does not prove runtime behavior.",
+  "child_maps": [
+    {
+      "map_id": "arch",
+      "name": "arch/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/arch/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/arch/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/arch/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "arch",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "block",
+      "name": "block/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/block/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/block/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/block/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "block",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "certs",
+      "name": "certs/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/certs/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/certs/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/certs/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "certs",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "crypto",
+      "name": "crypto/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/crypto/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/crypto/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/crypto/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "crypto",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "documentation",
+      "name": "Documentation/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/documentation/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/documentation/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/documentation/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "Documentation",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "python",
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "drivers",
+      "name": "drivers/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/drivers/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/drivers/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/drivers/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "drivers",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp",
+        "rust"
+      ]
+    },
+    {
+      "map_id": "fs",
+      "name": "fs/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/fs/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/fs/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/fs/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "fs",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "include",
+      "name": "include/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/include/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/include/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/include/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "include",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "init",
+      "name": "init/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/init/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/init/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/init/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "init",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "io_uring",
+      "name": "io_uring/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/io_uring/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/io_uring/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/io_uring/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "io_uring",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "ipc",
+      "name": "ipc/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/ipc/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/ipc/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/ipc/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "ipc",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "kernel",
+      "name": "kernel/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/kernel/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/kernel/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/kernel/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "kernel",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "lib",
+      "name": "lib/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/lib/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/lib/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/lib/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "lib",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp",
+        "rust"
+      ]
+    },
+    {
+      "map_id": "mm",
+      "name": "mm/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/mm/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/mm/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/mm/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "mm",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp",
+        "rust"
+      ]
+    },
+    {
+      "map_id": "net",
+      "name": "net/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/net/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/net/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/net/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "net",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "rust",
+      "name": "rust/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/rust/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/rust/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/rust/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "rust",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp",
+        "rust"
+      ]
+    },
+    {
+      "map_id": "samples",
+      "name": "samples/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/samples/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/samples/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/samples/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "samples",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp",
+        "rust"
+      ]
+    },
+    {
+      "map_id": "scripts",
+      "name": "scripts/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/scripts/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/scripts/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/scripts/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "scripts",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "python",
+        "c_cpp",
+        "rust"
+      ]
+    },
+    {
+      "map_id": "security",
+      "name": "security/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/security/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/security/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/security/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "security",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "sound",
+      "name": "sound/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/sound/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/sound/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/sound/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "sound",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "tools",
+      "name": "tools/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/tools/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/tools/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/tools/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "tools",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "python",
+        "c_cpp",
+        "rust"
+      ]
+    },
+    {
+      "map_id": "usr",
+      "name": "usr/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/usr/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/usr/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/usr/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "usr",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "virt",
+      "name": "virt/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/virt/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/virt/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/virt/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "virt",
+      "status": "inferred_from_source_tree",
+      "systems": [
+        "c_cpp"
+      ]
+    },
+    {
+      "map_id": "licenses",
+      "name": "LICENSES/ subsystem map",
+      "owner": "unknown",
+      "path": "subsystems/licenses/system_review_manifest.json",
+      "purpose": "Drill-down map generated from this top-level repository directory.",
+      "report_path": "../subsystems/licenses/reports/system_review_graph.md",
+      "review_hint": "Open subsystems/licenses/system_review_manifest.json first, then inspect real Linux source/docs/tests for the workflows and gates this inferred child map cannot prove.",
+      "scope": "LICENSES",
+      "status": "inferred_from_source_tree",
+      "systems": []
+    }
+  ],
+  "current_truth": {
+    "file_limit_per_map": 6000,
+    "map_strategy": "root atlas plus linked child subsystem manifests",
+    "max_subsystems": 24,
+    "path_only_mirror": true,
+    "root_files_seen": 6000,
+    "runtime_behavior_proven": false,
+    "scanner": "language_neutral_atlas",
+    "source_blobs_copied": false,
+    "source_commit": "2d3090a8aeb596a26935db0955d46c9a5db5c6ce",
+    "source_commit_date": "2026-06-08 07:58:32 -0700",
+    "source_commit_subject": "Merge tag 'v7.1-p5' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6",
+    "source_repository": "https://github.com/torvalds/linux",
+    "subsystem_count": 24
+  },
+  "decision_gates": [
+    {
+      "gate_id": "subsystem_review_gate",
+      "human_gate": true,
+      "inputs": [
+        "root directory boundary",
+        "child subsystem map",
+        "maintainer review"
+      ],
+      "name": "Subsystem Review Gate",
+      "outputs": [
+        "accepted",
+        "needs_deeper_map",
+        "split_or_merge",
+        "rejected"
+      ],
+      "risk_boundary": "Atlas output is a navigation structure and source-surface hypothesis, not proof of runtime behavior.",
+      "rules": [
+        {
+          "if": "directory boundary matches real subsystem",
+          "then": "accepted"
+        },
+        {
+          "if": "directory contains multiple unrelated systems",
+          "then": "split_or_merge"
+        },
+        {
+          "if": "child map lacks workflows or gates",
+          "then": "needs_deeper_map"
+        },
+        {
+          "if": "directory is generated/vendor noise",
+          "then": "rejected"
+        }
+      ]
+    }
+  ],
+  "edges": [],
+  "known_boundaries": [
+    "Atlas boundaries are inferred from source-tree directories and markers.",
+    "A child map gives review context; it does not prove runtime behavior by itself.",
+    "Very large systems still need maintainers or deeper agents to refine real workflows.",
+    "CI regeneration can detect drift, but deciding meaning still needs review gates.",
+    "The Linux example was generated from a path-only mirror of the git tree; file contents, build configuration, runtime behavior, and maintainer ownership were not audited."
+  ],
+  "one_line": "Map-of-maps generated for a large repository: root atlas links to subsystem manifests.",
+  "rebuild_recipe": [
+    {
+      "commands": [
+        "system-review-graph scan --repo . --atlas --out reports/system-review --max-subsystems 24"
+      ],
+      "goal": "Generate root and child subsystem maps.",
+      "phase": "atlas-scan"
+    },
+    {
+      "commands": [
+        "system-review-graph scan --repo . --atlas --out reports/system-review --build-reports"
+      ],
+      "goal": "Regenerate reports in CI after a merge or major milestone.",
+      "phase": "merge-regeneration"
+    }
+  ],
+  "review_questions": [
+    "Which child maps changed since the last merge?",
+    "Which subsystem boundary is too broad and needs splitting?",
+    "Which subsystem lacks workflow, gate, schema, or test evidence?",
+    "Can reviewers reproduce the map from the declared rebuild recipe?",
+    "Where does the atlas overclaim beyond source-surface evidence?"
+  ],
+  "schemas": [
+    {
+      "example": {
+        "map_id": "drivers",
+        "path": "subsystems/drivers/system_review_manifest.json",
+        "scope": "drivers/",
+        "status": "inferred_from_source_tree",
+        "systems": [
+          "c_cpp"
+        ]
+      },
+      "kind": "atlas_contract",
+      "name": "SubsystemMap",
+      "privacy_notes": "Only path-level source metadata is included by default.",
+      "purpose": "A child system review map that a root atlas can link, upload, and hand to reviewers or agents.",
+      "required_fields": [
+        "map_id",
+        "path",
+        "scope",
+        "systems",
+        "status"
+      ]
+    }
+  ],
+  "scope": "Generated from Linux kernel git tree paths at commit 2d3090a; source blobs were not copied.",
+  "source_links": [
+    {
+      "label": "Linux kernel repository",
+      "notes": "Public source repository used for the path-tree stress test.",
+      "url": "https://github.com/torvalds/linux"
+    },
+    {
+      "label": "Linux kernel commit 2d3090a",
+      "notes": "Merge tag 'v7.1-p5' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6",
+      "url": "https://github.com/torvalds/linux/commit/2d3090a8aeb596a26935db0955d46c9a5db5c6ce"
+    }
+  ],
+  "systems": [
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "arch_child_map"
+      ],
+      "code_surfaces": [
+        "arch"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/arch/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "arch/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "arch",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "block_child_map"
+      ],
+      "code_surfaces": [
+        "block"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/block/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "block/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "block",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "certs_child_map"
+      ],
+      "code_surfaces": [
+        "certs"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/certs/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "certs/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "certs",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "crypto_child_map"
+      ],
+      "code_surfaces": [
+        "crypto"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/crypto/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "crypto/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "crypto",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "documentation_child_map"
+      ],
+      "code_surfaces": [
+        "Documentation"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/documentation/system_review_manifest.json",
+        "detected_child_systems": [
+          "python",
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Python"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "Documentation/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "documentation",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "drivers_child_map"
+      ],
+      "code_surfaces": [
+        "drivers"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/drivers/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp",
+          "rust"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Rust"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "drivers/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "drivers",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "fs_child_map"
+      ],
+      "code_surfaces": [
+        "fs"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/fs/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "fs/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "fs",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "include_child_map"
+      ],
+      "code_surfaces": [
+        "include"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/include/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "include/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "include",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "init_child_map"
+      ],
+      "code_surfaces": [
+        "init"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/init/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "init/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "init",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "io_uring_child_map"
+      ],
+      "code_surfaces": [
+        "io_uring"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/io_uring/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "io_uring/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "io_uring",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "ipc_child_map"
+      ],
+      "code_surfaces": [
+        "ipc"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/ipc/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "ipc/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "ipc",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "kernel_child_map"
+      ],
+      "code_surfaces": [
+        "kernel"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/kernel/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "kernel/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "kernel",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "lib_child_map"
+      ],
+      "code_surfaces": [
+        "lib"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/lib/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp",
+          "rust"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Rust"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "lib/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "lib",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "mm_child_map"
+      ],
+      "code_surfaces": [
+        "mm"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/mm/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp",
+          "rust"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Rust"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "mm/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "mm",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "net_child_map"
+      ],
+      "code_surfaces": [
+        "net"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/net/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "net/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "net",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "rust_child_map"
+      ],
+      "code_surfaces": [
+        "rust"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/rust/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp",
+          "rust"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Rust"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "rust/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "rust",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "samples_child_map"
+      ],
+      "code_surfaces": [
+        "samples"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/samples/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp",
+          "rust"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Rust"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "samples/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "samples",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "scripts_child_map"
+      ],
+      "code_surfaces": [
+        "scripts"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/scripts/system_review_manifest.json",
+        "detected_child_systems": [
+          "python",
+          "c_cpp",
+          "rust"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Python",
+        "Rust"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "scripts/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "scripts",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "security_child_map"
+      ],
+      "code_surfaces": [
+        "security"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/security/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "security/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "security",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "sound_child_map"
+      ],
+      "code_surfaces": [
+        "sound"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/sound/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "sound/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "sound",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "tools_child_map"
+      ],
+      "code_surfaces": [
+        "tools"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/tools/system_review_manifest.json",
+        "detected_child_systems": [
+          "python",
+          "c_cpp",
+          "rust"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++",
+        "Python",
+        "Rust"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "tools/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "tools",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "usr_child_map"
+      ],
+      "code_surfaces": [
+        "usr"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/usr/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "usr/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "usr",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "virt_child_map"
+      ],
+      "code_surfaces": [
+        "virt"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/virt/system_review_manifest.json",
+        "detected_child_systems": [
+          "c_cpp"
+        ]
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [
+        "C",
+        "C++"
+      ],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "virt/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "virt",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    },
+    {
+      "architecture_style": "top-level source-tree subsystem",
+      "artifacts": [
+        "licenses_child_map"
+      ],
+      "code_surfaces": [
+        "LICENSES"
+      ],
+      "decision_gates": [
+        "subsystem_review_gate"
+      ],
+      "example": {
+        "child_map": "subsystems/licenses/system_review_manifest.json",
+        "detected_child_systems": []
+      },
+      "ideal_target": "Replace inferred directory node with exact subsystem workflows, APIs, contracts, risks, and tests.",
+      "language_stack": [],
+      "lifecycle": "open child map -> inspect source surfaces -> refine real workflows",
+      "name": "LICENSES/",
+      "owner": "unknown",
+      "purpose": "Top-level repository subsystem inferred from directory boundary. Use the child map for language surfaces and first review targets.",
+      "system_id": "licenses",
+      "truth_boundary": "Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review."
+    }
+  ],
+  "title": "Linux Kernel System Review Atlas",
+  "walkthroughs": [
+    {
+      "example": {
+        "ci": "system-review-graph scan --repo . --atlas --out reports/system-review --build-reports",
+        "review": [
+          "Read reports/system-review/reports/system_review_graph.md",
+          "Open changed child manifests under reports/system-review/subsystems/",
+          "Promote accepted inferred maps into reviewed manifests"
+        ],
+        "scan": "system-review-graph scan --repo /path/to/repo --atlas --out atlas --max-subsystems 24"
+      },
+      "name": "Review a huge repository without flattening it",
+      "story": "Start at the atlas report, choose the subsystem that changed or looks risky, open the child manifest, then refine that child into exact workflows and gates."
+    }
+  ],
+  "workflows": [
+    {
+      "actor": "System Review Graph scanner",
+      "consumes": [],
+      "gates": [
+        "subsystem_review_gate"
+      ],
+      "name": "Scan Root Boundaries",
+      "next_steps": [
+        "open_child_maps"
+      ],
+      "produces": [
+        "arch_child_map",
+        "block_child_map",
+        "certs_child_map",
+        "crypto_child_map",
+        "documentation_child_map",
+        "drivers_child_map",
+        "fs_child_map",
+        "include_child_map",
+        "init_child_map",
+        "io_uring_child_map",
+        "ipc_child_map",
+        "kernel_child_map",
+        "lib_child_map",
+        "mm_child_map",
+        "net_child_map",
+        "rust_child_map",
+        "samples_child_map",
+        "scripts_child_map",
+        "security_child_map",
+        "sound_child_map",
+        "tools_child_map",
+        "usr_child_map",
+        "virt_child_map",
+        "licenses_child_map"
+      ],
+      "purpose": "Detect top-level subsystem boundaries and generate child maps.",
+      "step_id": "scan_root_boundaries"
+    },
+    {
+      "actor": "Reviewer or agent",
+      "consumes": [
+        "arch_child_map",
+        "block_child_map",
+        "certs_child_map",
+        "crypto_child_map",
+        "documentation_child_map",
+        "drivers_child_map",
+        "fs_child_map",
+        "include_child_map",
+        "init_child_map",
+        "io_uring_child_map",
+        "ipc_child_map",
+        "kernel_child_map",
+        "lib_child_map",
+        "mm_child_map",
+        "net_child_map",
+        "rust_child_map",
+        "samples_child_map",
+        "scripts_child_map",
+        "security_child_map",
+        "sound_child_map",
+        "tools_child_map",
+        "usr_child_map",
+        "virt_child_map",
+        "licenses_child_map"
+      ],
+      "gates": [
+        "subsystem_review_gate"
+      ],
+      "name": "Open Child Maps",
+      "next_steps": [
+        "refine_atlas"
+      ],
+      "produces": [
+        "subsystem_review_context"
+      ],
+      "purpose": "Load child manifests to understand each subsystem without losing the root map.",
+      "step_id": "open_child_maps"
+    },
+    {
+      "actor": "Maintainer",
+      "consumes": [
+        "subsystem_review_context"
+      ],
+      "gates": [
+        "subsystem_review_gate"
+      ],
+      "name": "Refine Atlas",
+      "next_steps": [
+        "regenerate_on_merge"
+      ],
+      "produces": [
+        "accepted_system_review_atlas"
+      ],
+      "purpose": "Replace inferred boundaries with reviewed workflows, APIs, and gates.",
+      "step_id": "refine_atlas"
+    },
+    {
+      "actor": "CI",
+      "consumes": [
+        "accepted_system_review_atlas"
+      ],
+      "gates": [
+        "subsystem_review_gate"
+      ],
+      "name": "Regenerate On Merge",
+      "next_steps": [],
+      "produces": [
+        "fresh_review_reports",
+        "drift_findings"
+      ],
+      "purpose": "Keep the atlas current after merges so reviewers can see system drift, new features, and changed review targets.",
+      "step_id": "regenerate_on_merge"
+    }
+  ]
+}

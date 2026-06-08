@@ -26,3 +26,6 @@ jobs:
           system-review-graph build --manifest examples/actual_repos/fastapi/system_review_manifest.json --out-dir examples/actual_repos/fastapi/reports
           system-review-graph build --manifest examples/actual_repos/duckdb/system_review_manifest.json --out-dir examples/actual_repos/duckdb/reports
           system-review-graph build --manifest examples/actual_repos/opentelemetry_collector/system_review_manifest.json --out-dir examples/actual_repos/opentelemetry_collector/reports
+      - name: Generate merge-time system atlas
+        run: |
+          system-review-graph scan --repo . --atlas --out /tmp/system-review-atlas --max-subsystems 16 --build-reports --depth overview

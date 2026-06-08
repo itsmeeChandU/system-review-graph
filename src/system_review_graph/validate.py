@@ -32,7 +32,14 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
     missing = sorted(REQUIRED_TOP_LEVEL - set(manifest))
     if missing:
         errors.append(f"missing top-level keys: {', '.join(missing)}")
-    for key in ("systems", "artifacts", "schemas", "decision_gates", "workflows"):
+    for key in (
+        "systems",
+        "artifacts",
+        "schemas",
+        "decision_gates",
+        "workflows",
+        "child_maps",
+    ):
         if key in manifest and not isinstance(manifest[key], list):
             errors.append(f"{key} must be a list")
     systems = manifest.get("systems") or []
@@ -41,12 +48,14 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
     workflows = manifest.get("workflows") or []
     schemas = manifest.get("schemas") or []
     edges = manifest.get("edges") or []
+    child_maps = manifest.get("child_maps") or []
     for label, values in (
         ("system_id", _ids(systems, "system_id")),
         ("artifact_id", _ids(artifacts, "artifact_id")),
         ("gate_id", _ids(gates, "gate_id")),
         ("step_id", _ids(workflows, "step_id")),
         ("schema name", _ids(schemas, "name")),
+        ("child map_id", _ids(child_maps, "map_id")),
     ):
         for duplicate in _seen_duplicates(values):
             errors.append(f"duplicate {label}: {duplicate}")
@@ -57,6 +66,13 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
         for field in ("system_id", "name", "purpose"):
             if not system.get(field):
                 errors.append(f"systems[{index}] missing {field}")
+    for index, child_map in enumerate(manifest.get("child_maps") or []):
+        if not isinstance(child_map, dict):
+            errors.append(f"child_maps[{index}] must be an object")
+            continue
+        for field in ("map_id", "name", "path"):
+            if not child_map.get(field):
+                errors.append(f"child_maps[{index}] missing {field}")
     for index, artifact in enumerate(manifest.get("artifacts") or []):
         if not isinstance(artifact, dict):
             errors.append(f"artifacts[{index}] must be an object")

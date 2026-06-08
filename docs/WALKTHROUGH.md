@@ -158,3 +158,44 @@ review grammar:
 - framework repo,
 - database engine,
 - component pipeline.
+
+## 10. Generate A Map-Of-Maps Atlas
+
+For very large repositories, use atlas mode:
+
+```bash
+system-review-graph scan \
+  --repo /path/to/linux-or-monorepo \
+  --atlas \
+  --out /tmp/system-review-atlas \
+  --max-subsystems 24 \
+  --build-reports \
+  --depth overview
+```
+
+Outputs:
+
+```text
+/tmp/system-review-atlas/system_review_manifest.json
+/tmp/system-review-atlas/reports/system_review_graph.md
+/tmp/system-review-atlas/subsystems/<subsystem>/system_review_manifest.json
+/tmp/system-review-atlas/subsystems/<subsystem>/reports/system_review_graph.md
+```
+
+Read the root report first. It shows the current truth, a map-of-maps diagram,
+and a child-map table. Then open the subsystem that changed, failed review, or
+needs deeper analysis.
+
+Atlas mode is also useful in CI:
+
+```bash
+system-review-graph scan \
+  --repo . \
+  --atlas \
+  --out reports/system-review-atlas \
+  --max-subsystems 16 \
+  --build-reports
+```
+
+The generated report can be attached to pull requests or compared after merges
+to spot architecture drift, missing gates, and new subsystem surfaces.

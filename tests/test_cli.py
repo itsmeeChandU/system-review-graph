@@ -92,3 +92,37 @@ def test_cli_scan(tmp_path):
     text = manifest.read_text()
     assert "Python Surface" in text
     assert "system_review_manifest.json" in text
+
+
+def test_cli_scan_atlas(tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "drivers").mkdir(parents=True)
+    (repo / "net").mkdir()
+    (repo / "fs").mkdir()
+    (repo / "drivers" / "device.c").write_text("int driver(void) { return 0; }\n")
+    (repo / "net" / "socket.c").write_text("int socket_layer(void) { return 0; }\n")
+    (repo / "fs" / "file.c").write_text("int fs_layer(void) { return 0; }\n")
+    out = tmp_path / "atlas"
+
+    exit_code = main(
+        [
+            "scan",
+            "--repo",
+            str(repo),
+            "--out",
+            str(out),
+            "--atlas",
+            "--max-subsystems",
+            "3",
+            "--build-reports",
+        ]
+    )
+
+    root_manifest = out / "system_review_manifest.json"
+    root_report = out / "reports" / "system_review_graph.md"
+
+    assert exit_code == 0
+    assert root_manifest.exists()
+    assert (out / "subsystems" / "drivers" / "system_review_manifest.json").exists()
+    assert "child_maps" in root_manifest.read_text()
+    assert "## Map Of Maps" in root_report.read_text()

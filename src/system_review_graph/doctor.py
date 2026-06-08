@@ -49,6 +49,16 @@ def doctor_manifest(manifest: dict[str, Any]) -> list[dict[str, str]]:
                 "message": "fewer than two systems; report may be too shallow for a system map",
             }
         )
+    if _count(manifest, "systems") > 12 and _count(manifest, "child_maps") == 0:
+        findings.append(
+            {
+                "severity": "info",
+                "message": (
+                    "large manifest has no child_maps; consider atlas mode so reviewers can "
+                    "drill into subsystem maps"
+                ),
+            }
+        )
     if _count(manifest, "workflows") == 0:
         findings.append(
             {

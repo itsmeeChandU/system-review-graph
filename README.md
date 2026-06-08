@@ -14,6 +14,8 @@ It turns a public or sanitized manifest into:
 - schema and artifact references,
 - walkthrough examples for reviewers, maintainers, and AI agents.
 - optional HTML and Graphviz DOT outputs.
+- optional map-of-maps atlases for huge repositories.
+- an MCP server so agents can scan, build, validate, and load atlas context.
 
 This project is meant for open-source maintainers, platform teams, audit teams, AI coding agents, and new engineers who need to understand a repo as an operating system rather than a pile of files.
 
@@ -112,6 +114,23 @@ flowchart LR
   human --> review["needs review"]
 ```
 
+Map of maps for huge repositories:
+
+```mermaid
+flowchart TD
+  atlas["Root system atlas"]
+  drivers["drivers/ child map"]
+  net["net/ child map"]
+  fs["fs/ child map"]
+  mm["mm/ child map"]
+  atlas --> drivers
+  atlas --> net
+  atlas --> fs
+  atlas --> mm
+  drivers --> ccpp["C / C++ source surfaces"]
+  net --> workflow["network workflows to refine"]
+```
+
 ## Quick Start
 
 ```bash
@@ -164,6 +183,49 @@ for C, C++, Java, C#, Python, JavaScript/TypeScript, Go, Rust, docs, tests, and
 common build/config files. Scanner output is intentionally marked as inferred;
 it is a starting map, not proof of runtime behavior.
 
+For a huge repository, generate an atlas instead of one giant flat graph:
+
+```bash
+system-review-graph scan \
+  --repo /path/to/large/repo \
+  --atlas \
+  --out /tmp/system-review-atlas \
+  --max-subsystems 24 \
+  --build-reports \
+  --depth overview
+```
+
+That writes:
+
+```text
+/tmp/system-review-atlas/system_review_manifest.json
+/tmp/system-review-atlas/reports/system_review_graph.md
+/tmp/system-review-atlas/subsystems/*/system_review_manifest.json
+```
+
+The root manifest includes `child_maps`, so a reviewer or AI agent can load one
+map and discover the linked subsystem maps.
+
+Expose SRG to MCP-capable agents:
+
+```bash
+system-review-graph-mcp
+```
+
+Example MCP client entry:
+
+```json
+{
+  "mcpServers": {
+    "system-review-graph": {
+      "command": "system-review-graph-mcp"
+    }
+  }
+}
+```
+
+See [`docs/MCP.md`](docs/MCP.md).
+
 ## Example Gallery
 
 | Example | What It Teaches | Generated Report |
@@ -172,6 +234,7 @@ it is a starting map, not proof of runtime behavior.
 | FastAPI | Framework/API runtime mapping | `examples/actual_repos/fastapi/reports/system_review_graph.md` |
 | DuckDB | Database/query-engine mapping | `examples/actual_repos/duckdb/reports/system_review_graph.md` |
 | OpenTelemetry Collector | Component pipeline and API-only review mapping | `examples/actual_repos/opentelemetry_collector/reports/system_review_graph.md` |
+| Linux Kernel Atlas | Large-repo map-of-maps stress test | `examples/actual_repos/linux_kernel/reports/system_review_graph.md` |
 
 The actual-repo examples are educational public-review maps, not official
 maintainer audits.
@@ -218,6 +281,7 @@ A manifest describes:
 - decision gates,
 - workflows,
 - graph edges,
+- child maps for large-repo atlases,
 - source links,
 - current truth,
 - architecture patterns,
@@ -276,6 +340,9 @@ system_review_graph.html
 system_review_graph.dot
 ```
 
+`scan --atlas --build-reports` writes the same report files for the root atlas
+and each child subsystem map.
+
 ## Repository Layout
 
 ```text
@@ -300,6 +367,7 @@ examples/
     fastapi/
     duckdb/
     opentelemetry_collector/
+    linux_kernel/
 ```
 
 ## Project Docs
@@ -309,6 +377,7 @@ examples/
 | [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | Explains code map vs system map and the review methodology. |
 | [`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md) | Step-by-step usage walkthrough. |
 | [`docs/SCHEMA.md`](docs/SCHEMA.md) | Manifest fields and depth options. |
+| [`docs/MCP.md`](docs/MCP.md) | MCP stdio server setup and tools. |
 | [`docs/schema/system_review_manifest.schema.json`](docs/schema/system_review_manifest.schema.json) | JSON Schema for editor/tool validation. |
 | [`docs/ARCHITECTURE_PATTERNS.md`](docs/ARCHITECTURE_PATTERNS.md) | How different system shapes map into the manifest. |
 | [`docs/OPEN_SOURCE_LAUNCH.md`](docs/OPEN_SOURCE_LAUNCH.md) | How to make the repo findable and launch it publicly. |
@@ -327,6 +396,8 @@ python -m ruff check .
 A GitHub Actions CI template is available at
 `docs/ci/github-actions-ci.yml`. Copy it to `.github/workflows/ci.yml` in your
 own repository if you want automated lint, tests, and example-report builds.
+The template also shows how to regenerate an atlas on every push or pull
+request so architecture drift becomes a visible merge artifact.
 
 ## Packaging
 
@@ -334,6 +405,7 @@ The project is configured as a Python package with the console command:
 
 ```bash
 system-review-graph
+system-review-graph-mcp
 ```
 
 Build and check locally:

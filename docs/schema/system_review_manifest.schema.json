@@ -38,6 +38,10 @@
       "type": "array",
       "items": { "$ref": "#/$defs/edge" }
     },
+    "child_maps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/child_map" }
+    },
     "architecture_patterns": {
       "type": "array",
       "items": { "type": "object" }
@@ -184,6 +188,25 @@
         "target": { "type": "string" },
         "relation": { "type": "string" },
         "why": { "type": "string" }
+      }
+    },
+    "child_map": {
+      "type": "object",
+      "required": ["map_id", "name", "path"],
+      "properties": {
+        "map_id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "report_path": { "type": "string" },
+        "purpose": { "type": "string" },
+        "scope": { "type": "string" },
+        "owner": { "type": "string" },
+        "systems": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "status": { "type": "string" },
+        "review_hint": { "type": "string" }
       }
     }
   }

@@ -15,7 +15,7 @@ from system_review_graph.render import (
     render_html,
     render_markdown,
 )
-from system_review_graph.scanner import scan_repository
+from system_review_graph.scanner import scan_repository, scan_repository_atlas
 from system_review_graph.serialize import to_dict
 from system_review_graph.validate import validate_manifest
 
@@ -31,6 +31,32 @@ def _example_choices() -> list[str]:
     )
 
 
+def _write_report_outputs(
+    manifest: dict,
+    out_dir: Path,
+    depth: str,
+    html: bool = False,
+    dot: bool = False,
+) -> None:
+    graph = build_system_review(manifest)
+    write_json(out_dir / "system_review_graph.json", to_dict(graph))
+    (out_dir / "system_review_graph.md").parent.mkdir(parents=True, exist_ok=True)
+    (out_dir / "system_review_graph.md").write_text(
+        render_markdown(graph, depth=depth),
+        encoding="utf-8",
+    )
+    if html:
+        (out_dir / "system_review_graph.html").write_text(
+            render_html(graph, depth=depth),
+            encoding="utf-8",
+        )
+    if dot:
+        (out_dir / "system_review_graph.dot").write_text(
+            render_graphviz_dot(graph),
+            encoding="utf-8",
+        )
+
+
 def _build(args: argparse.Namespace) -> int:
     manifest_path = Path(args.manifest)
     out_dir = Path(args.out_dir)
@@ -40,23 +66,7 @@ def _build(args: argparse.Namespace) -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 2
-    graph = build_system_review(manifest)
-    write_json(out_dir / "system_review_graph.json", to_dict(graph))
-    (out_dir / "system_review_graph.md").parent.mkdir(parents=True, exist_ok=True)
-    (out_dir / "system_review_graph.md").write_text(
-        render_markdown(graph, depth=args.depth),
-        encoding="utf-8",
-    )
-    if args.html:
-        (out_dir / "system_review_graph.html").write_text(
-            render_html(graph, depth=args.depth),
-            encoding="utf-8",
-        )
-    if args.dot:
-        (out_dir / "system_review_graph.dot").write_text(
-            render_graphviz_dot(graph),
-            encoding="utf-8",
-        )
+    _write_report_outputs(manifest, out_dir, args.depth, args.html, args.dot)
     print(out_dir / "system_review_graph.md")
     return 0
 
@@ -104,6 +114,47 @@ def _doctor(args: argparse.Namespace) -> int:
 
 
 def _scan(args: argparse.Namespace) -> int:
+    if args.atlas:
+        output = Path(args.out)
+        if output.suffix == ".json":
+            print("ERROR: --atlas expects --out to be a directory, not a JSON file")
+            return 2
+        atlas = scan_repository_atlas(
+            Path(args.repo),
+            title=args.title,
+            file_limit=args.file_limit,
+            max_subsystems=args.max_subsystems,
+        )
+        root_manifest = atlas["root"]
+        root_path = output / "system_review_manifest.json"
+        write_json(root_path, root_manifest)
+        for child in atlas["children"]:
+            child_manifest_path = output / child["manifest_path"]
+            write_json(child_manifest_path, child["manifest"])
+        if args.build_reports:
+            errors = validate_manifest(root_manifest)
+            if errors:
+                for error in errors:
+                    print(f"ERROR: {error}")
+                return 2
+            _write_report_outputs(
+                root_manifest,
+                output / "reports",
+                args.depth,
+                args.html,
+                args.dot,
+            )
+            for child in atlas["children"]:
+                manifest = child["manifest"]
+                errors = validate_manifest(manifest)
+                if errors:
+                    for error in errors:
+                        print(f"ERROR: {child['manifest_path']}: {error}")
+                    return 2
+                child_dir = (output / child["manifest_path"]).parent / "reports"
+                _write_report_outputs(manifest, child_dir, args.depth, args.html, args.dot)
+        print(root_path)
+        return 0
     manifest = scan_repository(Path(args.repo), title=args.title, file_limit=args.file_limit)
     output = Path(args.out)
     write_json(output, manifest)
@@ -153,6 +204,21 @@ def main(argv: list[str] | None = None) -> int:
     scan.add_argument("--out", required=True)
     scan.add_argument("--title")
     scan.add_argument("--file-limit", type=int, default=6000)
+    scan.add_argument("--atlas", action="store_true", help="Write a root atlas plus child maps")
+    scan.add_argument("--max-subsystems", type=int, default=24)
+    scan.add_argument(
+        "--build-reports",
+        action="store_true",
+        help="With --atlas, also build Markdown and JSON reports for root and child maps",
+    )
+    scan.add_argument(
+        "--depth",
+        choices=sorted(REPORT_DEPTHS),
+        default="overview",
+        help="Report detail level for --atlas --build-reports",
+    )
+    scan.add_argument("--html", action="store_true", help="With --build-reports, also write HTML")
+    scan.add_argument("--dot", action="store_true", help="With --build-reports, also write DOT")
     scan.set_defaults(func=_scan)
 
     args = parser.parse_args(argv)
