@@ -20,6 +20,7 @@ orientation.
 - MCP stdio server with scan/build/validate/doctor/load-atlas-context tools.
 - Blueprint-depth reports with source evidence, operational flows, control points, and known gaps.
 - Linux kernel blueprint with major source-backed operational paths.
+- Generated coverage, evidence, gap, and action registers in Markdown and HTML reports.
 - Merge-time atlas generation pattern for CI.
 - Linux kernel atlas stress-test example.
 
@@ -28,6 +29,7 @@ orientation.
 - Add more real public repo examples across languages and architectures.
 - Refine atlas scoring beyond top-level directories into changed files, ownership, docs, and tests.
 - Add automated source-evidence extraction for blueprint sections.
+- Add register export formats for teams that want CSV/JSON audit ledgers.
 - Detect OpenAPI, protobuf, SQL migrations, package metadata, docs, and tests in more detail.
 - Add deeper language-specific scanners for Python, TypeScript, Go, Rust, Java, C#, C, and C++.
 - Add an interactive review mode that asks missing-methodology questions.

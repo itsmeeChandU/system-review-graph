@@ -11,6 +11,7 @@ It turns a public or sanitized manifest into:
 - a reverse-engineering report,
 - architecture and workflow maps,
 - decision-gate documentation,
+- coverage, evidence, gap, and action registers,
 - schema and artifact references,
 - walkthrough examples for reviewers, maintainers, and AI agents.
 - optional HTML and Graphviz DOT outputs.
@@ -29,6 +30,7 @@ Most repo maps stop at modules, classes, functions, imports, and calls. That is 
 - What data or artifacts feed each stage?
 - What actions can happen downstream?
 - What is blocked by human/legal/security review?
+- What is covered, proven, open, and actionable?
 - What can be shared publicly when the database is private?
 - How could someone rebuild the system from the report?
 
@@ -207,6 +209,15 @@ That writes:
 The root manifest includes `child_maps`, so a reviewer or AI agent can load one
 map and discover the linked subsystem maps.
 
+Every generated report also includes open-source-style audit registers:
+
+| Register | Answers |
+|---|---|
+| Coverage Register | Which systems, artifacts, schemas, gates, workflows, child maps, and blueprint sections are represented? |
+| Evidence Register | Which source links, artifact paths, schema contracts, and blueprint evidence rows support the map? |
+| Gap Register | Which boundaries, missing proof points, and optional deepening areas remain open? |
+| Action Register | Which review questions, rebuild phases, and gap-closing tasks should happen next? |
+
 Expose SRG to MCP-capable agents:
 
 ```bash
@@ -246,10 +257,10 @@ Reports are generated with `--depth deep` by default.
 
 | Depth | Use When | Includes |
 |---|---|---|
-| `overview` | You need the fastest orientation. | Current truth, source links, lifecycle map, expansion index, systems, architecture patterns, walkthroughs, review questions. |
+| `overview` | You need the fastest orientation. | Current truth, source links, report registers, lifecycle map, expansion index, systems, architecture patterns, walkthroughs, review questions. |
 | `standard` | You want a normal audit handoff. | Overview plus artifact/schema map, gate map, system details, artifacts, schemas, gates, and workflows. |
 | `deep` | You want blueprint-level inspection. | Standard plus relationship graph, schema examples, and per-system artifact/gate/workflow drill-downs. |
-| `blueprint` | You want a wall-map view of how the system works. | Deep plus blueprint sections with source evidence, operational flow, control points, review questions, and known gaps. |
+| `blueprint` | You want a wall-map view of how the system works. | Deep plus blueprint sections with source evidence, operational flow, control points, review questions, known gaps, and full report registers. |
 
 ```bash
 system-review-graph build \

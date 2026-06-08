@@ -40,6 +40,7 @@
     }
   ],
   "bigger_picture": "This is an inferred starter map. It detects language and project surfaces, then asks maintainers or agents to refine actual workflows, gates, and boundaries.",
+  "blueprint_sections": [],
   "child_maps": [],
   "current_truth": {
     "atlas_parent": "srg-linux-paths",
@@ -139,7 +140,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T20:12:02+00:00",
+  "generated_at": "2026-06-08T20:57:40+00:00",
   "known_boundaries": [
     "Scanner output is inferred from file paths and markers.",
     "Runtime behavior, production deployment, and ownership are not proven.",

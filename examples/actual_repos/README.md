@@ -12,6 +12,12 @@ architecture shapes:
 | FastAPI | `fastapi/fastapi` | Python web/API framework |
 | DuckDB | `duckdb/duckdb` | Embedded analytical database engine |
 | OpenTelemetry Collector | `open-telemetry/opentelemetry-collector` | Go telemetry pipeline and component framework |
+| Linux Kernel Atlas | `torvalds/linux` | Large source-tree atlas with child maps and blueprint flows |
+
+Generated reports include coverage, evidence, gap, and action registers. Use
+those registers first when reviewing an example: they show what the report
+covers, what evidence is declared, what remains open, and what the next review
+actions are.
 
 Build one report:
 

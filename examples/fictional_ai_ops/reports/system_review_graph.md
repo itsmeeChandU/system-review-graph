@@ -1,6 +1,6 @@
 # Fictional AI Ops System Review Graph
 
-Generated: `2026-06-08T19:54:22+00:00`
+Generated: `2026-06-08T20:57:31+00:00`
 Scope: A fictional public-safe AI operations system used as an open-source example.
 One line: Code-review graph shows the files; this system-review graph shows how evidence becomes recommended action, outcome, and lesson.
 Depth: `deep`
@@ -17,6 +17,81 @@ This example shows how a team can explain a complex system without exposing priv
 - `unsafe_action_bypass_count`: `0`
 - `outcomes_pending_capture`: `3`
 - `production_database_exposed`: `false`
+
+## Report Registers
+
+These registers turn the map into an audit surface: what is covered, what evidence supports it, what remains open, and what a reviewer should do next.
+
+### Coverage Register
+
+| Area | Count | What It Means | Reviewer Use |
+|---|---:|---|---|
+| Systems | 6 | Bounded contexts, services, subsystems, or product surfaces. | Use this to see whether the report maps the main operating areas. |
+| Artifacts | 7 | Inspectable files, APIs, tables, dashboards, reports, or outputs. | Use this to trace where system claims can be inspected. |
+| Schemas/contracts | 6 | Public or sanitized contracts for artifacts and handoffs. | Use this to rebuild examples without touching private data. |
+| Decision gates | 4 | Rules that advance, wait, block, or require human review. | Use this to find where the system controls action. |
+| Workflows | 6 | Lifecycle steps from input to output. | Use this to follow what happens end to end. |
+| Graph edges | 38 | Explicit and derived relationships between manifest nodes. | Use this to audit connectivity and missing relationships. |
+| Child maps | 0 | Linked subsystem maps for large repositories. | Use this to drill into a map-of-maps instead of one flat report. |
+| Blueprint sections | 0 | Source-evidence-backed operating flows. | Use this to review deep behavior claims with proof anchors. |
+| Blueprint evidence rows | 0 | Source paths, symbols, roles, and proof levels. | Use this to verify whether blueprint claims are source-backed. |
+| Source links | 0 | External or public references used by the report. | Use this to confirm the report's public evidence base. |
+| Known boundaries | 4 | Open limits, unproven claims, redactions, or scope exclusions. | Use this to avoid treating the report as stronger than it is. |
+| Review questions | 6 | Questions a maintainer, auditor, or agent should answer next. | Use this as the human follow-up queue. |
+| Rebuild phases | 3 | Documented commands or phases for reproducing the report. | Use this to regenerate or verify the report locally. |
+
+### Evidence Register
+
+| Evidence | Kind | Coverage | Proof | Reviewer Use |
+|---|---|---|---|---|
+| GET /internal/source-rollups | api | data-platform | public_summary_only | Returns sanitized source summaries. |
+| private://evidence_graph | private_database | data-platform | schema_only | Canonical internal evidence store. |
+| reports/recommendations.json | json_report | intelligence | safe_to_share | Reviewable recommendation cards. |
+| queue://action-intents | queue | operations | counts_only | Downstream actions waiting for execution or review. |
+| reports/outcomes.jsonl | jsonl_ledger | operations | safe_to_share | Reality feedback from executed or skipped actions. |
+| reports/lessons.jsonl | jsonl_ledger | research | safe_to_share | Validated lessons and parked rule changes. |
+| app://operator | ui | operations | public_summary_only | Shows recommendations, blockers, approvals, outcomes, and lessons. |
+| SourceEnvelope | sanitized_event | source_id, observed_at, source_type, summary, rights_status | contract declared | Describes a source observation without exposing raw vendor payloads. |
+| EvidenceFact | graph_fact | fact_id, subject, kind, payload, valid_at, source_ref | contract declared | Stores traceable evidence used by recommendations. |
+| RecommendationCard | decision_input | recommendation_id, subject, confidence, reason, evidence_refs, risk_level | contract declared | Explains why the system recommends an action. |
+| ActionIntent | downstream_action | action_id, recommendation_id, action_type, human_gate_required, status | contract declared | Represents a proposed action before execution. |
+| OutcomeRecord | reality_feedback | outcome_id, action_id, capture_status, result, evidence_refs | contract declared | Captures whether action created the intended result. |
+| LessonRecord | learning_loop | lesson_id, outcome_id, lesson, rule_change_status | contract declared | Turns outcomes into validated or parked rule changes. |
+
+### Gap Register
+
+| Gap | Area | Status | Boundary | Next Step |
+|---|---|---|---|---|
+| Known boundary | whole report | open | This report explains architecture and system behavior; it does not prove production correctness. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | Sanitized examples must not be treated as real data. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | A passing gate in a report still needs implementation tests in the actual system. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | Human/legal/security gates should be implemented in production code, not only documented. | Accept the boundary or add evidence that closes it. |
+| System truth boundary | Source Mesh | review | Source summaries are not product claims. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Evidence Core | review | Database remains private; public report exposes only schema and examples. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Recommendation Engine | review | A recommendation is not an executed action. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Action Engine | review | Restricted actions require approval before execution. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Outcome Learning Loop | review | A lesson does not change future behavior until promotion is validated. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Operator UI | review | UI reads canonical reports and requests actions; it does not invent truth. | Inspect this boundary before making stronger behavior claims. |
+| Source links missing | whole report | open | No external source links were declared. | Add public repo, docs, issue, or design references. |
+| Blueprint not declared | whole report | optional | No source-backed blueprint sections were declared. | Add blueprint sections when the report needs source-level proof. |
+
+### Action Register
+
+| Action | Owner | Status | Trigger | Expected Output |
+|---|---|---|---|---|
+| Review question | maintainer / auditor | open | Which source and evidence artifacts prove each recommendation? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Which decision gate blocks unsafe downstream action? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Which actions require human approval and why? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Where is the outcome captured after action or no-action? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Which lessons are promoted, parked, or killed based on reality feedback? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | What can be safely reviewed if the production database remains private? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Resolve boundary | maintainer / auditor | open | This report explains architecture and system behavior; it does not prove production correctness. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | Sanitized examples must not be treated as real data. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | A passing gate in a report still needs implementation tests in the actual system. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | Human/legal/security gates should be implemented in production code, not only documented. | Accept as scope or add proof that closes it. |
+| Rebuild phase | maintainer / agent | repeatable | validate | Check the manifest shape. |
+| Rebuild phase | maintainer / agent | repeatable | build | Generate JSON and Markdown reports. |
+| Rebuild phase | maintainer / agent | repeatable | review | Read the system as an operating map. |
 
 ## Lifecycle Map
 
@@ -139,6 +214,9 @@ flowchart TD
 | Level | Use It To Answer | Report Section |
 |---|---|---|
 | 0. Situation | What is true now? | Current Truth |
+| 0.25. Registers | What is covered, proven, open, and actionable? | Report Registers |
+| 0.5. Atlas | Which child map should I open next? | Map Of Maps |
+| 0.75. Blueprint | Which source-backed flows explain the whole system? | Blueprint Sections |
 | 1. Flow | How does the system move end to end? | Lifecycle Map |
 | 2. Ownership | Which subsystem owns which artifact? | Artifact And Schema Map |
 | 3. Control | Which rules advance, wait, or block? | Gate Map |

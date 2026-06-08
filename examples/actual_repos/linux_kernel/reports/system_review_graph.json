@@ -2519,7 +2519,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T20:36:32+00:00",
+  "generated_at": "2026-06-08T20:57:36+00:00",
   "known_boundaries": [
     "Atlas boundaries are inferred from source-tree directories and markers.",
     "A child map gives review context; it does not prove runtime behavior by itself.",

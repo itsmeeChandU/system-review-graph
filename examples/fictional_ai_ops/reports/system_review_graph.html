@@ -5,18 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fictional AI Ops System Review Graph</title>
   <style>
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; margin: 0; color: #18202a; background: #f8fafc; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      margin: 0;
+      color: #18202a;
+      background: #f8fafc;
+    }
     header { padding: 40px 32px; background: #172033; color: white; }
     main { max-width: 1120px; margin: 0 auto; padding: 28px; }
-    section { margin: 24px 0; padding: 24px; background: white; border: 1px solid #dbe3ee; border-radius: 10px; }
+    section {
+      margin: 24px 0;
+      padding: 24px;
+      background: white;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+    }
     h1, h2, h3 { line-height: 1.2; }
     code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .pill { padding: 6px 10px; border: 1px solid rgba(255,255,255,.32); border-radius: 999px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
     .card { padding: 18px; border: 1px solid #dbe3ee; border-radius: 10px; background: #fbfdff; }
     dt { font-weight: 700; margin-top: 10px; }
     dd { margin-left: 0; color: #465466; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #dbe3ee; padding: 10px 8px; text-align: left; }
     a { color: #1456cc; }
   </style>
 </head>
@@ -41,6 +58,67 @@
       <h2>Source Links</h2>
       <ul></ul>
     </section>
+
+    <section>
+      <h2>Report Registers</h2>
+      <h3>Coverage Register</h3>
+      <table><thead><tr><th>Area</th><th>Count</th><th>What It Means</th><th>Reviewer Use</th></tr></thead><tbody><tr><td>Systems</td><td>6</td><td>Bounded contexts, services, subsystems, or product surfaces.</td><td>Use this to see whether the report maps the main operating areas.</td></tr>
+<tr><td>Artifacts</td><td>7</td><td>Inspectable files, APIs, tables, dashboards, reports, or outputs.</td><td>Use this to trace where system claims can be inspected.</td></tr>
+<tr><td>Schemas/contracts</td><td>6</td><td>Public or sanitized contracts for artifacts and handoffs.</td><td>Use this to rebuild examples without touching private data.</td></tr>
+<tr><td>Decision gates</td><td>4</td><td>Rules that advance, wait, block, or require human review.</td><td>Use this to find where the system controls action.</td></tr>
+<tr><td>Workflows</td><td>6</td><td>Lifecycle steps from input to output.</td><td>Use this to follow what happens end to end.</td></tr>
+<tr><td>Graph edges</td><td>38</td><td>Explicit and derived relationships between manifest nodes.</td><td>Use this to audit connectivity and missing relationships.</td></tr>
+<tr><td>Child maps</td><td>0</td><td>Linked subsystem maps for large repositories.</td><td>Use this to drill into a map-of-maps instead of one flat report.</td></tr>
+<tr><td>Blueprint sections</td><td>0</td><td>Source-evidence-backed operating flows.</td><td>Use this to review deep behavior claims with proof anchors.</td></tr>
+<tr><td>Blueprint evidence rows</td><td>0</td><td>Source paths, symbols, roles, and proof levels.</td><td>Use this to verify whether blueprint claims are source-backed.</td></tr>
+<tr><td>Source links</td><td>0</td><td>External or public references used by the report.</td><td>Use this to confirm the report&#x27;s public evidence base.</td></tr>
+<tr><td>Known boundaries</td><td>4</td><td>Open limits, unproven claims, redactions, or scope exclusions.</td><td>Use this to avoid treating the report as stronger than it is.</td></tr>
+<tr><td>Review questions</td><td>6</td><td>Questions a maintainer, auditor, or agent should answer next.</td><td>Use this as the human follow-up queue.</td></tr>
+<tr><td>Rebuild phases</td><td>3</td><td>Documented commands or phases for reproducing the report.</td><td>Use this to regenerate or verify the report locally.</td></tr></tbody></table>
+      <h3>Evidence Register</h3>
+      <table><thead><tr><th>Evidence</th><th>Kind</th><th>Coverage</th><th>Proof</th><th>Reviewer Use</th></tr></thead><tbody><tr><td>GET /internal/source-rollups</td><td>api</td><td>data-platform</td><td>public_summary_only</td><td>Returns sanitized source summaries.</td></tr>
+<tr><td>private://evidence_graph</td><td>private_database</td><td>data-platform</td><td>schema_only</td><td>Canonical internal evidence store.</td></tr>
+<tr><td>reports/recommendations.json</td><td>json_report</td><td>intelligence</td><td>safe_to_share</td><td>Reviewable recommendation cards.</td></tr>
+<tr><td>queue://action-intents</td><td>queue</td><td>operations</td><td>counts_only</td><td>Downstream actions waiting for execution or review.</td></tr>
+<tr><td>reports/outcomes.jsonl</td><td>jsonl_ledger</td><td>operations</td><td>safe_to_share</td><td>Reality feedback from executed or skipped actions.</td></tr>
+<tr><td>reports/lessons.jsonl</td><td>jsonl_ledger</td><td>research</td><td>safe_to_share</td><td>Validated lessons and parked rule changes.</td></tr>
+<tr><td>app://operator</td><td>ui</td><td>operations</td><td>public_summary_only</td><td>Shows recommendations, blockers, approvals, outcomes, and lessons.</td></tr>
+<tr><td>SourceEnvelope</td><td>sanitized_event</td><td>source_id, observed_at, source_type, summary, rights_status</td><td>contract declared</td><td>Describes a source observation without exposing raw vendor payloads.</td></tr>
+<tr><td>EvidenceFact</td><td>graph_fact</td><td>fact_id, subject, kind, payload, valid_at, source_ref</td><td>contract declared</td><td>Stores traceable evidence used by recommendations.</td></tr>
+<tr><td>RecommendationCard</td><td>decision_input</td><td>recommendation_id, subject, confidence, reason, evidence_refs, risk_level</td><td>contract declared</td><td>Explains why the system recommends an action.</td></tr>
+<tr><td>ActionIntent</td><td>downstream_action</td><td>action_id, recommendation_id, action_type, human_gate_required, status</td><td>contract declared</td><td>Represents a proposed action before execution.</td></tr>
+<tr><td>OutcomeRecord</td><td>reality_feedback</td><td>outcome_id, action_id, capture_status, result, evidence_refs</td><td>contract declared</td><td>Captures whether action created the intended result.</td></tr>
+<tr><td>LessonRecord</td><td>learning_loop</td><td>lesson_id, outcome_id, lesson, rule_change_status</td><td>contract declared</td><td>Turns outcomes into validated or parked rule changes.</td></tr></tbody></table>
+      <h3>Gap Register</h3>
+      <table><thead><tr><th>Gap</th><th>Area</th><th>Status</th><th>Boundary</th><th>Next Step</th></tr></thead><tbody><tr><td>Known boundary</td><td>whole report</td><td>open</td><td>This report explains architecture and system behavior; it does not prove production correctness.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>Sanitized examples must not be treated as real data.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>A passing gate in a report still needs implementation tests in the actual system.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>Human/legal/security gates should be implemented in production code, not only documented.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>System truth boundary</td><td>Source Mesh</td><td>review</td><td>Source summaries are not product claims.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Evidence Core</td><td>review</td><td>Database remains private; public report exposes only schema and examples.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Recommendation Engine</td><td>review</td><td>A recommendation is not an executed action.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Action Engine</td><td>review</td><td>Restricted actions require approval before execution.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Outcome Learning Loop</td><td>review</td><td>A lesson does not change future behavior until promotion is validated.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Operator UI</td><td>review</td><td>UI reads canonical reports and requests actions; it does not invent truth.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>Source links missing</td><td>whole report</td><td>open</td><td>No external source links were declared.</td><td>Add public repo, docs, issue, or design references.</td></tr>
+<tr><td>Blueprint not declared</td><td>whole report</td><td>optional</td><td>No source-backed blueprint sections were declared.</td><td>Add blueprint sections when the report needs source-level proof.</td></tr></tbody></table>
+      <h3>Action Register</h3>
+      <table><thead><tr><th>Action</th><th>Owner</th><th>Status</th><th>Trigger</th><th>Expected Output</th></tr></thead><tbody><tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which source and evidence artifacts prove each recommendation?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which decision gate blocks unsafe downstream action?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which actions require human approval and why?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Where is the outcome captured after action or no-action?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which lessons are promoted, parked, or killed based on reality feedback?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>What can be safely reviewed if the production database remains private?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>This report explains architecture and system behavior; it does not prove production correctness.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>Sanitized examples must not be treated as real data.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>A passing gate in a report still needs implementation tests in the actual system.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>Human/legal/security gates should be implemented in production code, not only documented.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>validate</td><td>Check the manifest shape.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>build</td><td>Generate JSON and Markdown reports.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>review</td><td>Read the system as an operating map.</td></tr></tbody></table>
+
+    </section>
+
     <section>
       <h2>Lifecycle Map</h2>
       <pre class="mermaid">flowchart LR
@@ -57,7 +135,10 @@
   capture_outcome --&gt; learn_from_outcome[&quot;Learn From Outcome&quot;]
   learn_from_outcome --&gt; score_recommendations[&quot;Score Recommendations&quot;]</pre>
     </section>
-    
+
+
+
+
         <section>
           <h2>Artifact And Schema Map</h2>
           <pre class="mermaid">flowchart LR
@@ -108,8 +189,8 @@
   gate_human_action_gate{&quot;Human Action Gate&quot;} --&gt; step_capture_outcome[&quot;Capture Outcome&quot;]
   gate_lesson_promotion_gate{&quot;Lesson Promotion Gate&quot;} --&gt; step_learn_from_outcome[&quot;Learn From Outcome&quot;]</pre>
         </section>
-        
-    
+
+
         <section>
           <h2>Relationship Graph</h2>
           <pre class="mermaid">flowchart TD
@@ -152,7 +233,7 @@
   lesson_promotion_gate[&quot;Lesson Promotion Gate&quot;] -- &quot;gates&quot; --&gt; learn_from_outcome[&quot;Learn From Outcome&quot;]
   learn_from_outcome[&quot;Learn From Outcome&quot;] -- &quot;routes to&quot; --&gt; score_recommendations[&quot;Score Recommendations&quot;]</pre>
         </section>
-        
+
     <section>
       <h2>Systems</h2>
       <div class="grid">
@@ -165,7 +246,7 @@
             <dt>Boundary</dt><dd>Source summaries are not product claims.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="evidence_core">
           <h3>Evidence Core</h3>
@@ -176,7 +257,7 @@
             <dt>Boundary</dt><dd>Database remains private; public report exposes only schema and examples.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="recommendation_engine">
           <h3>Recommendation Engine</h3>
@@ -187,7 +268,7 @@
             <dt>Boundary</dt><dd>A recommendation is not an executed action.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="action_engine">
           <h3>Action Engine</h3>
@@ -198,7 +279,7 @@
             <dt>Boundary</dt><dd>Restricted actions require approval before execution.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="outcome_learning_loop">
           <h3>Outcome Learning Loop</h3>
@@ -209,7 +290,7 @@
             <dt>Boundary</dt><dd>A lesson does not change future behavior until promotion is validated.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="operator_ui">
           <h3>Operator UI</h3>

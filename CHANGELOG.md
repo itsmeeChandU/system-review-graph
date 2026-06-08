@@ -2,6 +2,22 @@
 
 All notable changes to System Review Graph are documented here.
 
+## 0.5.0 - 2026-06-08
+
+Audit-register release.
+
+Added:
+
+- Generated report registers for coverage, evidence, gaps, and actions.
+- Register sections in Markdown and HTML reports, including source links,
+  artifact paths, schema contracts, blueprint evidence, known boundaries,
+  review questions, and rebuild phases.
+- Expansion-index entry for the register layer so reviewers can quickly find
+  what is covered, proven, open, and actionable.
+- Tests that require generated Markdown reports to include the register layer.
+- Regenerated bundled examples, including the Linux kernel blueprint atlas,
+  with the new audit-register sections.
+
 ## 0.4.0 - 2026-06-08
 
 Blueprint-depth release.

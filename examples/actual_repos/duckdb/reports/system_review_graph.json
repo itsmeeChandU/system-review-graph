@@ -96,6 +96,8 @@
     }
   ],
   "bigger_picture": "This example shows how to map a database engine repo. The system is not just a command-line tool or a client library; it is a layered execution engine where SQL is parsed, bound, planned, optimized, executed in vectorized operators, connected to storage and transactions, and extended through extensions. A reviewer should understand the route from query text to result chunks and persisted state.",
+  "blueprint_sections": [],
+  "child_maps": [],
   "current_truth": {
     "example_type": "actual_public_repo",
     "official_maintainer_audit": false,
@@ -520,7 +522,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T19:54:22+00:00",
+  "generated_at": "2026-06-08T20:57:31+00:00",
   "known_boundaries": [
     "This is a public educational map, not an official DuckDB maintainer audit.",
     "It maps high-level engine layers and public source paths, not every operator or internal invariant.",

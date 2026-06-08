@@ -76,6 +76,8 @@
     }
   ],
   "bigger_picture": "This example shows how to map a framework repo. The system is not one deployed application; it is a reusable engine that lets application authors declare routes, dependencies, models, security, and documentation contracts. A reviewer should follow how a developer declaration becomes runtime routing, validation, response handling, and OpenAPI documentation.",
+  "blueprint_sections": [],
+  "child_maps": [],
   "current_truth": {
     "example_type": "actual_public_repo",
     "official_maintainer_audit": false,
@@ -478,7 +480,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T19:54:22+00:00",
+  "generated_at": "2026-06-08T20:57:31+00:00",
   "known_boundaries": [
     "This is a public educational map, not an official FastAPI maintainer audit.",
     "It maps framework behavior, not a specific deployed FastAPI application.",

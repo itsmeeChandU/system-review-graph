@@ -1,6 +1,6 @@
 # OpenTelemetry Collector Public Repo System Review Graph
 
-Generated: `2026-06-08T19:54:22+00:00`
+Generated: `2026-06-08T20:57:31+00:00`
 Scope: A public-safe system map of the OpenTelemetry Collector open-source repository based on public source directories and documentation.
 One line: The OpenTelemetry Collector routes telemetry through configurable receivers, processors, connectors, extensions, and exporters.
 Depth: `deep`
@@ -25,6 +25,82 @@ This example shows how to map a component pipeline repo. The system is a configu
 | [GitHub repository](https://github.com/open-telemetry/opentelemetry-collector) | Primary public source used for repo identity and source paths. |
 | [OpenTelemetry Collector documentation](https://opentelemetry.io/docs/collector/) | Public docs for collector concepts and configuration. |
 | [OpenTelemetry project](https://opentelemetry.io/) | Public project context for telemetry standards. |
+
+## Report Registers
+
+These registers turn the map into an audit surface: what is covered, what evidence supports it, what remains open, and what a reviewer should do next.
+
+### Coverage Register
+
+| Area | Count | What It Means | Reviewer Use |
+|---|---:|---|---|
+| Systems | 6 | Bounded contexts, services, subsystems, or product surfaces. | Use this to see whether the report maps the main operating areas. |
+| Artifacts | 8 | Inspectable files, APIs, tables, dashboards, reports, or outputs. | Use this to trace where system claims can be inspected. |
+| Schemas/contracts | 6 | Public or sanitized contracts for artifacts and handoffs. | Use this to rebuild examples without touching private data. |
+| Decision gates | 4 | Rules that advance, wait, block, or require human review. | Use this to find where the system controls action. |
+| Workflows | 6 | Lifecycle steps from input to output. | Use this to follow what happens end to end. |
+| Graph edges | 51 | Explicit and derived relationships between manifest nodes. | Use this to audit connectivity and missing relationships. |
+| Child maps | 0 | Linked subsystem maps for large repositories. | Use this to drill into a map-of-maps instead of one flat report. |
+| Blueprint sections | 0 | Source-evidence-backed operating flows. | Use this to review deep behavior claims with proof anchors. |
+| Blueprint evidence rows | 0 | Source paths, symbols, roles, and proof levels. | Use this to verify whether blueprint claims are source-backed. |
+| Source links | 3 | External or public references used by the report. | Use this to confirm the report's public evidence base. |
+| Known boundaries | 4 | Open limits, unproven claims, redactions, or scope exclusions. | Use this to avoid treating the report as stronger than it is. |
+| Review questions | 5 | Questions a maintainer, auditor, or agent should answer next. | Use this as the human follow-up queue. |
+| Rebuild phases | 2 | Documented commands or phases for reproducing the report. | Use this to regenerate or verify the report locally. |
+
+### Evidence Register
+
+| Evidence | Kind | Coverage | Proof | Reviewer Use |
+|---|---|---|---|---|
+| [GitHub repository](https://github.com/open-telemetry/opentelemetry-collector) | source link | whole report | declared | Primary public source used for repo identity and source paths. |
+| [OpenTelemetry Collector documentation](https://opentelemetry.io/docs/collector/) | source link | whole report | declared | Public docs for collector concepts and configuration. |
+| [OpenTelemetry project](https://opentelemetry.io/) | source link | whole report | declared | Public project context for telemetry standards. |
+| receiver/ | source_directory | collector | safe_to_share | Defines receiver interfaces, helpers, and built-in receiver components. |
+| processor/ | source_directory | collector | safe_to_share | Defines processors that transform, batch, limit, or otherwise mediate telemetry. |
+| exporter/ | source_directory | collector | safe_to_share | Defines exporters and exporter helper behavior. |
+| connector/ | source_directory | collector | safe_to_share | Defines connectors that can route telemetry between pipelines. |
+| extension/ | source_directory | collector | safe_to_share | Defines service extensions such as auth, zpages, memory limiters, and capabilities. |
+| service/ | source_directory | collector | safe_to_share | Coordinates configuration, pipelines, component lifecycle, telemetry, and host capabilities. |
+| confmap/ | source_directory | collector | safe_to_share | Loads and resolves configuration maps and providers. |
+| docs/ | public_docs | docs | safe_to_share | Documents collector behavior, proposals, and images. |
+| CollectorConfig | configuration_contract | receivers, processors, exporters, service.pipelines | contract declared | Declares which components exist and how telemetry flows through pipelines. |
+| ReceiverContract | component_contract | component_id, signal_type, endpoint, start_status | contract declared | Describes an ingest component that accepts telemetry. |
+| ProcessorContract | component_contract | component_id, signal_type, transform_policy, failure_policy | contract declared | Describes transformation, batching, filtering, memory, or enrichment behavior. |
+| ExporterContract | component_contract | component_id, destination, retry_policy, queue_policy | contract declared | Describes where telemetry is sent and how failures are handled. |
+| TelemetryBatch | data_contract | signal_type, resource_attrs, scope, records | contract declared | Represents telemetry moving through a pipeline. |
+| ComponentStatus | health_contract | component_id, status, error, observed_at | contract declared | Represents component lifecycle and health state. |
+
+### Gap Register
+
+| Gap | Area | Status | Boundary | Next Step |
+|---|---|---|---|---|
+| Known boundary | whole report | open | This is a public educational map, not an official OpenTelemetry maintainer audit. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | It maps the collector architecture at a high level, not every component or distribution. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | Real enterprise reviews should use fake or redacted telemetry payloads. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | A full audit should inspect exact config, component versions, tests, runtime metrics, and deployment policy. | Accept the boundary or add evidence that closes it. |
+| System truth boundary | Configuration System | review | Configuration describes desired telemetry flow; startup gates decide whether it can run. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Receiver Layer | review | A receiver only starts when configuration and lifecycle checks pass. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Processor Layer | review | Processor behavior is bounded by pipeline order and configuration. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Connector And Extension Layer | review | Connectors and extensions can change topology or service behavior; they must start cleanly. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Exporter Layer | review | Delivery depends on destination, queue, retry, and failure policy. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Service Orchestrator | review | The service can expose health and telemetry, but configured components determine data path. | Inspect this boundary before making stronger behavior claims. |
+| Blueprint not declared | whole report | optional | No source-backed blueprint sections were declared. | Add blueprint sections when the report needs source-level proof. |
+
+### Action Register
+
+| Action | Owner | Status | Trigger | Expected Output |
+|---|---|---|---|---|
+| Review question | maintainer / auditor | open | How does configuration become a running telemetry pipeline? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Which gates prevent invalid config or failed components from processing telemetry? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Where are backpressure, memory, queue, retry, and delivery policies enforced? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | How can a reviewer audit topology without seeing customer telemetry payloads? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Which component health and service telemetry artifacts would prove runtime behavior? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Resolve boundary | maintainer / auditor | open | This is a public educational map, not an official OpenTelemetry maintainer audit. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | It maps the collector architecture at a high level, not every component or distribution. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | Real enterprise reviews should use fake or redacted telemetry payloads. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | A full audit should inspect exact config, component versions, tests, runtime metrics, and deployment policy. | Accept as scope or add proof that closes it. |
+| Rebuild phase | maintainer / agent | repeatable | validate | Check the OpenTelemetry Collector public repo manifest. |
+| Rebuild phase | maintainer / agent | repeatable | build | Generate the OpenTelemetry Collector system review report. |
 
 ## Lifecycle Map
 
@@ -160,6 +236,9 @@ flowchart TD
 | Level | Use It To Answer | Report Section |
 |---|---|---|
 | 0. Situation | What is true now? | Current Truth |
+| 0.25. Registers | What is covered, proven, open, and actionable? | Report Registers |
+| 0.5. Atlas | Which child map should I open next? | Map Of Maps |
+| 0.75. Blueprint | Which source-backed flows explain the whole system? | Blueprint Sections |
 | 1. Flow | How does the system move end to end? | Lifecycle Map |
 | 2. Ownership | Which subsystem owns which artifact? | Artifact And Schema Map |
 | 3. Control | Which rules advance, wait, or block? | Gate Map |

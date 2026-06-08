@@ -5,18 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FastAPI Public Repo System Review Graph</title>
   <style>
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; margin: 0; color: #18202a; background: #f8fafc; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      margin: 0;
+      color: #18202a;
+      background: #f8fafc;
+    }
     header { padding: 40px 32px; background: #172033; color: white; }
     main { max-width: 1120px; margin: 0 auto; padding: 28px; }
-    section { margin: 24px 0; padding: 24px; background: white; border: 1px solid #dbe3ee; border-radius: 10px; }
+    section {
+      margin: 24px 0;
+      padding: 24px;
+      background: white;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+    }
     h1, h2, h3 { line-height: 1.2; }
     code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .pill { padding: 6px 10px; border: 1px solid rgba(255,255,255,.32); border-radius: 999px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
     .card { padding: 18px; border: 1px solid #dbe3ee; border-radius: 10px; background: #fbfdff; }
     dt { font-weight: 700; margin-top: 10px; }
     dd { margin-left: 0; color: #465466; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #dbe3ee; padding: 10px 8px; text-align: left; }
     a { color: #1456cc; }
   </style>
 </head>
@@ -43,6 +60,65 @@
 <li><a href="https://fastapi.tiangolo.com/">FastAPI documentation</a> - Public docs for framework concepts and user-facing behavior.</li>
 <li><a href="https://fastapi.tiangolo.com/features/">Public OpenAPI docs concept</a> - High-level feature surface for generated API documentation and validation.</li></ul>
     </section>
+
+    <section>
+      <h2>Report Registers</h2>
+      <h3>Coverage Register</h3>
+      <table><thead><tr><th>Area</th><th>Count</th><th>What It Means</th><th>Reviewer Use</th></tr></thead><tbody><tr><td>Systems</td><td>6</td><td>Bounded contexts, services, subsystems, or product surfaces.</td><td>Use this to see whether the report maps the main operating areas.</td></tr>
+<tr><td>Artifacts</td><td>6</td><td>Inspectable files, APIs, tables, dashboards, reports, or outputs.</td><td>Use this to trace where system claims can be inspected.</td></tr>
+<tr><td>Schemas/contracts</td><td>5</td><td>Public or sanitized contracts for artifacts and handoffs.</td><td>Use this to rebuild examples without touching private data.</td></tr>
+<tr><td>Decision gates</td><td>5</td><td>Rules that advance, wait, block, or require human review.</td><td>Use this to find where the system controls action.</td></tr>
+<tr><td>Workflows</td><td>6</td><td>Lifecycle steps from input to output.</td><td>Use this to follow what happens end to end.</td></tr>
+<tr><td>Graph edges</td><td>45</td><td>Explicit and derived relationships between manifest nodes.</td><td>Use this to audit connectivity and missing relationships.</td></tr>
+<tr><td>Child maps</td><td>0</td><td>Linked subsystem maps for large repositories.</td><td>Use this to drill into a map-of-maps instead of one flat report.</td></tr>
+<tr><td>Blueprint sections</td><td>0</td><td>Source-evidence-backed operating flows.</td><td>Use this to review deep behavior claims with proof anchors.</td></tr>
+<tr><td>Blueprint evidence rows</td><td>0</td><td>Source paths, symbols, roles, and proof levels.</td><td>Use this to verify whether blueprint claims are source-backed.</td></tr>
+<tr><td>Source links</td><td>3</td><td>External or public references used by the report.</td><td>Use this to confirm the report&#x27;s public evidence base.</td></tr>
+<tr><td>Known boundaries</td><td>4</td><td>Open limits, unproven claims, redactions, or scope exclusions.</td><td>Use this to avoid treating the report as stronger than it is.</td></tr>
+<tr><td>Review questions</td><td>5</td><td>Questions a maintainer, auditor, or agent should answer next.</td><td>Use this as the human follow-up queue.</td></tr>
+<tr><td>Rebuild phases</td><td>2</td><td>Documented commands or phases for reproducing the report.</td><td>Use this to regenerate or verify the report locally.</td></tr></tbody></table>
+      <h3>Evidence Register</h3>
+      <table><thead><tr><th>Evidence</th><th>Kind</th><th>Coverage</th><th>Proof</th><th>Reviewer Use</th></tr></thead><tbody><tr><td><a href="https://github.com/fastapi/fastapi">GitHub repository</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Primary public source used for repo identity and source paths.</td></tr>
+<tr><td><a href="https://fastapi.tiangolo.com/">FastAPI documentation</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Public docs for framework concepts and user-facing behavior.</td></tr>
+<tr><td><a href="https://fastapi.tiangolo.com/features/">Public OpenAPI docs concept</a></td><td>source link</td><td>whole report</td><td>declared</td><td>High-level feature surface for generated API documentation and validation.</td></tr>
+<tr><td>fastapi/</td><td>python_package</td><td>framework</td><td>safe_to_share</td><td>Public framework package imported by application authors.</td></tr>
+<tr><td>fastapi/routing.py</td><td>source_directory</td><td>framework</td><td>safe_to_share</td><td>Connects declared routes to request handling.</td></tr>
+<tr><td>fastapi/dependencies/</td><td>source_directory</td><td>framework</td><td>safe_to_share</td><td>Resolves dependency graphs and request-time inputs.</td></tr>
+<tr><td>fastapi/openapi/</td><td>source_directory</td><td>framework</td><td>safe_to_share</td><td>Builds OpenAPI artifacts from application declarations.</td></tr>
+<tr><td>docs/</td><td>public_docs</td><td>docs</td><td>safe_to_share</td><td>Explains framework usage and examples for application authors.</td></tr>
+<tr><td>tests/</td><td>tests</td><td>quality</td><td>safe_to_share</td><td>Protects behavior across routing, validation, docs, security, and compatibility.</td></tr>
+<tr><td>PathOperationDeclaration</td><td>developer_contract</td><td>path, method, endpoint_callable, response_model, dependencies</td><td>contract declared</td><td>Describes what an application author declares when registering an API endpoint.</td></tr>
+<tr><td>DependencySpec</td><td>runtime_contract</td><td>callable, scope, parameters, security_requirements</td><td>contract declared</td><td>Represents dependencies that must be resolved before an endpoint runs.</td></tr>
+<tr><td>ValidationContract</td><td>request_response_contract</td><td>input_schema, output_schema, status_code, error_shape</td><td>contract declared</td><td>Connects Python type hints and model definitions to request and response validation.</td></tr>
+<tr><td>OpenAPIContract</td><td>documentation_contract</td><td>paths, components, schemas, security, responses</td><td>contract declared</td><td>The generated machine-readable API contract used by docs and clients.</td></tr>
+<tr><td>TestScenario</td><td>quality_contract</td><td>feature, input, expected_status, expected_body</td><td>contract declared</td><td>A public test scenario that protects framework behavior.</td></tr></tbody></table>
+      <h3>Gap Register</h3>
+      <table><thead><tr><th>Gap</th><th>Area</th><th>Status</th><th>Boundary</th><th>Next Step</th></tr></thead><tbody><tr><td>Known boundary</td><td>whole report</td><td>open</td><td>This is a public educational map, not an official FastAPI maintainer audit.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>It maps framework behavior, not a specific deployed FastAPI application.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>Runtime details may evolve as the upstream repo changes.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>A real audit should inspect the exact commit, CI status, tests, and release notes.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>System truth boundary</td><td>Developer Declaration Surface</td><td>review</td><td>A declaration is intent; runtime gates still validate requests and dependencies.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Routing Layer</td><td>review</td><td>Route matching does not mean endpoint execution is safe yet.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Dependency Engine</td><td>review</td><td>Dependencies can block execution before endpoint logic runs.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Validation And Serialization</td><td>review</td><td>Validation is bounded by declared models and framework compatibility behavior.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>OpenAPI And Docs Engine</td><td>review</td><td>Generated docs describe declared framework behavior, not an external production service.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Quality And Release Loop</td><td>review</td><td>This public map does not replace maintainer CI or release policy.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>Blueprint not declared</td><td>whole report</td><td>optional</td><td>No source-backed blueprint sections were declared.</td><td>Add blueprint sections when the report needs source-level proof.</td></tr></tbody></table>
+      <h3>Action Register</h3>
+      <table><thead><tr><th>Action</th><th>Owner</th><th>Status</th><th>Trigger</th><th>Expected Output</th></tr></thead><tbody><tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>How does a Python route declaration become runtime route behavior?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which gates prevent unresolved dependencies or invalid payloads from reaching endpoint logic?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>How does generated OpenAPI stay aligned with runtime behavior?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which tests protect compatibility for routing, validation, dependencies, security, and docs?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>What should a reviewer inspect if auditing a specific FastAPI application built on top of this framework?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>This is a public educational map, not an official FastAPI maintainer audit.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>It maps framework behavior, not a specific deployed FastAPI application.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>Runtime details may evolve as the upstream repo changes.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>A real audit should inspect the exact commit, CI status, tests, and release notes.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>validate</td><td>Check the FastAPI public repo manifest.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>build</td><td>Generate the FastAPI system review report.</td></tr></tbody></table>
+
+    </section>
+
     <section>
       <h2>Lifecycle Map</h2>
       <pre class="mermaid">flowchart LR
@@ -58,7 +134,10 @@
   validate_and_execute --&gt; publish_contract[&quot;Publish OpenAPI Contract&quot;]
   publish_contract --&gt; test_behavior[&quot;Test Behavior&quot;]</pre>
     </section>
-    
+
+
+
+
         <section>
           <h2>Artifact And Schema Map</h2>
           <pre class="mermaid">flowchart LR
@@ -108,8 +187,8 @@
   gate_openapi_contract_gate{&quot;OpenAPI Contract Gate&quot;} --&gt; step_publish_contract[&quot;Publish OpenAPI Contract&quot;]
   gate_test_release_gate{&quot;Test And Release Gate&quot;} --&gt; step_test_behavior[&quot;Test Behavior&quot;]</pre>
         </section>
-        
-    
+
+
         <section>
           <h2>Relationship Graph</h2>
           <pre class="mermaid">flowchart TD
@@ -159,7 +238,7 @@
   test_behavior[&quot;Test Behavior&quot;] -- &quot;produces&quot; --&gt; test_suite[&quot;Test Suite&quot;]
   test_release_gate[&quot;Test And Release Gate&quot;] -- &quot;gates&quot; --&gt; test_behavior[&quot;Test Behavior&quot;]</pre>
         </section>
-        
+
     <section>
       <h2>Systems</h2>
       <div class="grid">
@@ -172,7 +251,7 @@
             <dt>Boundary</dt><dd>A declaration is intent; runtime gates still validate requests and dependencies.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="routing_layer">
           <h3>Routing Layer</h3>
@@ -183,7 +262,7 @@
             <dt>Boundary</dt><dd>Route matching does not mean endpoint execution is safe yet.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="dependency_engine">
           <h3>Dependency Engine</h3>
@@ -194,7 +273,7 @@
             <dt>Boundary</dt><dd>Dependencies can block execution before endpoint logic runs.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="validation_serialization">
           <h3>Validation And Serialization</h3>
@@ -205,7 +284,7 @@
             <dt>Boundary</dt><dd>Validation is bounded by declared models and framework compatibility behavior.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="openapi_docs_engine">
           <h3>OpenAPI And Docs Engine</h3>
@@ -216,7 +295,7 @@
             <dt>Boundary</dt><dd>Generated docs describe declared framework behavior, not an external production service.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="quality_release_loop">
           <h3>Quality And Release Loop</h3>

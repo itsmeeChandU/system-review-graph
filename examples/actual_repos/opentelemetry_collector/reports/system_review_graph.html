@@ -5,18 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OpenTelemetry Collector Public Repo System Review Graph</title>
   <style>
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; margin: 0; color: #18202a; background: #f8fafc; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      margin: 0;
+      color: #18202a;
+      background: #f8fafc;
+    }
     header { padding: 40px 32px; background: #172033; color: white; }
     main { max-width: 1120px; margin: 0 auto; padding: 28px; }
-    section { margin: 24px 0; padding: 24px; background: white; border: 1px solid #dbe3ee; border-radius: 10px; }
+    section {
+      margin: 24px 0;
+      padding: 24px;
+      background: white;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+    }
     h1, h2, h3 { line-height: 1.2; }
     code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .pill { padding: 6px 10px; border: 1px solid rgba(255,255,255,.32); border-radius: 999px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
     .card { padding: 18px; border: 1px solid #dbe3ee; border-radius: 10px; background: #fbfdff; }
     dt { font-weight: 700; margin-top: 10px; }
     dd { margin-left: 0; color: #465466; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #dbe3ee; padding: 10px 8px; text-align: left; }
     a { color: #1456cc; }
   </style>
 </head>
@@ -43,6 +60,68 @@
 <li><a href="https://opentelemetry.io/docs/collector/">OpenTelemetry Collector documentation</a> - Public docs for collector concepts and configuration.</li>
 <li><a href="https://opentelemetry.io/">OpenTelemetry project</a> - Public project context for telemetry standards.</li></ul>
     </section>
+
+    <section>
+      <h2>Report Registers</h2>
+      <h3>Coverage Register</h3>
+      <table><thead><tr><th>Area</th><th>Count</th><th>What It Means</th><th>Reviewer Use</th></tr></thead><tbody><tr><td>Systems</td><td>6</td><td>Bounded contexts, services, subsystems, or product surfaces.</td><td>Use this to see whether the report maps the main operating areas.</td></tr>
+<tr><td>Artifacts</td><td>8</td><td>Inspectable files, APIs, tables, dashboards, reports, or outputs.</td><td>Use this to trace where system claims can be inspected.</td></tr>
+<tr><td>Schemas/contracts</td><td>6</td><td>Public or sanitized contracts for artifacts and handoffs.</td><td>Use this to rebuild examples without touching private data.</td></tr>
+<tr><td>Decision gates</td><td>4</td><td>Rules that advance, wait, block, or require human review.</td><td>Use this to find where the system controls action.</td></tr>
+<tr><td>Workflows</td><td>6</td><td>Lifecycle steps from input to output.</td><td>Use this to follow what happens end to end.</td></tr>
+<tr><td>Graph edges</td><td>51</td><td>Explicit and derived relationships between manifest nodes.</td><td>Use this to audit connectivity and missing relationships.</td></tr>
+<tr><td>Child maps</td><td>0</td><td>Linked subsystem maps for large repositories.</td><td>Use this to drill into a map-of-maps instead of one flat report.</td></tr>
+<tr><td>Blueprint sections</td><td>0</td><td>Source-evidence-backed operating flows.</td><td>Use this to review deep behavior claims with proof anchors.</td></tr>
+<tr><td>Blueprint evidence rows</td><td>0</td><td>Source paths, symbols, roles, and proof levels.</td><td>Use this to verify whether blueprint claims are source-backed.</td></tr>
+<tr><td>Source links</td><td>3</td><td>External or public references used by the report.</td><td>Use this to confirm the report&#x27;s public evidence base.</td></tr>
+<tr><td>Known boundaries</td><td>4</td><td>Open limits, unproven claims, redactions, or scope exclusions.</td><td>Use this to avoid treating the report as stronger than it is.</td></tr>
+<tr><td>Review questions</td><td>5</td><td>Questions a maintainer, auditor, or agent should answer next.</td><td>Use this as the human follow-up queue.</td></tr>
+<tr><td>Rebuild phases</td><td>2</td><td>Documented commands or phases for reproducing the report.</td><td>Use this to regenerate or verify the report locally.</td></tr></tbody></table>
+      <h3>Evidence Register</h3>
+      <table><thead><tr><th>Evidence</th><th>Kind</th><th>Coverage</th><th>Proof</th><th>Reviewer Use</th></tr></thead><tbody><tr><td><a href="https://github.com/open-telemetry/opentelemetry-collector">GitHub repository</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Primary public source used for repo identity and source paths.</td></tr>
+<tr><td><a href="https://opentelemetry.io/docs/collector/">OpenTelemetry Collector documentation</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Public docs for collector concepts and configuration.</td></tr>
+<tr><td><a href="https://opentelemetry.io/">OpenTelemetry project</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Public project context for telemetry standards.</td></tr>
+<tr><td>receiver/</td><td>source_directory</td><td>collector</td><td>safe_to_share</td><td>Defines receiver interfaces, helpers, and built-in receiver components.</td></tr>
+<tr><td>processor/</td><td>source_directory</td><td>collector</td><td>safe_to_share</td><td>Defines processors that transform, batch, limit, or otherwise mediate telemetry.</td></tr>
+<tr><td>exporter/</td><td>source_directory</td><td>collector</td><td>safe_to_share</td><td>Defines exporters and exporter helper behavior.</td></tr>
+<tr><td>connector/</td><td>source_directory</td><td>collector</td><td>safe_to_share</td><td>Defines connectors that can route telemetry between pipelines.</td></tr>
+<tr><td>extension/</td><td>source_directory</td><td>collector</td><td>safe_to_share</td><td>Defines service extensions such as auth, zpages, memory limiters, and capabilities.</td></tr>
+<tr><td>service/</td><td>source_directory</td><td>collector</td><td>safe_to_share</td><td>Coordinates configuration, pipelines, component lifecycle, telemetry, and host capabilities.</td></tr>
+<tr><td>confmap/</td><td>source_directory</td><td>collector</td><td>safe_to_share</td><td>Loads and resolves configuration maps and providers.</td></tr>
+<tr><td>docs/</td><td>public_docs</td><td>docs</td><td>safe_to_share</td><td>Documents collector behavior, proposals, and images.</td></tr>
+<tr><td>CollectorConfig</td><td>configuration_contract</td><td>receivers, processors, exporters, service.pipelines</td><td>contract declared</td><td>Declares which components exist and how telemetry flows through pipelines.</td></tr>
+<tr><td>ReceiverContract</td><td>component_contract</td><td>component_id, signal_type, endpoint, start_status</td><td>contract declared</td><td>Describes an ingest component that accepts telemetry.</td></tr>
+<tr><td>ProcessorContract</td><td>component_contract</td><td>component_id, signal_type, transform_policy, failure_policy</td><td>contract declared</td><td>Describes transformation, batching, filtering, memory, or enrichment behavior.</td></tr>
+<tr><td>ExporterContract</td><td>component_contract</td><td>component_id, destination, retry_policy, queue_policy</td><td>contract declared</td><td>Describes where telemetry is sent and how failures are handled.</td></tr>
+<tr><td>TelemetryBatch</td><td>data_contract</td><td>signal_type, resource_attrs, scope, records</td><td>contract declared</td><td>Represents telemetry moving through a pipeline.</td></tr>
+<tr><td>ComponentStatus</td><td>health_contract</td><td>component_id, status, error, observed_at</td><td>contract declared</td><td>Represents component lifecycle and health state.</td></tr></tbody></table>
+      <h3>Gap Register</h3>
+      <table><thead><tr><th>Gap</th><th>Area</th><th>Status</th><th>Boundary</th><th>Next Step</th></tr></thead><tbody><tr><td>Known boundary</td><td>whole report</td><td>open</td><td>This is a public educational map, not an official OpenTelemetry maintainer audit.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>It maps the collector architecture at a high level, not every component or distribution.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>Real enterprise reviews should use fake or redacted telemetry payloads.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>A full audit should inspect exact config, component versions, tests, runtime metrics, and deployment policy.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>System truth boundary</td><td>Configuration System</td><td>review</td><td>Configuration describes desired telemetry flow; startup gates decide whether it can run.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Receiver Layer</td><td>review</td><td>A receiver only starts when configuration and lifecycle checks pass.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Processor Layer</td><td>review</td><td>Processor behavior is bounded by pipeline order and configuration.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Connector And Extension Layer</td><td>review</td><td>Connectors and extensions can change topology or service behavior; they must start cleanly.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Exporter Layer</td><td>review</td><td>Delivery depends on destination, queue, retry, and failure policy.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Service Orchestrator</td><td>review</td><td>The service can expose health and telemetry, but configured components determine data path.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>Blueprint not declared</td><td>whole report</td><td>optional</td><td>No source-backed blueprint sections were declared.</td><td>Add blueprint sections when the report needs source-level proof.</td></tr></tbody></table>
+      <h3>Action Register</h3>
+      <table><thead><tr><th>Action</th><th>Owner</th><th>Status</th><th>Trigger</th><th>Expected Output</th></tr></thead><tbody><tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>How does configuration become a running telemetry pipeline?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which gates prevent invalid config or failed components from processing telemetry?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Where are backpressure, memory, queue, retry, and delivery policies enforced?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>How can a reviewer audit topology without seeing customer telemetry payloads?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which component health and service telemetry artifacts would prove runtime behavior?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>This is a public educational map, not an official OpenTelemetry maintainer audit.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>It maps the collector architecture at a high level, not every component or distribution.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>Real enterprise reviews should use fake or redacted telemetry payloads.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>A full audit should inspect exact config, component versions, tests, runtime metrics, and deployment policy.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>validate</td><td>Check the OpenTelemetry Collector public repo manifest.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>build</td><td>Generate the OpenTelemetry Collector system review report.</td></tr></tbody></table>
+
+    </section>
+
     <section>
       <h2>Lifecycle Map</h2>
       <pre class="mermaid">flowchart LR
@@ -58,7 +137,10 @@
   process_telemetry --&gt; route_or_export[&quot;Route Or Export&quot;]
   route_or_export --&gt; observe_collector[&quot;Observe Collector&quot;]</pre>
     </section>
-    
+
+
+
+
         <section>
           <h2>Artifact And Schema Map</h2>
           <pre class="mermaid">flowchart LR
@@ -110,8 +192,8 @@
   gate_export_delivery_gate{&quot;Export Delivery Gate&quot;} --&gt; step_route_or_export[&quot;Route Or Export&quot;]
   gate_component_lifecycle_gate{&quot;Component Lifecycle Gate&quot;} --&gt; step_observe_collector[&quot;Observe Collector&quot;]</pre>
         </section>
-        
-    
+
+
         <section>
           <h2>Relationship Graph</h2>
           <pre class="mermaid">flowchart TD
@@ -167,7 +249,7 @@
   observe_collector[&quot;Observe Collector&quot;] -- &quot;produces&quot; --&gt; service_telemetry[&quot;service_telemetry&quot;]
   component_lifecycle_gate[&quot;Component Lifecycle Gate&quot;] -- &quot;gates&quot; --&gt; observe_collector[&quot;Observe Collector&quot;]</pre>
         </section>
-        
+
     <section>
       <h2>Systems</h2>
       <div class="grid">
@@ -180,7 +262,7 @@
             <dt>Boundary</dt><dd>Configuration describes desired telemetry flow; startup gates decide whether it can run.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="receiver_layer">
           <h3>Receiver Layer</h3>
@@ -191,7 +273,7 @@
             <dt>Boundary</dt><dd>A receiver only starts when configuration and lifecycle checks pass.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="processor_layer">
           <h3>Processor Layer</h3>
@@ -202,7 +284,7 @@
             <dt>Boundary</dt><dd>Processor behavior is bounded by pipeline order and configuration.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="connector_extension_layer">
           <h3>Connector And Extension Layer</h3>
@@ -213,7 +295,7 @@
             <dt>Boundary</dt><dd>Connectors and extensions can change topology or service behavior; they must start cleanly.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="exporter_layer">
           <h3>Exporter Layer</h3>
@@ -224,7 +306,7 @@
             <dt>Boundary</dt><dd>Delivery depends on destination, queue, retry, and failure policy.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="service_orchestrator">
           <h3>Service Orchestrator</h3>

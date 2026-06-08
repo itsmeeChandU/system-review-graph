@@ -249,6 +249,403 @@ def render_graphviz_dot(graph: SystemReviewGraph) -> str:
     return "\n".join(lines)
 
 
+def _blueprint_evidence_count(graph: SystemReviewGraph) -> int:
+    return sum(len(section.source_evidence) for section in graph.blueprint_sections)
+
+
+def _coverage_register_rows(graph: SystemReviewGraph) -> list[list[object]]:
+    return [
+        [
+            "Systems",
+            len(graph.systems),
+            "Bounded contexts, services, subsystems, or product surfaces.",
+            "Use this to see whether the report maps the main operating areas.",
+        ],
+        [
+            "Artifacts",
+            len(graph.artifacts),
+            "Inspectable files, APIs, tables, dashboards, reports, or outputs.",
+            "Use this to trace where system claims can be inspected.",
+        ],
+        [
+            "Schemas/contracts",
+            len(graph.schemas),
+            "Public or sanitized contracts for artifacts and handoffs.",
+            "Use this to rebuild examples without touching private data.",
+        ],
+        [
+            "Decision gates",
+            len(graph.gates),
+            "Rules that advance, wait, block, or require human review.",
+            "Use this to find where the system controls action.",
+        ],
+        [
+            "Workflows",
+            len(graph.workflows),
+            "Lifecycle steps from input to output.",
+            "Use this to follow what happens end to end.",
+        ],
+        [
+            "Graph edges",
+            len(graph.edges),
+            "Explicit and derived relationships between manifest nodes.",
+            "Use this to audit connectivity and missing relationships.",
+        ],
+        [
+            "Child maps",
+            len(graph.child_maps),
+            "Linked subsystem maps for large repositories.",
+            "Use this to drill into a map-of-maps instead of one flat report.",
+        ],
+        [
+            "Blueprint sections",
+            len(graph.blueprint_sections),
+            "Source-evidence-backed operating flows.",
+            "Use this to review deep behavior claims with proof anchors.",
+        ],
+        [
+            "Blueprint evidence rows",
+            _blueprint_evidence_count(graph),
+            "Source paths, symbols, roles, and proof levels.",
+            "Use this to verify whether blueprint claims are source-backed.",
+        ],
+        [
+            "Source links",
+            len(graph.source_links),
+            "External or public references used by the report.",
+            "Use this to confirm the report's public evidence base.",
+        ],
+        [
+            "Known boundaries",
+            len(graph.known_boundaries)
+            + sum(len(section.known_boundaries) for section in graph.blueprint_sections),
+            "Open limits, unproven claims, redactions, or scope exclusions.",
+            "Use this to avoid treating the report as stronger than it is.",
+        ],
+        [
+            "Review questions",
+            len(graph.review_questions)
+            + sum(len(section.review_questions) for section in graph.blueprint_sections),
+            "Questions a maintainer, auditor, or agent should answer next.",
+            "Use this as the human follow-up queue.",
+        ],
+        [
+            "Rebuild phases",
+            len(graph.rebuild_recipe),
+            "Documented commands or phases for reproducing the report.",
+            "Use this to regenerate or verify the report locally.",
+        ],
+    ]
+
+
+def _evidence_register_rows(graph: SystemReviewGraph) -> list[list[object]]:
+    rows: list[list[object]] = []
+    for source in graph.source_links:
+        label = source.get("label", "") or source.get("url", "") or "source"
+        url = source.get("url", "")
+        notes = source.get("notes", "")
+        evidence = f"[{label}]({url})" if label and url else label
+        rows.append([evidence, "source link", "whole report", "declared", notes])
+    for section in graph.blueprint_sections:
+        for evidence in section.source_evidence:
+            path = evidence.get("path", "")
+            symbol = evidence.get("symbol", "")
+            role = evidence.get("role", "")
+            proof_level = evidence.get("proof_level", "") or "declared"
+            notes = evidence.get("notes", "")
+            label = path if not symbol else f"{path} ({symbol})"
+            coverage = section.title
+            if role:
+                coverage = f"{coverage}: {role}"
+            rows.append([label, "blueprint evidence", coverage, proof_level, notes])
+    for artifact in graph.artifacts:
+        if not artifact.path:
+            continue
+        proof = artifact.redaction or "declared"
+        coverage = artifact.owner or "artifact"
+        rows.append([artifact.path, artifact.kind or "artifact", coverage, proof, artifact.purpose])
+    for schema in graph.schemas:
+        fields = ", ".join(schema.required_fields) if schema.required_fields else "no fields listed"
+        rows.append(
+            [
+                schema.name,
+                schema.kind or "schema",
+                fields,
+                "contract declared",
+                schema.purpose,
+            ]
+        )
+    if not rows:
+        rows.append(
+            [
+                "No evidence rows declared",
+                "gap",
+                "whole report",
+                "not proven",
+                "Add source links, artifacts, schemas, or blueprint evidence.",
+            ]
+        )
+    return rows
+
+
+def _gap_register_rows(graph: SystemReviewGraph) -> list[list[object]]:
+    rows: list[list[object]] = []
+    for item in graph.known_boundaries:
+        rows.append(
+            [
+                "Known boundary",
+                "whole report",
+                "open",
+                item,
+                "Accept the boundary or add evidence that closes it.",
+            ]
+        )
+    for system in graph.systems:
+        if system.truth_boundary:
+            rows.append(
+                [
+                    "System truth boundary",
+                    system.name,
+                    "review",
+                    system.truth_boundary,
+                    "Inspect this boundary before making stronger behavior claims.",
+                ]
+            )
+    for section in graph.blueprint_sections:
+        for item in section.known_boundaries:
+            rows.append(
+                [
+                    "Blueprint gap",
+                    section.title,
+                    "open",
+                    item,
+                    "Add source evidence, tests, traces, or child-map detail.",
+                ]
+            )
+        if not section.source_evidence:
+            rows.append(
+                [
+                    "Blueprint evidence missing",
+                    section.title,
+                    "open",
+                    "Blueprint section has no source evidence rows.",
+                    "Add source paths, symbols, roles, and proof levels.",
+                ]
+            )
+    if not graph.source_links:
+        rows.append(
+            [
+                "Source links missing",
+                "whole report",
+                "open",
+                "No external source links were declared.",
+                "Add public repo, docs, issue, or design references.",
+            ]
+        )
+    if not graph.gates:
+        rows.append(
+            [
+                "Decision gates missing",
+                "whole report",
+                "open",
+                "No decision gates were declared.",
+                "Add the rules that advance, wait, block, or require human review.",
+            ]
+        )
+    if not graph.workflows:
+        rows.append(
+            [
+                "Workflow missing",
+                "whole report",
+                "open",
+                "No lifecycle workflow was declared.",
+                "Add the input -> transform -> gate -> output path.",
+            ]
+        )
+    if graph.systems and not graph.artifacts:
+        rows.append(
+            [
+                "Artifacts missing",
+                "whole report",
+                "open",
+                "Systems exist without inspectable artifacts.",
+                "Add files, APIs, tables, dashboards, reports, or logs.",
+            ]
+        )
+    if len(graph.systems) > 12 and not graph.child_maps:
+        rows.append(
+            [
+                "Large map without child maps",
+                "whole report",
+                "review",
+                "Many systems are declared but no linked child maps exist.",
+                "Split into an atlas if the report becomes hard to navigate.",
+            ]
+        )
+    if not graph.blueprint_sections:
+        rows.append(
+            [
+                "Blueprint not declared",
+                "whole report",
+                "optional",
+                "No source-backed blueprint sections were declared.",
+                "Add blueprint sections when the report needs source-level proof.",
+            ]
+        )
+    if not rows:
+        rows.append(
+            [
+                "No open gaps declared",
+                "whole report",
+                "clear",
+                "The report declared no known boundaries or generated gaps.",
+                "Still verify against source, runtime behavior, and maintainer review.",
+            ]
+        )
+    return rows
+
+
+def _action_register_rows(graph: SystemReviewGraph) -> list[list[object]]:
+    rows: list[list[object]] = []
+    for question in graph.review_questions:
+        rows.append(
+            [
+                "Review question",
+                "maintainer / auditor",
+                "open",
+                question,
+                "Answer from source, tests, docs, logs, or maintainer knowledge.",
+            ]
+        )
+    for section in graph.blueprint_sections:
+        for question in section.review_questions:
+            rows.append(
+                [
+                    "Blueprint review",
+                    "maintainer / auditor",
+                    "open",
+                    f"{section.title}: {question}",
+                    "Answer before using this blueprint as a final architecture claim.",
+                ]
+            )
+        for boundary in section.known_boundaries:
+            rows.append(
+                [
+                    "Close blueprint gap",
+                    "maintainer / auditor",
+                    "open",
+                    f"{section.title}: {boundary}",
+                    "Add evidence or explicitly preserve the boundary.",
+                ]
+            )
+    for boundary in graph.known_boundaries:
+        rows.append(
+            [
+                "Resolve boundary",
+                "maintainer / auditor",
+                "open",
+                boundary,
+                "Accept as scope or add proof that closes it.",
+            ]
+        )
+    for phase in graph.rebuild_recipe:
+        rows.append(
+            [
+                "Rebuild phase",
+                "maintainer / agent",
+                "repeatable",
+                phase.get("phase", "phase"),
+                phase.get("goal", ""),
+            ]
+        )
+    if not rows:
+        rows.append(
+            [
+                "Add action queue",
+                "maintainer",
+                "open",
+                "No review questions, boundaries, or rebuild phases were declared.",
+                "Add at least one concrete next action for reviewers.",
+            ]
+        )
+    return rows
+
+
+def _register_limit(depth: str) -> int:
+    if depth == "overview":
+        return 20
+    if depth == "standard":
+        return 80
+    return 200
+
+
+def _limited_rows(rows: list[list[object]], depth: str) -> tuple[list[list[object]], int]:
+    limit = _register_limit(depth)
+    return rows[:limit], max(0, len(rows) - limit)
+
+
+def _html_table(headers: list[str], rows: list[list[object]], class_name: str = "") -> str:
+    class_attr = f' class="{escape(class_name)}"' if class_name else ""
+    head = "".join(f"<th>{escape(header)}</th>" for header in headers)
+    body = "\n".join(
+        "<tr>" + "".join(f"<td>{_html_cell(value)}</td>" for value in row) + "</tr>"
+        for row in rows
+    )
+    return f"<table{class_attr}><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>"
+
+
+def _html_cell(value: object) -> str:
+    text = str(value)
+    markdown_link = re.fullmatch(r"\[([^\]]+)\]\(([^)]+)\)", text)
+    if markdown_link:
+        label, url = markdown_link.groups()
+        return f'<a href="{escape(url)}">{escape(label)}</a>'
+    return escape(text)
+
+
+def _html_register_section(graph: SystemReviewGraph, depth: str) -> str:
+    evidence_rows, evidence_omitted = _limited_rows(_evidence_register_rows(graph), depth)
+    gap_rows, gap_omitted = _limited_rows(_gap_register_rows(graph), depth)
+    action_rows, action_omitted = _limited_rows(_action_register_rows(graph), depth)
+    coverage_table = _html_table(
+        ["Area", "Count", "What It Means", "Reviewer Use"],
+        _coverage_register_rows(graph),
+    )
+    evidence_table = _html_table(
+        ["Evidence", "Kind", "Coverage", "Proof", "Reviewer Use"], evidence_rows
+    )
+    gap_table = _html_table(["Gap", "Area", "Status", "Boundary", "Next Step"], gap_rows)
+    action_table = _html_table(
+        ["Action", "Owner", "Status", "Trigger", "Expected Output"], action_rows
+    )
+    omitted_parts = [
+        f"{count} {name} rows omitted"
+        for name, count in [
+            ("evidence", evidence_omitted),
+            ("gap", gap_omitted),
+            ("action", action_omitted),
+        ]
+        if count
+    ]
+    omitted = ""
+    if omitted_parts:
+        omitted = f"<p>{escape('; '.join(omitted_parts))}. Use Markdown or JSON for full audit.</p>"
+    return f"""
+    <section>
+      <h2>Report Registers</h2>
+      <h3>Coverage Register</h3>
+      {coverage_table}
+      <h3>Evidence Register</h3>
+      {evidence_table}
+      <h3>Gap Register</h3>
+      {gap_table}
+      <h3>Action Register</h3>
+      {action_table}
+      {omitted}
+    </section>
+    """
+
+
 def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
     """Render a standalone HTML report with Mermaid diagrams."""
 
@@ -440,6 +837,7 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
       <h2>Source Links</h2>
       <ul>{source_links}</ul>
     </section>
+    {_html_register_section(graph, depth)}
     <section>
       <h2>Lifecycle Map</h2>
       <pre class="mermaid">{escape(render_lifecycle_mermaid(graph))}</pre>
@@ -531,6 +929,73 @@ def _add_visuals(lines: list[str], graph: SystemReviewGraph, depth: str) -> None
         )
 
 
+def _add_report_registers(lines: list[str], graph: SystemReviewGraph, depth: str) -> None:
+    evidence_rows, evidence_omitted = _limited_rows(_evidence_register_rows(graph), depth)
+    gap_rows, gap_omitted = _limited_rows(_gap_register_rows(graph), depth)
+    action_rows, action_omitted = _limited_rows(_action_register_rows(graph), depth)
+    lines.extend(
+        [
+            "",
+            "## Report Registers",
+            "",
+            "These registers turn the map into an audit surface: what is covered, "
+            "what evidence supports it, what remains open, and what a reviewer "
+            "should do next.",
+            "",
+            "### Coverage Register",
+            "",
+            "| Area | Count | What It Means | Reviewer Use |",
+            "|---|---:|---|---|",
+        ]
+    )
+    for row in _coverage_register_rows(graph):
+        lines.append(_row(row))
+    lines.extend(
+        [
+            "",
+            "### Evidence Register",
+            "",
+            "| Evidence | Kind | Coverage | Proof | Reviewer Use |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    for row in evidence_rows:
+        lines.append(_row(row))
+    if evidence_omitted:
+        lines.extend(
+            [
+                "",
+                f"{evidence_omitted} additional evidence rows omitted at `{depth}` depth.",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "### Gap Register",
+            "",
+            "| Gap | Area | Status | Boundary | Next Step |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    for row in gap_rows:
+        lines.append(_row(row))
+    if gap_omitted:
+        lines.extend(["", f"{gap_omitted} additional gap rows omitted at `{depth}` depth."])
+    lines.extend(
+        [
+            "",
+            "### Action Register",
+            "",
+            "| Action | Owner | Status | Trigger | Expected Output |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    for row in action_rows:
+        lines.append(_row(row))
+    if action_omitted:
+        lines.extend(["", f"{action_omitted} additional action rows omitted at `{depth}` depth."])
+
+
 def _add_expansion_index(lines: list[str], graph: SystemReviewGraph, depth: str) -> None:
     lines.extend(
         [
@@ -540,6 +1005,13 @@ def _add_expansion_index(lines: list[str], graph: SystemReviewGraph, depth: str)
             "| Level | Use It To Answer | Report Section |",
             "|---|---|---|",
             _row(["0. Situation", "What is true now?", "Current Truth"]),
+            _row(
+                [
+                    "0.25. Registers",
+                    "What is covered, proven, open, and actionable?",
+                    "Report Registers",
+                ]
+            ),
             _row(["0.5. Atlas", "Which child map should I open next?", "Map Of Maps"]),
             _row(
                 [
@@ -960,6 +1432,7 @@ def render_markdown(graph: SystemReviewGraph, depth: str = "deep") -> str:
             notes = source.get("notes", "")
             link = f"[{label}]({url})" if label and url else url
             lines.append(_row([link, notes]))
+    _add_report_registers(lines, graph, depth)
     _add_visuals(lines, graph, depth)
     _add_expansion_index(lines, graph, depth)
     lines.extend(

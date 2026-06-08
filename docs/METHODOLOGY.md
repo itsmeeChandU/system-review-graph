@@ -30,7 +30,24 @@ sources -> artifacts -> schemas -> systems -> workflows -> gates -> outcomes -> 
 5. Describe workflows: what consumes, gates, produces, and routes to the next step.
 6. Add decision gates: what advances, waits, blocks, or needs human review.
 7. Add current truth and boundaries: what is proven, unproven, private, or unsafe to publish.
-8. Add review questions so humans and agents know where to inspect next.
+8. Generate registers: coverage, evidence, gaps, and actions.
+9. Add review questions so humans and agents know where to inspect next.
+
+## Report Registers
+
+The generated report includes four registers so it can be reviewed like an
+open-source audit packet rather than only read like narrative documentation.
+
+| Register | Purpose |
+|---|---|
+| Coverage Register | Counts the systems, artifacts, schemas, gates, workflows, graph edges, child maps, blueprint sections, evidence rows, source links, boundaries, review questions, and rebuild phases. |
+| Evidence Register | Lists the source links, artifact paths, schema contracts, and blueprint evidence rows used to support the report. |
+| Gap Register | Lists known boundaries, unproven runtime claims, missing gates, missing workflows, missing evidence, and optional deepening areas. |
+| Action Register | Turns review questions, known boundaries, blueprint gaps, and rebuild phases into a next-action queue. |
+
+These registers do not make a report true by themselves. They make the truth
+surface inspectable: a maintainer can see what was mapped, what supports it,
+what remains open, and what should happen next.
 
 ## How It Works With Only Code
 

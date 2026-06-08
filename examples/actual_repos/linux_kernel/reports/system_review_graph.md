@@ -1,6 +1,6 @@
 # Linux Kernel System Review Atlas
 
-Generated: `2026-06-08T20:36:32+00:00`
+Generated: `2026-06-08T20:57:36+00:00`
 Scope: Generated from Linux kernel git tree paths at commit 2d3090a; source blobs were not copied.
 One line: Map-of-maps generated for a large repository: root atlas links to subsystem manifests.
 Depth: `blueprint`
@@ -34,6 +34,224 @@ This is a large-repository map-of-maps and blueprint stress test for System Revi
 |---|---|
 | [Linux kernel repository](https://github.com/torvalds/linux) | Public source repository used for the path-tree stress test. |
 | [Linux kernel commit 2d3090a](https://github.com/torvalds/linux/commit/2d3090a8aeb596a26935db0955d46c9a5db5c6ce) | Merge tag 'v7.1-p5' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6 |
+
+## Report Registers
+
+These registers turn the map into an audit surface: what is covered, what evidence supports it, what remains open, and what a reviewer should do next.
+
+### Coverage Register
+
+| Area | Count | What It Means | Reviewer Use |
+|---|---:|---|---|
+| Systems | 24 | Bounded contexts, services, subsystems, or product surfaces. | Use this to see whether the report maps the main operating areas. |
+| Artifacts | 24 | Inspectable files, APIs, tables, dashboards, reports, or outputs. | Use this to trace where system claims can be inspected. |
+| Schemas/contracts | 1 | Public or sanitized contracts for artifacts and handoffs. | Use this to rebuild examples without touching private data. |
+| Decision gates | 1 | Rules that advance, wait, block, or require human review. | Use this to find where the system controls action. |
+| Workflows | 4 | Lifecycle steps from input to output. | Use this to follow what happens end to end. |
+| Graph edges | 109 | Explicit and derived relationships between manifest nodes. | Use this to audit connectivity and missing relationships. |
+| Child maps | 24 | Linked subsystem maps for large repositories. | Use this to drill into a map-of-maps instead of one flat report. |
+| Blueprint sections | 11 | Source-evidence-backed operating flows. | Use this to review deep behavior claims with proof anchors. |
+| Blueprint evidence rows | 56 | Source paths, symbols, roles, and proof levels. | Use this to verify whether blueprint claims are source-backed. |
+| Source links | 2 | External or public references used by the report. | Use this to confirm the report's public evidence base. |
+| Known boundaries | 17 | Open limits, unproven claims, redactions, or scope exclusions. | Use this to avoid treating the report as stronger than it is. |
+| Review questions | 38 | Questions a maintainer, auditor, or agent should answer next. | Use this as the human follow-up queue. |
+| Rebuild phases | 2 | Documented commands or phases for reproducing the report. | Use this to regenerate or verify the report locally. |
+
+### Evidence Register
+
+| Evidence | Kind | Coverage | Proof | Reviewer Use |
+|---|---|---|---|---|
+| [Linux kernel repository](https://github.com/torvalds/linux) | source link | whole report | declared | Public source repository used for the path-tree stress test. |
+| [Linux kernel commit 2d3090a](https://github.com/torvalds/linux/commit/2d3090a8aeb596a26935db0955d46c9a5db5c6ce) | source link | whole report | declared | Merge tag 'v7.1-p5' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6 |
+| Kconfig:8 (source "scripts/Kconfig.include") | blueprint evidence | Whole Repository Coverage And Build Configuration: configuration root | source-confirmed | Top-level config includes helper macros first. |
+| Kconfig:10-34 (source subsystem Kconfig files) | blueprint evidence | Whole Repository Coverage And Build Configuration: subsystem coverage fan-out | source-confirmed | Top-level Kconfig fans out to init, kernel, fs, mm, net, drivers, security, crypto, lib, docs, and io_uring. |
+| Makefile:131-152 (KBUILD_EXTMOD) | blueprint evidence | Whole Repository Coverage And Build Configuration: external module boundary | source-confirmed | Main build supports external module roots and exports that path. |
+| scripts/kconfig/Makefile:50-95 (Kconfig targets) | blueprint evidence | Whole Repository Coverage And Build Configuration: configuration command surface | source-confirmed | Kconfig tooling turns config targets into .config decisions. |
+| init/main.c:1017 (start_kernel) | blueprint evidence | Boot, Kernel Init, And Userspace Handoff: generic kernel entry | source-confirmed | Generic initialization begins here after architecture handoff. |
+| init/main.c:716 (rest_init) | blueprint evidence | Boot, Kernel Init, And Userspace Handoff: handoff to init threads | source-confirmed | Creates/continues the path toward kernel_init and idle scheduling. |
+| init/main.c:1584 (kernel_init) | blueprint evidence | Boot, Kernel Init, And Userspace Handoff: init thread body | source-confirmed | Runs the late init path and userspace transition logic. |
+| include/linux/module.h:82-130 (module_init and initcall macros) | blueprint evidence | Boot, Kernel Init, And Userspace Handoff: ordered init extension points | source-confirmed | Built-in init functions are ordered through initcall classes. |
+| kernel/fork.c:1969 (copy_process) | blueprint evidence | Process Lifetime And Scheduler Control Plane: task construction | source-confirmed | Core task creation path used under clone/kernel_clone flows. |
+| kernel/fork.c:2668 (kernel_clone) | blueprint evidence | Process Lifetime And Scheduler Control Plane: clone orchestration | source-confirmed | Turns clone arguments into a task creation request. |
+| kernel/sched/core.c:7273 (schedule) | blueprint evidence | Process Lifetime And Scheduler Control Plane: scheduler entry | source-confirmed | Main scheduling call path. |
+| kernel/sched/core.c:5999-6558 (pick_next_task) | blueprint evidence | Process Lifetime And Scheduler Control Plane: task selection | source-confirmed | Chooses the next task via scheduler class logic. |
+| kernel/sched/core.c:4152 (try_to_wake_up) | blueprint evidence | Process Lifetime And Scheduler Control Plane: wakeup gate | source-confirmed | Moves blocked/sleeping tasks toward runnable state. |
+| kernel/exit.c:896 (do_exit) | blueprint evidence | Process Lifetime And Scheduler Control Plane: task termination | source-confirmed | Core task exit path. |
+| include/linux/syscalls.h:217-246 (SYSCALL_DEFINE macros) | blueprint evidence | User-Kernel Boundary And Syscall Dispatch: syscall declaration contract | source-confirmed | Defines syscall macro family and generated signatures. |
+| fs/read_write.c:706 (ksys_read) | blueprint evidence | User-Kernel Boundary And Syscall Dispatch: kernel read helper | source-confirmed | Read syscall delegates into kernel read helper logic. |
+| fs/read_write.c:724 (SYSCALL_DEFINE3(read)) | blueprint evidence | User-Kernel Boundary And Syscall Dispatch: read syscall entry | source-confirmed | Public read syscall wrapper. |
+| fs/read_write.c:748 (SYSCALL_DEFINE3(write)) | blueprint evidence | User-Kernel Boundary And Syscall Dispatch: write syscall entry | source-confirmed | Public write syscall wrapper. |
+| kernel/sys_ni.c:20 (sys_ni_syscall) | blueprint evidence | User-Kernel Boundary And Syscall Dispatch: missing syscall fallback | source-confirmed | Represents not-implemented syscall handling. |
+| mm/mmap.c:280-336 (do_mmap) | blueprint evidence | Memory Management, Mappings, Faults, And Page Allocation: user mapping creation | source-confirmed | Creates userland memory mappings. |
+| mm/memory.c:6465 (__handle_mm_fault) | blueprint evidence | Memory Management, Mappings, Faults, And Page Allocation: fault core | source-confirmed | Core page fault handling path. |
+| mm/memory.c:6699 (handle_mm_fault) | blueprint evidence | Memory Management, Mappings, Faults, And Page Allocation: fault API | source-confirmed | Exported fault handling wrapper. |
+| mm/page_alloc.c:4682 (__alloc_pages_slowpath) | blueprint evidence | Memory Management, Mappings, Faults, And Page Allocation: allocation pressure path | source-confirmed | Handles difficult allocation cases. |
+| mm/page_alloc.c:5250 (__alloc_pages_noprof) | blueprint evidence | Memory Management, Mappings, Faults, And Page Allocation: page allocation API | source-confirmed | Core page allocation entry. |
+| fs/open.c:1355 (do_sys_openat2) | blueprint evidence | Filesystem, VFS, Path Lookup, And Block IO: open syscall core | source-confirmed | Turns userspace open request into kernel open flow. |
+| fs/namei.c:4838 (path_openat) | blueprint evidence | Filesystem, VFS, Path Lookup, And Block IO: path lookup/open | source-confirmed | Core path resolution/open helper. |
+| fs/read_write.c:554 (vfs_read) | blueprint evidence | Filesystem, VFS, Path Lookup, And Block IO: VFS read | source-confirmed | VFS read entry once a file is resolved. |
+| fs/read_write.c:668 (vfs_write) | blueprint evidence | Filesystem, VFS, Path Lookup, And Block IO: VFS write | source-confirmed | VFS write entry once a file is resolved. |
+| block/blk-core.c:904-916 (submit_bio) | blueprint evidence | Filesystem, VFS, Path Lookup, And Block IO: block IO submission | source-confirmed | Submits BIO requests to block layer. |
+| block/blk-mq.c:3112-3124 (blk_mq_submit_bio) | blueprint evidence | Filesystem, VFS, Path Lookup, And Block IO: multi-queue block submission | source-confirmed | Creates/sends block requests. |
+| net/core/dev.c:6440-6454 (netif_receive_skb) | blueprint evidence | Networking Packet Receive, Protocol Dispatch, And Transmit: RX packet entry | source-confirmed | Main receive data processing function. |
+| net/core/dev.c:5972 (__netif_receive_skb_core) | blueprint evidence | Networking Packet Receive, Protocol Dispatch, And Transmit: RX core routing | source-confirmed | Core packet receive path. |
+| net/ipv4/ip_input.c:603 (ip_rcv) | blueprint evidence | Networking Packet Receive, Protocol Dispatch, And Transmit: IPv4 receive | source-confirmed | IPv4 packet receive handler. |
+| net/ipv4/tcp_ipv4.c:2068 (tcp_v4_rcv) | blueprint evidence | Networking Packet Receive, Protocol Dispatch, And Transmit: TCP receive | source-confirmed | TCP over IPv4 receive handler. |
+| net/core/dev.c:4766 (__dev_queue_xmit) | blueprint evidence | Networking Packet Receive, Protocol Dispatch, And Transmit: TX queue entry | source-confirmed | Transmits skb toward device queue. |
+| drivers/base/driver.c:218-249 (driver_register) | blueprint evidence | Driver Model, Device Matching, And Probe: driver registration | source-confirmed | Registers driver and passes work to bus_add_driver. |
+| drivers/base/bus.c:722-725 (bus_add_driver) | blueprint evidence | Driver Model, Device Matching, And Probe: bus integration | source-confirmed | Adds a driver to a bus. |
+| drivers/base/dd.c:655 (really_probe) | blueprint evidence | Driver Model, Device Matching, And Probe: actual probe path | source-confirmed | Core device-driver binding/probe function. |
+| drivers/base/dd.c:895 (driver_probe_device) | blueprint evidence | Driver Model, Device Matching, And Probe: probe attempt | source-confirmed | Attempts to bind device and driver together. |
+| drivers/base/dd.c:1142 (device_attach) | blueprint evidence | Driver Model, Device Matching, And Probe: device attach path | source-confirmed | Tries to attach a device to a driver. |
+| include/linux/lsm_hook_defs.h:18-29 (LSM_HOOK macro list) | blueprint evidence | Security And LSM Permission Hooks: security hook contract | source-confirmed | Defines the hook inventory used by LSM infrastructure. |
+| include/linux/lsm_hook_defs.h:142 (inode_permission) | blueprint evidence | Security And LSM Permission Hooks: inode permission hook | source-confirmed | One concrete filesystem permission hook. |
+| security/security.c:488 (call_int_hook) | blueprint evidence | Security And LSM Permission Hooks: hook dispatch | source-confirmed | Dispatches int-returning LSM hooks. |
+| security/security.c:1838 (security_inode_permission) | blueprint evidence | Security And LSM Permission Hooks: inode permission gate | source-confirmed | Calls inode_permission hook implementations. |
+| Documentation/security/lsm.rst:119 (security_inode_permission example) | blueprint evidence | Security And LSM Permission Hooks: documentation anchor | docs-confirmed | Docs mention inode permission as an example hook. |
+| include/linux/module.h:82-131 (module_init) | blueprint evidence | Extensibility, Modules, BPF, And Tracing: module/initcall contract | source-confirmed | Drivers and modules declare initialization entry points. |
+| kernel/module/main.c:3422 (load_module) | blueprint evidence | Extensibility, Modules, BPF, And Tracing: module load core | source-confirmed | Core module loading implementation. |
+| kernel/module/main.c:3634 (SYSCALL_DEFINE3(init_module)) | blueprint evidence | Extensibility, Modules, BPF, And Tracing: module syscall entry | source-confirmed | Userspace module load syscall path. |
+| kernel/module/main.c:3799 (SYSCALL_DEFINE3(finit_module)) | blueprint evidence | Extensibility, Modules, BPF, And Tracing: fd-based module syscall | source-confirmed | Loads module from file descriptor path. |
+| kernel/bpf/syscall.c:2864 (bpf_prog_load) | blueprint evidence | Extensibility, Modules, BPF, And Tracing: BPF program load core | source-confirmed | Loads/verifies BPF programs. |
+| kernel/bpf/syscall.c:6385 (SYSCALL_DEFINE3(bpf)) | blueprint evidence | Extensibility, Modules, BPF, And Tracing: BPF syscall entry | source-confirmed | Userspace BPF command syscall. |
+| init/Kconfig:2190 (config RUST) | blueprint evidence | Rust Kernel Integration And Safety Boundary: Rust enablement gate | source-confirmed | Rust support is configured under general setup. |
+| Makefile:1103 (ifdef CONFIG_RUST) | blueprint evidence | Rust Kernel Integration And Safety Boundary: Rust build flag gate | source-confirmed | Top-level build changes behavior when Rust is enabled. |
+| rust/Makefile:6-24 (obj-$(CONFIG_RUST)) | blueprint evidence | Rust Kernel Integration And Safety Boundary: Rust build products | source-confirmed | Rust core/helpers/bindings/uapi/kernel objects are config-gated. |
+| Documentation/rust/general-information.rst:13 (Rust support constraints) | blueprint evidence | Rust Kernel Integration And Safety Boundary: documentation anchor | docs-confirmed | Docs describe what Rust support can link. |
+| Documentation/rust/general-information.rst:118-131 (bindings and wrappers) | blueprint evidence | Rust Kernel Integration And Safety Boundary: C/Rust boundary | docs-confirmed | Docs describe generated bindings and wrappers around unsafe functionality. |
+| subsystems/arch/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/block/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/certs/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/crypto/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/documentation/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/drivers/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/fs/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/include/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/init/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/io_uring/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/ipc/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/kernel/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/lib/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/mm/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/net/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/rust/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/samples/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/scripts/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/security/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/sound/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/tools/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/usr/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/virt/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| subsystems/licenses/system_review_manifest.json | child_system_map | unknown | safe_to_share | Machine-readable child map for a top-level subsystem boundary. |
+| SubsystemMap | atlas_contract | map_id, path, scope, systems, status | contract declared | A child system review map that a root atlas can link, upload, and hand to reviewers or agents. |
+
+### Gap Register
+
+| Gap | Area | Status | Boundary | Next Step |
+|---|---|---|---|---|
+| Known boundary | whole report | open | Atlas boundaries are inferred from source-tree directories and markers. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | A child map gives review context; it does not prove runtime behavior by itself. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | Very large systems still need maintainers or deeper agents to refine real workflows. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | CI regeneration can detect drift, but deciding meaning still needs review gates. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | The Linux example was generated from a path-only mirror of the git tree; file contents, build configuration, runtime behavior, and maintainer ownership were not audited. | Accept the boundary or add evidence that closes it. |
+| Known boundary | whole report | open | Blueprint sections cover major Linux operational flows, but not every file, architecture variant, driver family, filesystem, network protocol, scheduler class, or security module implementation. | Accept the boundary or add evidence that closes it. |
+| System truth boundary | arch/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | block/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | certs/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | crypto/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | Documentation/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | drivers/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | fs/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | include/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | init/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | io_uring/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | ipc/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | kernel/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | lib/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | mm/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | net/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | rust/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | samples/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | scripts/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | security/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | sound/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | tools/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | usr/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | virt/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| System truth boundary | LICENSES/ | review | Directory boundary is source-grounded; runtime responsibility and exact behavior require maintainer or deeper agent review. | Inspect this boundary before making stronger behavior claims. |
+| Blueprint gap | Whole Repository Coverage And Build Configuration | open | This blueprint maps source/build control surfaces, not a specific .config or compiled image. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Boot, Kernel Init, And Userspace Handoff | open | This section uses generic source anchors and does not map every architecture boot file. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Process Lifetime And Scheduler Control Plane | open | This section does not expand every scheduler class, CPU topology path, or architecture context switch implementation. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | User-Kernel Boundary And Syscall Dispatch | open | Architecture-specific syscall table files are not fully expanded in this root blueprint. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Memory Management, Mappings, Faults, And Page Allocation | open | Slab, vmalloc, huge pages, memcg, NUMA, and architecture fault entry are not fully expanded here. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Filesystem, VFS, Path Lookup, And Block IO | open | Specific filesystem implementations such as ext4, btrfs, xfs, and network filesystems need child blueprints. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Networking Packet Receive, Protocol Dispatch, And Transmit | open | IPv6, UDP, netfilter, namespaces, routing tables, qdisc, and NIC-specific drivers need child blueprints. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Driver Model, Device Matching, And Probe | open | PCI, USB, platform, ACPI, device-tree, and individual driver families need child blueprints. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Security And LSM Permission Hooks | open | SELinux, AppArmor, Smack, Landlock, BPF LSM, IMA/EVM, and capabilities need separate child blueprints. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Extensibility, Modules, BPF, And Tracing | open | Module signing, livepatch, perf, ftrace, kprobes, uprobes, and BPF verifier internals need child blueprints. | Add source evidence, tests, traces, or child-map detail. |
+| Blueprint gap | Rust Kernel Integration And Safety Boundary | open | This blueprint does not inspect each Rust abstraction, unsafe block, or Rust driver implementation. | Add source evidence, tests, traces, or child-map detail. |
+
+### Action Register
+
+| Action | Owner | Status | Trigger | Expected Output |
+|---|---|---|---|---|
+| Review question | maintainer / auditor | open | Which child maps changed since the last merge? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Which subsystem boundary is too broad and needs splitting? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Which subsystem lacks workflow, gate, schema, or test evidence? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Can reviewers reproduce the map from the declared rebuild recipe? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Review question | maintainer / auditor | open | Where does the atlas overclaim beyond source-surface evidence? | Answer from source, tests, docs, logs, or maintainer knowledge. |
+| Blueprint review | maintainer / auditor | open | Whole Repository Coverage And Build Configuration: Which top-level directories are config-selected into the build? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Whole Repository Coverage And Build Configuration: Which generated headers or scripts become hidden contracts for later source paths? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Whole Repository Coverage And Build Configuration: Which subsystem is absent in this atlas because it is build-generated rather than source-tree visible? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Whole Repository Coverage And Build Configuration: This blueprint maps source/build control surfaces, not a specific .config or compiled image. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Boot, Kernel Init, And Userspace Handoff: Which initcalls are required before filesystems, drivers, and userspace can run? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Boot, Kernel Init, And Userspace Handoff: Which boot path is architecture-specific and which is generic? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Boot, Kernel Init, And Userspace Handoff: Where would a boot failure be proven by logs or tracepoints? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Boot, Kernel Init, And Userspace Handoff: This section uses generic source anchors and does not map every architecture boot file. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Process Lifetime And Scheduler Control Plane: Which scheduler class owns the task at each moment? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Process Lifetime And Scheduler Control Plane: Which locks or barriers protect wakeup and task state? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Process Lifetime And Scheduler Control Plane: Which tests or traces prove latency and fairness for a specific workload? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Process Lifetime And Scheduler Control Plane: This section does not expand every scheduler class, CPU topology path, or architecture context switch implementation. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | User-Kernel Boundary And Syscall Dispatch: Which architecture entry file maps the syscall number to the generic implementation? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | User-Kernel Boundary And Syscall Dispatch: Which subsystem owns the post-syscall object model? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | User-Kernel Boundary And Syscall Dispatch: Where is user memory copied, checked, or faulted? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | User-Kernel Boundary And Syscall Dispatch: Architecture-specific syscall table files are not fully expanded in this root blueprint. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Memory Management, Mappings, Faults, And Page Allocation: Which memory path is user mapping, kernel allocation, slab, vmalloc, or page cache? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Memory Management, Mappings, Faults, And Page Allocation: Which GFP flags and context determine blocking behavior? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Memory Management, Mappings, Faults, And Page Allocation: Which tracepoints prove allocation pressure in runtime? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Memory Management, Mappings, Faults, And Page Allocation: Slab, vmalloc, huge pages, memcg, NUMA, and architecture fault entry are not fully expanded here. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Filesystem, VFS, Path Lookup, And Block IO: Which filesystem file_operations implementation is reached for a specific path? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Filesystem, VFS, Path Lookup, And Block IO: Does the path hit page cache, direct IO, or block IO? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Filesystem, VFS, Path Lookup, And Block IO: Which LSM or mount namespace decision can stop the operation? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Filesystem, VFS, Path Lookup, And Block IO: Specific filesystem implementations such as ext4, btrfs, xfs, and network filesystems need child blueprints. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Networking Packet Receive, Protocol Dispatch, And Transmit: Which driver/NAPI path creates the skb? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Networking Packet Receive, Protocol Dispatch, And Transmit: Which netfilter, BPF, or qdisc hooks can intercept this packet? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Networking Packet Receive, Protocol Dispatch, And Transmit: Which tracepoints prove drops versus delivery? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Networking Packet Receive, Protocol Dispatch, And Transmit: IPv6, UDP, netfilter, namespaces, routing tables, qdisc, and NIC-specific drivers need child blueprints. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Driver Model, Device Matching, And Probe: Which bus-specific match function controls this device? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Driver Model, Device Matching, And Probe: What resources are acquired during probe and released on remove? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Driver Model, Device Matching, And Probe: Which deferred-probe or firmware dependency blocks binding? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Driver Model, Device Matching, And Probe: PCI, USB, platform, ACPI, device-tree, and individual driver families need child blueprints. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Security And LSM Permission Hooks: Which security_* wrapper is called by the subsystem path? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Security And LSM Permission Hooks: Which configured LSM implementations register the hook? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Security And LSM Permission Hooks: Is the operation denied, audited, or only labeled? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Security And LSM Permission Hooks: SELinux, AppArmor, Smack, Landlock, BPF LSM, IMA/EVM, and capabilities need separate child blueprints. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Extensibility, Modules, BPF, And Tracing: Which runtime behavior is built in, module-loaded, or BPF-attached? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Extensibility, Modules, BPF, And Tracing: Which security and signature checks gate extension loading? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Extensibility, Modules, BPF, And Tracing: Which tracepoints prove this path at runtime? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Extensibility, Modules, BPF, And Tracing: Module signing, livepatch, perf, ftrace, kprobes, uprobes, and BPF verifier internals need child blueprints. | Add evidence or explicitly preserve the boundary. |
+| Blueprint review | maintainer / auditor | open | Rust Kernel Integration And Safety Boundary: Which Rust wrappers encapsulate unsafe C/kernel behavior? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Rust Kernel Integration And Safety Boundary: Which generated bindings are relied on by a driver? | Answer before using this blueprint as a final architecture claim. |
+| Blueprint review | maintainer / auditor | open | Rust Kernel Integration And Safety Boundary: Does the driver enter normal module/driver probe paths after Rust build integration? | Answer before using this blueprint as a final architecture claim. |
+| Close blueprint gap | maintainer / auditor | open | Rust Kernel Integration And Safety Boundary: This blueprint does not inspect each Rust abstraction, unsafe block, or Rust driver implementation. | Add evidence or explicitly preserve the boundary. |
+| Resolve boundary | maintainer / auditor | open | Atlas boundaries are inferred from source-tree directories and markers. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | A child map gives review context; it does not prove runtime behavior by itself. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | Very large systems still need maintainers or deeper agents to refine real workflows. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | CI regeneration can detect drift, but deciding meaning still needs review gates. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | The Linux example was generated from a path-only mirror of the git tree; file contents, build configuration, runtime behavior, and maintainer ownership were not audited. | Accept as scope or add proof that closes it. |
+| Resolve boundary | maintainer / auditor | open | Blueprint sections cover major Linux operational flows, but not every file, architecture variant, driver family, filesystem, network protocol, scheduler class, or security module implementation. | Accept as scope or add proof that closes it. |
+| Rebuild phase | maintainer / agent | repeatable | atlas-scan | Generate root and child subsystem maps. |
+| Rebuild phase | maintainer / agent | repeatable | merge-regeneration | Regenerate reports in CI after a merge or major milestone. |
 
 ## Map Of Maps
 
@@ -395,6 +613,7 @@ flowchart TD
 | Level | Use It To Answer | Report Section |
 |---|---|---|
 | 0. Situation | What is true now? | Current Truth |
+| 0.25. Registers | What is covered, proven, open, and actionable? | Report Registers |
 | 0.5. Atlas | Which child map should I open next? | Map Of Maps |
 | 0.75. Blueprint | Which source-backed flows explain the whole system? | Blueprint Sections |
 | 1. Flow | How does the system move end to end? | Lifecycle Map |

@@ -5,18 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DuckDB Public Repo System Review Graph</title>
   <style>
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; margin: 0; color: #18202a; background: #f8fafc; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      margin: 0;
+      color: #18202a;
+      background: #f8fafc;
+    }
     header { padding: 40px 32px; background: #172033; color: white; }
     main { max-width: 1120px; margin: 0 auto; padding: 28px; }
-    section { margin: 24px 0; padding: 24px; background: white; border: 1px solid #dbe3ee; border-radius: 10px; }
+    section {
+      margin: 24px 0;
+      padding: 24px;
+      background: white;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+    }
     h1, h2, h3 { line-height: 1.2; }
     code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .pill { padding: 6px 10px; border: 1px solid rgba(255,255,255,.32); border-radius: 999px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
     .card { padding: 18px; border: 1px solid #dbe3ee; border-radius: 10px; background: #fbfdff; }
     dt { font-weight: 700; margin-top: 10px; }
     dd { margin-left: 0; color: #465466; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #dbe3ee; padding: 10px 8px; text-align: left; }
     a { color: #1456cc; }
   </style>
 </head>
@@ -43,6 +60,68 @@
 <li><a href="https://duckdb.org/docs/">DuckDB documentation</a> - Public docs for SQL, clients, extensions, and engine behavior.</li>
 <li><a href="https://duckdb.org/docs/stable/internals/overview">DuckDB internals overview</a> - Public internals documentation for engine orientation.</li></ul>
     </section>
+
+    <section>
+      <h2>Report Registers</h2>
+      <h3>Coverage Register</h3>
+      <table><thead><tr><th>Area</th><th>Count</th><th>What It Means</th><th>Reviewer Use</th></tr></thead><tbody><tr><td>Systems</td><td>6</td><td>Bounded contexts, services, subsystems, or product surfaces.</td><td>Use this to see whether the report maps the main operating areas.</td></tr>
+<tr><td>Artifacts</td><td>8</td><td>Inspectable files, APIs, tables, dashboards, reports, or outputs.</td><td>Use this to trace where system claims can be inspected.</td></tr>
+<tr><td>Schemas/contracts</td><td>6</td><td>Public or sanitized contracts for artifacts and handoffs.</td><td>Use this to rebuild examples without touching private data.</td></tr>
+<tr><td>Decision gates</td><td>5</td><td>Rules that advance, wait, block, or require human review.</td><td>Use this to find where the system controls action.</td></tr>
+<tr><td>Workflows</td><td>6</td><td>Lifecycle steps from input to output.</td><td>Use this to follow what happens end to end.</td></tr>
+<tr><td>Graph edges</td><td>49</td><td>Explicit and derived relationships between manifest nodes.</td><td>Use this to audit connectivity and missing relationships.</td></tr>
+<tr><td>Child maps</td><td>0</td><td>Linked subsystem maps for large repositories.</td><td>Use this to drill into a map-of-maps instead of one flat report.</td></tr>
+<tr><td>Blueprint sections</td><td>0</td><td>Source-evidence-backed operating flows.</td><td>Use this to review deep behavior claims with proof anchors.</td></tr>
+<tr><td>Blueprint evidence rows</td><td>0</td><td>Source paths, symbols, roles, and proof levels.</td><td>Use this to verify whether blueprint claims are source-backed.</td></tr>
+<tr><td>Source links</td><td>3</td><td>External or public references used by the report.</td><td>Use this to confirm the report&#x27;s public evidence base.</td></tr>
+<tr><td>Known boundaries</td><td>4</td><td>Open limits, unproven claims, redactions, or scope exclusions.</td><td>Use this to avoid treating the report as stronger than it is.</td></tr>
+<tr><td>Review questions</td><td>5</td><td>Questions a maintainer, auditor, or agent should answer next.</td><td>Use this as the human follow-up queue.</td></tr>
+<tr><td>Rebuild phases</td><td>2</td><td>Documented commands or phases for reproducing the report.</td><td>Use this to regenerate or verify the report locally.</td></tr></tbody></table>
+      <h3>Evidence Register</h3>
+      <table><thead><tr><th>Evidence</th><th>Kind</th><th>Coverage</th><th>Proof</th><th>Reviewer Use</th></tr></thead><tbody><tr><td><a href="https://github.com/duckdb/duckdb">GitHub repository</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Primary public source used for repo identity and source paths.</td></tr>
+<tr><td><a href="https://duckdb.org/docs/">DuckDB documentation</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Public docs for SQL, clients, extensions, and engine behavior.</td></tr>
+<tr><td><a href="https://duckdb.org/docs/stable/internals/overview">DuckDB internals overview</a></td><td>source link</td><td>whole report</td><td>declared</td><td>Public internals documentation for engine orientation.</td></tr>
+<tr><td>src/parser/</td><td>source_directory</td><td>engine</td><td>safe_to_share</td><td>Turns SQL text into parsed statements.</td></tr>
+<tr><td>src/planner/</td><td>source_directory</td><td>engine</td><td>safe_to_share</td><td>Binds and plans parsed SQL into logical operators.</td></tr>
+<tr><td>src/optimizer/</td><td>source_directory</td><td>engine</td><td>safe_to_share</td><td>Rewrites and improves logical plans before physical execution.</td></tr>
+<tr><td>src/execution/</td><td>source_directory</td><td>engine</td><td>safe_to_share</td><td>Executes physical operators and data pipelines.</td></tr>
+<tr><td>src/storage/</td><td>source_directory</td><td>engine</td><td>safe_to_share</td><td>Handles table storage, persistence, scans, and writes.</td></tr>
+<tr><td>src/transaction/</td><td>source_directory</td><td>engine</td><td>safe_to_share</td><td>Coordinates transaction lifecycle and commit boundaries.</td></tr>
+<tr><td>extension/</td><td>source_directory</td><td>extensions</td><td>safe_to_share</td><td>Hosts built-in and optional extension surfaces such as parquet, json, icu, tpch, and tpcds.</td></tr>
+<tr><td>test/</td><td>tests</td><td>quality</td><td>safe_to_share</td><td>Protects SQL behavior, storage behavior, extensions, and compatibility.</td></tr>
+<tr><td>SQLRequest</td><td>query_contract</td><td>sql_text, connection_context, parameters, transaction_state</td><td>contract declared</td><td>Represents incoming SQL and execution context before parsing and binding.</td></tr>
+<tr><td>LogicalPlan</td><td>planning_contract</td><td>operators, bindings, types, catalog_refs</td><td>contract declared</td><td>Represents a query after parsing and semantic binding.</td></tr>
+<tr><td>PhysicalPlan</td><td>execution_contract</td><td>physical_operators, pipelines, dependencies, estimated_costs</td><td>contract declared</td><td>Represents executable operator pipelines.</td></tr>
+<tr><td>DataChunk</td><td>vectorized_data_contract</td><td>vectors, column_types, cardinality</td><td>contract declared</td><td>Represents batches of data flowing through vectorized execution.</td></tr>
+<tr><td>StorageTransaction</td><td>storage_contract</td><td>catalog_state, table_state, write_set, commit_status</td><td>contract declared</td><td>Represents storage and transaction state for reads and writes.</td></tr>
+<tr><td>ExtensionSpec</td><td>extension_contract</td><td>extension_name, functions, load_policy, compatibility</td><td>contract declared</td><td>Describes extension-provided functionality and loading boundaries.</td></tr></tbody></table>
+      <h3>Gap Register</h3>
+      <table><thead><tr><th>Gap</th><th>Area</th><th>Status</th><th>Boundary</th><th>Next Step</th></tr></thead><tbody><tr><td>Known boundary</td><td>whole report</td><td>open</td><td>This is a public educational map, not an official DuckDB maintainer audit.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>It maps high-level engine layers and public source paths, not every operator or internal invariant.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>A real audit should inspect a specific commit, build configuration, tests, fuzzers, benchmarks, and release notes.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>Known boundary</td><td>whole report</td><td>open</td><td>Do not use production SQL or private data in public examples.</td><td>Accept the boundary or add evidence that closes it.</td></tr>
+<tr><td>System truth boundary</td><td>SQL Front Door</td><td>review</td><td>A parsed query is not executable until binding and planning succeed.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Planner And Optimizer</td><td>review</td><td>Optimization must not change query meaning.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Vectorized Execution Engine</td><td>review</td><td>Execution depends on valid plan, memory, transaction, and storage state.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Storage And Transaction Layer</td><td>review</td><td>Storage behavior is valid only within transaction rules.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Extension System</td><td>review</td><td>Extensions expand behavior but must respect engine compatibility and load policy.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>System truth boundary</td><td>Quality And Compatibility Loop</td><td>review</td><td>This report does not replace upstream CI or benchmark review.</td><td>Inspect this boundary before making stronger behavior claims.</td></tr>
+<tr><td>Blueprint not declared</td><td>whole report</td><td>optional</td><td>No source-backed blueprint sections were declared.</td><td>Add blueprint sections when the report needs source-level proof.</td></tr></tbody></table>
+      <h3>Action Register</h3>
+      <table><thead><tr><th>Action</th><th>Owner</th><th>Status</th><th>Trigger</th><th>Expected Output</th></tr></thead><tbody><tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>How does SQL move from text to parsed statement, logical plan, optimized plan, physical operators, and result chunks?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which gates preserve query semantics during binding and optimization?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Where do storage and transaction boundaries constrain execution?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>How do extensions expand engine behavior without destabilizing the core?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Review question</td><td>maintainer / auditor</td><td>open</td><td>Which public tests, fuzzers, benchmarks, and release notes would a deeper audit inspect?</td><td>Answer from source, tests, docs, logs, or maintainer knowledge.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>This is a public educational map, not an official DuckDB maintainer audit.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>It maps high-level engine layers and public source paths, not every operator or internal invariant.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>A real audit should inspect a specific commit, build configuration, tests, fuzzers, benchmarks, and release notes.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Resolve boundary</td><td>maintainer / auditor</td><td>open</td><td>Do not use production SQL or private data in public examples.</td><td>Accept as scope or add proof that closes it.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>validate</td><td>Check the DuckDB public repo manifest.</td></tr>
+<tr><td>Rebuild phase</td><td>maintainer / agent</td><td>repeatable</td><td>build</td><td>Generate the DuckDB system review report.</td></tr></tbody></table>
+
+    </section>
+
     <section>
       <h2>Lifecycle Map</h2>
       <pre class="mermaid">flowchart LR
@@ -58,7 +137,10 @@
   execute_plan --&gt; commit_or_return[&quot;Commit Or Return Results&quot;]
   load_extension --&gt; parse_and_bind[&quot;Parse And Bind&quot;]</pre>
     </section>
-    
+
+
+
+
         <section>
           <h2>Artifact And Schema Map</h2>
           <pre class="mermaid">flowchart LR
@@ -109,8 +191,8 @@
   gate_storage_commit_gate{&quot;Storage Commit Gate&quot;} --&gt; step_commit_or_return[&quot;Commit Or Return Results&quot;]
   gate_extension_load_gate{&quot;Extension Load Gate&quot;} --&gt; step_load_extension[&quot;Load Extension&quot;]</pre>
         </section>
-        
-    
+
+
         <section>
           <h2>Relationship Graph</h2>
           <pre class="mermaid">flowchart TD
@@ -164,7 +246,7 @@
   extension_load_gate[&quot;Extension Load Gate&quot;] -- &quot;gates&quot; --&gt; load_extension[&quot;Load Extension&quot;]
   load_extension[&quot;Load Extension&quot;] -- &quot;routes to&quot; --&gt; parse_and_bind[&quot;Parse And Bind&quot;]</pre>
         </section>
-        
+
     <section>
       <h2>Systems</h2>
       <div class="grid">
@@ -177,7 +259,7 @@
             <dt>Boundary</dt><dd>A parsed query is not executable until binding and planning succeed.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="planner_optimizer">
           <h3>Planner And Optimizer</h3>
@@ -188,7 +270,7 @@
             <dt>Boundary</dt><dd>Optimization must not change query meaning.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="vectorized_execution_engine">
           <h3>Vectorized Execution Engine</h3>
@@ -199,7 +281,7 @@
             <dt>Boundary</dt><dd>Execution depends on valid plan, memory, transaction, and storage state.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="storage_transaction_layer">
           <h3>Storage And Transaction Layer</h3>
@@ -210,7 +292,7 @@
             <dt>Boundary</dt><dd>Storage behavior is valid only within transaction rules.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="extension_system">
           <h3>Extension System</h3>
@@ -221,7 +303,7 @@
             <dt>Boundary</dt><dd>Extensions expand behavior but must respect engine compatibility and load policy.</dd>
           </dl>
         </article>
-        
+
 
         <article class="card" id="quality_compatibility_loop">
           <h3>Quality And Compatibility Loop</h3>

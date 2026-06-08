@@ -39,6 +39,7 @@ Blueprint review:
 - The root report now includes 11 source-backed blueprint sections.
 - Covered flows: build/config, boot/init, process scheduler, syscall boundary, memory, VFS/block IO, networking, driver model/probe, LSM security hooks, modules/BPF/tracing, and Rust integration.
 - Each blueprint section lists source evidence, operational flow steps, control points, review questions, and known gaps.
+- The root report now includes coverage, evidence, gap, and action registers before the visual maps, so reviewers can inspect proof and next actions before drilling into the 11 blueprint flows.
 - The report should feel like a wall blueprint: root atlas first, subsystem map second, source-backed operational paths third.
 
 Known boundary:

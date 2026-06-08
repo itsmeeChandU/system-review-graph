@@ -104,6 +104,8 @@
     }
   ],
   "bigger_picture": "This example shows how a team can explain a complex system without exposing private databases. The system collects safe source summaries, stores evidence contracts, recommends actions, blocks risky operations behind human review, captures outcomes, and turns lessons into better rules.",
+  "blueprint_sections": [],
+  "child_maps": [],
   "current_truth": {
     "actions_allowed_without_human": 4,
     "actions_requiring_human_review": 8,
@@ -459,7 +461,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T19:54:22+00:00",
+  "generated_at": "2026-06-08T20:57:31+00:00",
   "known_boundaries": [
     "This report explains architecture and system behavior; it does not prove production correctness.",
     "Sanitized examples must not be treated as real data.",
