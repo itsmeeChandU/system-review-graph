@@ -459,7 +459,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T19:36:11+00:00",
+  "generated_at": "2026-06-08T19:54:22+00:00",
   "known_boundaries": [
     "This report explains architecture and system behavior; it does not prove production correctness.",
     "Sanitized examples must not be treated as real data.",

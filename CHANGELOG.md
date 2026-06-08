@@ -2,6 +2,22 @@
 
 All notable changes to System Review Graph are documented here.
 
+## 0.2.0 - 2026-06-08
+
+Roadmap completion release.
+
+Added:
+
+- README Mermaid visualizations.
+- HTML report output.
+- Graphviz DOT output.
+- JSON Schema for manifests.
+- Stronger validation for duplicate IDs and unresolved explicit graph edges.
+- `doctor` command for manifest quality checks.
+- `scan` command for mixed-language starter manifests.
+- Starter language detection for C, C++, Java, C#, Python, JavaScript/TypeScript, Go, and Rust.
+- Generated HTML and DOT outputs for all bundled examples.
+
 ## 0.1.0 - 2026-06-08
 
 Initial public release.

@@ -13,6 +13,7 @@ It turns a public or sanitized manifest into:
 - decision-gate documentation,
 - schema and artifact references,
 - walkthrough examples for reviewers, maintainers, and AI agents.
+- optional HTML and Graphviz DOT outputs.
 
 This project is meant for open-source maintainers, platform teams, audit teams, AI coding agents, and new engineers who need to understand a repo as an operating system rather than a pile of files.
 
@@ -70,16 +71,60 @@ Use code as evidence, but not the only evidence:
 
 Read more in [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
 
+## What It Looks Like
+
+Lifecycle map:
+
+```mermaid
+flowchart LR
+  source["Source / repo surface"]
+  artifact["Artifact"]
+  schema["Schema / contract"]
+  system["System / subsystem"]
+  workflow["Workflow step"]
+  gate{"Decision gate"}
+  output["Output / report"]
+  question["Review question"]
+  source --> artifact --> schema --> system --> workflow --> gate --> output --> question
+```
+
+Artifact and schema expansion:
+
+```mermaid
+flowchart LR
+  frontend["Frontend System"] --> route["Route/API Artifact"]
+  backend["Backend Service"] --> queue["Queue Artifact"]
+  data["Data Layer"] --> table["Table/View Artifact"]
+  route --> request["Request Contract"]
+  queue --> event["Event Contract"]
+  table --> fact["Fact Contract"]
+```
+
+Gate map:
+
+```mermaid
+flowchart LR
+  confidence{"Confidence Gate"} --> advance["advance"]
+  confidence --> wait["wait"]
+  confidence --> reject["reject"]
+  human{"Human Review Gate"} --> approve["approved"]
+  human --> block["blocked"]
+  human --> review["needs review"]
+```
+
 ## Quick Start
 
 ```bash
 python -m pip install -e .
 system-review-graph list-examples
 system-review-graph validate --manifest examples/fictional_ai_ops/system_review_manifest.json
+system-review-graph doctor --manifest examples/fictional_ai_ops/system_review_manifest.json
 system-review-graph build \
   --manifest examples/fictional_ai_ops/system_review_manifest.json \
   --out-dir examples/fictional_ai_ops/reports \
-  --depth deep
+  --depth deep \
+  --html \
+  --dot
 ```
 
 Open:
@@ -104,6 +149,20 @@ system-review-graph init-example \
   --out-dir /tmp/duckdb-system-review \
   --force
 ```
+
+Generate a starter manifest from any local repo:
+
+```bash
+system-review-graph scan \
+  --repo /path/to/repo \
+  --out /tmp/system_review_manifest.json \
+  --title "My Project System Review Graph"
+```
+
+The scanner supports mixed-language repositories. It detects starter surfaces
+for C, C++, Java, C#, Python, JavaScript/TypeScript, Go, Rust, docs, tests, and
+common build/config files. Scanner output is intentionally marked as inferred;
+it is a starting map, not proof of runtime behavior.
 
 ## Example Gallery
 
@@ -194,6 +253,29 @@ Companies often cannot publish database schemas, architecture details, or source
 
 The goal is not to leak the system. The goal is to explain the system.
 
+## Outputs
+
+`build` always writes:
+
+```text
+system_review_graph.json
+system_review_graph.md
+```
+
+Optional:
+
+```bash
+system-review-graph build --manifest system_review_manifest.json --out-dir reports --html
+system-review-graph build --manifest system_review_manifest.json --out-dir reports --dot
+```
+
+Optional files:
+
+```text
+system_review_graph.html
+system_review_graph.dot
+```
+
 ## Repository Layout
 
 ```text
@@ -227,6 +309,7 @@ examples/
 | [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | Explains code map vs system map and the review methodology. |
 | [`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md) | Step-by-step usage walkthrough. |
 | [`docs/SCHEMA.md`](docs/SCHEMA.md) | Manifest fields and depth options. |
+| [`docs/schema/system_review_manifest.schema.json`](docs/schema/system_review_manifest.schema.json) | JSON Schema for editor/tool validation. |
 | [`docs/ARCHITECTURE_PATTERNS.md`](docs/ARCHITECTURE_PATTERNS.md) | How different system shapes map into the manifest. |
 | [`docs/OPEN_SOURCE_LAUNCH.md`](docs/OPEN_SOURCE_LAUNCH.md) | How to make the repo findable and launch it publicly. |
 | [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md) | Build, verify, and publish package instructions. |

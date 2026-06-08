@@ -1,6 +1,6 @@
 # Fictional AI Ops System Review Graph
 
-Generated: `2026-06-08T19:36:11+00:00`
+Generated: `2026-06-08T19:54:22+00:00`
 Scope: A fictional public-safe AI operations system used as an open-source example.
 One line: Code-review graph shows the files; this system-review graph shows how evidence becomes recommended action, outcome, and lesson.
 Depth: `deep`

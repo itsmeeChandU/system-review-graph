@@ -1,6 +1,6 @@
 # OpenTelemetry Collector Public Repo System Review Graph
 
-Generated: `2026-06-08T19:36:11+00:00`
+Generated: `2026-06-08T19:54:22+00:00`
 Scope: A public-safe system map of the OpenTelemetry Collector open-source repository based on public source directories and documentation.
 One line: The OpenTelemetry Collector routes telemetry through configurable receivers, processors, connectors, extensions, and exporters.
 Depth: `deep`

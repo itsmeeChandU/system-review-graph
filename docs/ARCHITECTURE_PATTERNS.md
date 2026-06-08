@@ -12,6 +12,23 @@ Map:
 - validation and CI -> decision gates,
 - examples -> walkthroughs.
 
+## Mixed-Language Repository
+
+Map:
+
+- C/C++ build surfaces such as `CMakeLists.txt`, `Makefile`, `src/`, `include/` -> systems/artifacts,
+- Java build surfaces such as `pom.xml`, `build.gradle`, `src/main/java` -> systems/artifacts,
+- C#/.NET surfaces such as `.sln`, `.csproj`, `Directory.Build.props` -> systems/artifacts,
+- Python surfaces such as `pyproject.toml`, `src/`, package modules -> systems/artifacts,
+- JavaScript/TypeScript surfaces such as `package.json`, `tsconfig.json`, app directories -> systems/artifacts,
+- Go surfaces such as `go.mod`, packages, commands -> systems/artifacts,
+- Rust surfaces such as `Cargo.toml`, crates, modules -> systems/artifacts,
+- docs/tests/configs -> evidence artifacts,
+- maintainer review -> decision gate.
+
+The built-in `scan` command detects broad language/build/test/doc surfaces and
+creates a starter manifest. It does not claim to prove runtime behavior.
+
 ## Web Application
 
 Map:

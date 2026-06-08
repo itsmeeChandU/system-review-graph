@@ -96,7 +96,50 @@ If you cannot expose internals:
 
 The report should teach the architecture without leaking the company.
 
-## 6. Try Actual Public Repos
+## 6. Check Report Quality
+
+Run:
+
+```bash
+system-review-graph doctor --manifest examples/fictional_ai_ops/system_review_manifest.json
+```
+
+The doctor command reports missing boundaries, shallow workflows, unresolved
+references, and missing review/audit surfaces.
+
+## 7. Generate HTML Or DOT
+
+```bash
+system-review-graph build \
+  --manifest examples/actual_repos/fastapi/system_review_manifest.json \
+  --out-dir /tmp/fastapi-system-review \
+  --depth deep \
+  --html \
+  --dot
+```
+
+Outputs:
+
+```text
+system_review_graph.md
+system_review_graph.json
+system_review_graph.html
+system_review_graph.dot
+```
+
+## 8. Scan A Mixed-Language Repo
+
+```bash
+system-review-graph scan \
+  --repo /path/to/repo \
+  --out /tmp/system_review_manifest.json
+```
+
+The scanner detects starter surfaces for C, C++, Java, C#, Python,
+JavaScript/TypeScript, Go, Rust, docs, tests, and common build/config files.
+It is a starting point, not a proof of runtime behavior.
+
+## 9. Try Actual Public Repos
 
 The `examples/actual_repos/` folder contains public-review manifests for real
 open-source repositories. They are educational maps, not official maintainer

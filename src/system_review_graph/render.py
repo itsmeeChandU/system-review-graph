@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from html import escape
 
 from system_review_graph.models import SystemReviewGraph
 
@@ -161,6 +162,161 @@ def render_mermaid(graph: SystemReviewGraph) -> str:
             f'  {source}["{source_label}"] -- "{label}" --> {target}["{target_label}"]'
         )
     return "\n".join(lines)
+
+
+def render_graphviz_dot(graph: SystemReviewGraph) -> str:
+    """Render the relationship graph as Graphviz DOT."""
+
+    labels = _label_map(graph)
+    lines = [
+        "digraph system_review_graph {",
+        "  rankdir=LR;",
+        '  graph [fontname="Helvetica"];',
+        '  node [shape=box, style="rounded", fontname="Helvetica"];',
+        '  edge [fontname="Helvetica"];',
+    ]
+    for edge in graph.edges:
+        source = _node_id(edge.source)
+        target = _node_id(edge.target)
+        source_label = labels.get(edge.source, edge.source).replace('"', "'")
+        target_label = labels.get(edge.target, edge.target).replace('"', "'")
+        relation = _relation(edge.relation).replace('"', "'")
+        lines.append(f'  {source} [label="{source_label}"];')
+        lines.append(f'  {target} [label="{target_label}"];')
+        lines.append(f'  {source} -> {target} [label="{relation}"];')
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
+    """Render a standalone HTML report with Mermaid diagrams."""
+
+    if depth not in REPORT_DEPTHS:
+        raise ValueError(f"depth must be one of: {', '.join(sorted(REPORT_DEPTHS))}")
+    source_links = "\n".join(
+        f'<li><a href="{escape(source.get("url", ""))}">{escape(source.get("label", ""))}</a>'
+        f' - {escape(source.get("notes", ""))}</li>'
+        for source in graph.source_links
+    )
+    system_cards = "\n".join(
+        f"""
+        <article class="card" id="{escape(system.system_id)}">
+          <h3>{escape(system.name)}</h3>
+          <p>{escape(system.purpose)}</p>
+          <dl>
+            <dt>Architecture</dt><dd>{escape(system.architecture_style)}</dd>
+            <dt>Lifecycle</dt><dd>{escape(system.lifecycle)}</dd>
+            <dt>Boundary</dt><dd>{escape(system.truth_boundary)}</dd>
+          </dl>
+        </article>
+        """
+        for system in graph.systems
+    )
+    review_questions = "\n".join(f"<li>{escape(item)}</li>" for item in graph.review_questions)
+    artifact_map = (
+        f"""
+        <section>
+          <h2>Artifact And Schema Map</h2>
+          <pre class="mermaid">{escape(render_artifact_mermaid(graph))}</pre>
+        </section>
+        <section>
+          <h2>Gate Map</h2>
+          <pre class="mermaid">{escape(render_gate_mermaid(graph))}</pre>
+        </section>
+        """
+        if depth in {"standard", "deep"}
+        else ""
+    )
+    relationship_graph = (
+        f"""
+        <section>
+          <h2>Relationship Graph</h2>
+          <pre class="mermaid">{escape(render_mermaid(graph))}</pre>
+        </section>
+        """
+        if depth == "deep"
+        else ""
+    )
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{escape(graph.title)}</title>
+  <style>
+    body {{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      margin: 0;
+      color: #18202a;
+      background: #f8fafc;
+    }}
+    header {{ padding: 40px 32px; background: #172033; color: white; }}
+    main {{ max-width: 1120px; margin: 0 auto; padding: 28px; }}
+    section {{
+      margin: 24px 0;
+      padding: 24px;
+      background: white;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+    }}
+    h1, h2, h3 {{ line-height: 1.2; }}
+    code, pre {{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }}
+    .meta {{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }}
+    .pill {{ padding: 6px 10px; border: 1px solid rgba(255,255,255,.32); border-radius: 999px; }}
+    .grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }}
+    .card {{ padding: 18px; border: 1px solid #dbe3ee; border-radius: 10px; background: #fbfdff; }}
+    dt {{ font-weight: 700; margin-top: 10px; }}
+    dd {{ margin-left: 0; color: #465466; }}
+    a {{ color: #1456cc; }}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{escape(graph.title)}</h1>
+    <p>{escape(graph.one_line)}</p>
+    <div class="meta">
+      <span class="pill">Depth: {escape(depth)}</span>
+      <span class="pill">Systems: {len(graph.systems)}</span>
+      <span class="pill">Artifacts: {len(graph.artifacts)}</span>
+      <span class="pill">Gates: {len(graph.gates)}</span>
+      <span class="pill">Workflows: {len(graph.workflows)}</span>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>Bigger Picture</h2>
+      <p>{escape(graph.bigger_picture)}</p>
+    </section>
+    <section>
+      <h2>Source Links</h2>
+      <ul>{source_links}</ul>
+    </section>
+    <section>
+      <h2>Lifecycle Map</h2>
+      <pre class="mermaid">{escape(render_lifecycle_mermaid(graph))}</pre>
+    </section>
+    {artifact_map}
+    {relationship_graph}
+    <section>
+      <h2>Systems</h2>
+      <div class="grid">{system_cards}</div>
+    </section>
+    <section>
+      <h2>Review Questions</h2>
+      <ul>{review_questions}</ul>
+    </section>
+  </main>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({{ startOnLoad: true, securityLevel: 'strict' }});
+  </script>
+</body>
+</html>
+"""
 
 
 def _add_visuals(lines: list[str], graph: SystemReviewGraph, depth: str) -> None:

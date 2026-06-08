@@ -71,3 +71,23 @@ def test_validation_catches_unknown_references():
     errors = validate_manifest(manifest)
 
     assert "systems[0] references unknown artifact missing_artifact" in errors
+
+
+def test_validation_catches_duplicates_and_bad_edges():
+    manifest = {
+        "title": "Broken",
+        "systems": [
+            {"system_id": "system", "name": "System", "purpose": "One"},
+            {"system_id": "system", "name": "System Copy", "purpose": "Duplicate"},
+        ],
+        "artifacts": [],
+        "schemas": [],
+        "decision_gates": [],
+        "workflows": [],
+        "edges": [{"source": "system", "target": "missing", "relation": "points_to"}],
+    }
+
+    errors = validate_manifest(manifest)
+
+    assert "duplicate system_id: system" in errors
+    assert "edges[0] references unknown target node missing" in errors

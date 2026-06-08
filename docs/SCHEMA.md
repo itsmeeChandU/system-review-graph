@@ -177,3 +177,13 @@ system-review-graph build --manifest system_review_manifest.json --out-dir repor
 
 `deep` reports add relationship graphs, schema examples, and per-system
 artifact/gate/workflow expansion.
+
+## JSON Schema
+
+A machine-readable JSON Schema is available at:
+
+```text
+docs/schema/system_review_manifest.schema.json
+```
+
+Use it in editors, CI checks, or external tooling.

@@ -28,12 +28,16 @@ def test_cli_build_example(tmp_path):
             str(tmp_path),
             "--depth",
             "overview",
+            "--html",
+            "--dot",
         ]
     )
 
     assert exit_code == 0
     assert (tmp_path / "system_review_graph.json").exists()
     assert (tmp_path / "system_review_graph.md").exists()
+    assert (tmp_path / "system_review_graph.html").exists()
+    assert (tmp_path / "system_review_graph.dot").exists()
     assert "Depth: `overview`" in (tmp_path / "system_review_graph.md").read_text()
 
 
@@ -62,3 +66,29 @@ def test_cli_list_examples(capsys):
     assert exit_code == 0
     assert "fictional_ai_ops" in captured.out
     assert "actual_repos/duckdb" in captured.out
+
+
+def test_cli_doctor(capsys):
+    exit_code = main(
+        [
+            "doctor",
+            "--manifest",
+            "examples/fictional_ai_ops/system_review_manifest.json",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "doctor" in captured.out
+
+
+def test_cli_scan(tmp_path):
+    manifest = tmp_path / "starter_manifest.json"
+
+    exit_code = main(["scan", "--repo", ".", "--out", str(manifest)])
+
+    assert exit_code == 0
+    text = manifest.read_text()
+    assert "Python Surface" in text
+    assert "system_review_manifest.json" in text

@@ -7,8 +7,15 @@ import shutil
 from pathlib import Path
 
 from system_review_graph.builder import build_system_review
+from system_review_graph.doctor import doctor_manifest, format_doctor_findings
 from system_review_graph.io import read_json, write_json
-from system_review_graph.render import REPORT_DEPTHS, render_markdown
+from system_review_graph.render import (
+    REPORT_DEPTHS,
+    render_graphviz_dot,
+    render_html,
+    render_markdown,
+)
+from system_review_graph.scanner import scan_repository
 from system_review_graph.serialize import to_dict
 from system_review_graph.validate import validate_manifest
 
@@ -40,6 +47,16 @@ def _build(args: argparse.Namespace) -> int:
         render_markdown(graph, depth=args.depth),
         encoding="utf-8",
     )
+    if args.html:
+        (out_dir / "system_review_graph.html").write_text(
+            render_html(graph, depth=args.depth),
+            encoding="utf-8",
+        )
+    if args.dot:
+        (out_dir / "system_review_graph.dot").write_text(
+            render_graphviz_dot(graph),
+            encoding="utf-8",
+        )
     print(out_dir / "system_review_graph.md")
     return 0
 
@@ -80,6 +97,20 @@ def _list_examples(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _doctor(args: argparse.Namespace) -> int:
+    findings = doctor_manifest(read_json(Path(args.manifest)))
+    print(format_doctor_findings(findings))
+    return 1 if any(finding["severity"] == "error" for finding in findings) else 0
+
+
+def _scan(args: argparse.Namespace) -> int:
+    manifest = scan_repository(Path(args.repo), title=args.title, file_limit=args.file_limit)
+    output = Path(args.out)
+    write_json(output, manifest)
+    print(output)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="system-review-graph",
@@ -96,6 +127,8 @@ def main(argv: list[str] | None = None) -> int:
         default="deep",
         help="Report detail level",
     )
+    build.add_argument("--html", action="store_true", help="Also write system_review_graph.html")
+    build.add_argument("--dot", action="store_true", help="Also write system_review_graph.dot")
     build.set_defaults(func=_build)
 
     validate = sub.add_parser("validate", help="Validate a manifest")
@@ -110,6 +143,17 @@ def main(argv: list[str] | None = None) -> int:
 
     list_examples = sub.add_parser("list-examples", help="List bundled starter manifests")
     list_examples.set_defaults(func=_list_examples)
+
+    doctor = sub.add_parser("doctor", help="Check manifest quality and audit readiness")
+    doctor.add_argument("--manifest", required=True)
+    doctor.set_defaults(func=_doctor)
+
+    scan = sub.add_parser("scan", help="Generate a starter manifest from a repository")
+    scan.add_argument("--repo", default=".")
+    scan.add_argument("--out", required=True)
+    scan.add_argument("--title")
+    scan.add_argument("--file-limit", type=int, default=6000)
+    scan.set_defaults(func=_scan)
 
     args = parser.parse_args(argv)
     return int(args.func(args))

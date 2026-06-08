@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/itsmeeChandU/system-review-graph/schema/system_review_manifest.schema.json",
+  "title": "System Review Graph Manifest",
+  "type": "object",
+  "required": ["title", "systems", "artifacts", "schemas", "decision_gates", "workflows"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "one_line": { "type": "string" },
+    "scope": { "type": "string" },
+    "bigger_picture": { "type": "string" },
+    "current_truth": { "type": "object" },
+    "source_links": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/source_link" }
+    },
+    "schemas": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/schema_contract" }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "decision_gates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/decision_gate" }
+    },
+    "systems": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/system" }
+    },
+    "workflows": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/workflow_step" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "architecture_patterns": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "walkthroughs": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "review_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rebuild_recipe": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "known_boundaries": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "source_link": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "url": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "schema_contract": {
+      "type": "object",
+      "required": ["name", "kind", "required_fields"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string" },
+        "required_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "purpose": { "type": "string" },
+        "example": { "type": "object" },
+        "privacy_notes": { "type": "string" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["artifact_id", "name", "kind"],
+      "properties": {
+        "artifact_id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "kind": { "type": "string" },
+        "path": { "type": "string" },
+        "owner": { "type": "string" },
+        "schema": { "type": "string" },
+        "purpose": { "type": "string" },
+        "redaction": { "type": "string" }
+      }
+    },
+    "decision_gate": {
+      "type": "object",
+      "required": ["gate_id", "name", "inputs", "outputs", "rules"],
+      "properties": {
+        "gate_id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "inputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rules": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "human_gate": { "type": "boolean" },
+        "risk_boundary": { "type": "string" }
+      }
+    },
+    "system": {
+      "type": "object",
+      "required": ["system_id", "name", "purpose"],
+      "properties": {
+        "system_id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "purpose": { "type": "string" },
+        "owner": { "type": "string" },
+        "language_stack": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "architecture_style": { "type": "string" },
+        "lifecycle": { "type": "string" },
+        "code_surfaces": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "artifacts": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "decision_gates": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "truth_boundary": { "type": "string" },
+        "ideal_target": { "type": "string" },
+        "example": { "type": "object" }
+      }
+    },
+    "workflow_step": {
+      "type": "object",
+      "required": ["step_id", "name", "actor"],
+      "properties": {
+        "step_id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "actor": { "type": "string" },
+        "consumes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "produces": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "gates": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "next_steps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "purpose": { "type": "string" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["source", "target", "relation"],
+      "properties": {
+        "source": { "type": "string" },
+        "target": { "type": "string" },
+        "relation": { "type": "string" },
+        "why": { "type": "string" }
+      }
+    }
+  }
+}

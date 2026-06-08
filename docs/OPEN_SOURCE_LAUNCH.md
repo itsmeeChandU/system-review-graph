@@ -54,6 +54,8 @@ system-review
 - A release tag exists.
 - GitHub topics are set.
 - PyPI name is checked before publishing.
+- README includes visual examples.
+- Wheel install smoke test passes.
 
 ## Where To Share
 

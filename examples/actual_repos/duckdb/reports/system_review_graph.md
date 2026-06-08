@@ -1,6 +1,6 @@
 # DuckDB Public Repo System Review Graph
 
-Generated: `2026-06-08T19:36:11+00:00`
+Generated: `2026-06-08T19:54:22+00:00`
 Scope: A public-safe system map of the DuckDB open-source repository based on public source directories and documentation.
 One line: DuckDB turns SQL and local data access into vectorized analytical execution inside an embedded database engine.
 Depth: `deep`

@@ -520,7 +520,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T19:36:11+00:00",
+  "generated_at": "2026-06-08T19:54:22+00:00",
   "known_boundaries": [
     "This is a public educational map, not an official DuckDB maintainer audit.",
     "It maps high-level engine layers and public source paths, not every operator or internal invariant.",
