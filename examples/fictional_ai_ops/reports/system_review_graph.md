@@ -1,8 +1,9 @@
 # Fictional AI Ops System Review Graph
 
-Generated: `2026-06-08T19:26:51+00:00`
+Generated: `2026-06-08T19:36:11+00:00`
 Scope: A fictional public-safe AI operations system used as an open-source example.
 One line: Code-review graph shows the files; this system-review graph shows how evidence becomes recommended action, outcome, and lesson.
+Depth: `deep`
 
 ## Bigger Picture
 
@@ -33,6 +34,60 @@ flowchart LR
   route_action --> capture_outcome["Capture Outcome"]
   capture_outcome --> learn_from_outcome["Learn From Outcome"]
   learn_from_outcome --> score_recommendations["Score Recommendations"]
+```
+
+## Artifact And Schema Map
+
+```mermaid
+flowchart LR
+  system_source_mesh["Source Mesh"]
+  system_source_mesh --> artifact_source_rollup_api["Source Rollup API"]
+  artifact_source_rollup_api --> schema_SourceEnvelope["SourceEnvelope"]
+  system_evidence_core["Evidence Core"]
+  system_evidence_core --> artifact_evidence_graph["Evidence Graph"]
+  artifact_evidence_graph --> schema_EvidenceFact["EvidenceFact"]
+  system_recommendation_engine["Recommendation Engine"]
+  system_recommendation_engine --> artifact_recommendation_report["Recommendation Report"]
+  artifact_recommendation_report --> schema_RecommendationCard["RecommendationCard"]
+  system_action_engine["Action Engine"]
+  system_action_engine --> artifact_action_queue["Action Queue"]
+  artifact_action_queue --> schema_ActionIntent["ActionIntent"]
+  system_outcome_learning_loop["Outcome Learning Loop"]
+  system_outcome_learning_loop --> artifact_outcome_ledger["Outcome Ledger"]
+  artifact_outcome_ledger --> schema_OutcomeRecord["OutcomeRecord"]
+  system_outcome_learning_loop --> artifact_lesson_registry["Lesson Registry"]
+  artifact_lesson_registry --> schema_LessonRecord["LessonRecord"]
+  system_operator_ui["Operator UI"]
+  system_operator_ui --> artifact_operator_console["Operator Console"]
+  artifact_operator_console --> schema_ActionIntent["ActionIntent"]
+```
+
+## Gate Map
+
+```mermaid
+flowchart LR
+  gate_source_rights_gate{"Source Rights Gate"}
+  gate_source_rights_gate --> out_source_rights_gate_internal_only["internal_only"]
+  gate_source_rights_gate --> out_source_rights_gate_safe_to_use["safe_to_use"]
+  gate_source_rights_gate --> out_source_rights_gate_blocked["blocked"]
+  gate_recommendation_confidence_gate{"Recommendation Confidence Gate"}
+  gate_recommendation_confidence_gate --> out_recommendation_confidence_gate_advance["advance"]
+  gate_recommendation_confidence_gate --> out_recommendation_confidence_gate_wait["wait"]
+  gate_recommendation_confidence_gate --> out_recommendation_confidence_gate_reject["reject"]
+  gate_human_action_gate{"Human Action Gate"}
+  gate_human_action_gate --> out_human_action_gate_approved["approved"]
+  gate_human_action_gate --> out_human_action_gate_blocked["blocked"]
+  gate_human_action_gate --> out_human_action_gate_needs_review["needs_review"]
+  gate_lesson_promotion_gate{"Lesson Promotion Gate"}
+  gate_lesson_promotion_gate --> out_lesson_promotion_gate_promote["promote"]
+  gate_lesson_promotion_gate --> out_lesson_promotion_gate_park["park"]
+  gate_lesson_promotion_gate --> out_lesson_promotion_gate_kill["kill"]
+  gate_source_rights_gate{"Source Rights Gate"} --> step_load_sources["Load Sources"]
+  gate_source_rights_gate{"Source Rights Gate"} --> step_write_evidence["Write Evidence"]
+  gate_recommendation_confidence_gate{"Recommendation Confidence Gate"} --> step_score_recommendations["Score Recommendations"]
+  gate_human_action_gate{"Human Action Gate"} --> step_route_action["Route Action"]
+  gate_human_action_gate{"Human Action Gate"} --> step_capture_outcome["Capture Outcome"]
+  gate_lesson_promotion_gate{"Lesson Promotion Gate"} --> step_learn_from_outcome["Learn From Outcome"]
 ```
 
 ## Relationship Graph
@@ -79,6 +134,17 @@ flowchart TD
   learn_from_outcome["Learn From Outcome"] -- "routes to" --> score_recommendations["Score Recommendations"]
 ```
 
+## Expansion Index
+
+| Level | Use It To Answer | Report Section |
+|---|---|---|
+| 0. Situation | What is true now? | Current Truth |
+| 1. Flow | How does the system move end to end? | Lifecycle Map |
+| 2. Ownership | Which subsystem owns which artifact? | Artifact And Schema Map |
+| 3. Control | Which rules advance, wait, or block? | Gate Map |
+| 4. Implementation | Which files, APIs, docs, or outputs should I inspect? | System Details |
+| 5. Audit | What should an external reviewer ask next? | Review Questions |
+
 ## Systems
 
 | System | Owner | Stack | Architecture | Lifecycle | Boundary | Ideal Target |
@@ -101,6 +167,25 @@ flowchart TD
 - Boundary: Source summaries are not product claims.
 - Ideal target: Every source has freshness, rights, and retry metadata.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Source Rollup API | api | SourceEnvelope | GET /internal/source-rollups | Returns sanitized source summaries. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Source Rights Gate | SourceEnvelope.rights_status | internal_only, safe_to_use, blocked | No downstream product or public claim uses a source unless rights are clear. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Load Sources | Source Mesh | external_public_sources, private_internal_sources | source_rollup_api | source_rights_gate |
+| Write Evidence | Evidence Core | source_rollup_api | evidence_graph | source_rights_gate |
+
 ### Evidence Core
 
 - Purpose: Stores facts, relationships, and reasoning traces used by recommendations.
@@ -109,6 +194,19 @@ flowchart TD
 - Decision gates: `none`
 - Boundary: Database remains private; public report exposes only schema and examples.
 - Ideal target: Every recommendation can trace back to facts and sources.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Evidence Graph | private_database | EvidenceFact | private://evidence_graph | Canonical internal evidence store. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Write Evidence | Evidence Core | source_rollup_api | evidence_graph | source_rights_gate |
+| Score Recommendations | Recommendation Engine | evidence_graph | recommendation_report | recommendation_confidence_gate |
 
 ### Recommendation Engine
 
@@ -119,6 +217,25 @@ flowchart TD
 - Boundary: A recommendation is not an executed action.
 - Ideal target: Every recommendation has evidence, confidence, failure modes, and next action.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Recommendation Report | json_report | RecommendationCard | reports/recommendations.json | Reviewable recommendation cards. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Recommendation Confidence Gate | RecommendationCard.confidence, RecommendationCard.evidence_refs | advance, wait, reject | Weak or ungrounded recommendations cannot become action intents. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Score Recommendations | Recommendation Engine | evidence_graph | recommendation_report | recommendation_confidence_gate |
+| Route Action | Action Engine | recommendation_report | action_queue | human_action_gate |
+
 ### Action Engine
 
 - Purpose: Routes approved recommendations into bounded action intents.
@@ -127,6 +244,25 @@ flowchart TD
 - Decision gates: `human_action_gate`
 - Boundary: Restricted actions require approval before execution.
 - Ideal target: Every action intent has an outcome slot.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Action Queue | queue | ActionIntent | queue://action-intents | Downstream actions waiting for execution or review. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Human Action Gate | ActionIntent.action_type, RecommendationCard.risk_level | approved, blocked, needs_review | External sends, money movement, deletion, legal claims, and user-visible changes need approval. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Route Action | Action Engine | recommendation_report | action_queue | human_action_gate |
+| Capture Outcome | Outcome Worker | action_queue | outcome_ledger | human_action_gate |
 
 ### Outcome Learning Loop
 
@@ -137,6 +273,26 @@ flowchart TD
 - Boundary: A lesson does not change future behavior until promotion is validated.
 - Ideal target: Knowledge becomes wisdom through observed outcomes.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Outcome Ledger | jsonl_ledger | OutcomeRecord | reports/outcomes.jsonl | Reality feedback from executed or skipped actions. |
+| Lesson Registry | jsonl_ledger | LessonRecord | reports/lessons.jsonl | Validated lessons and parked rule changes. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Lesson Promotion Gate | OutcomeRecord.result, LessonRecord.rule_change_status | promote, park, kill | One good outcome is not enough to change future system behavior. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Capture Outcome | Outcome Worker | action_queue | outcome_ledger | human_action_gate |
+| Learn From Outcome | Research Worker | outcome_ledger | lesson_registry | lesson_promotion_gate |
+
 ### Operator UI
 
 - Purpose: Shows recommendations, approvals, outcomes, and lessons without owning truth.
@@ -145,6 +301,25 @@ flowchart TD
 - Decision gates: `human_action_gate`
 - Boundary: UI reads canonical reports and requests actions; it does not invent truth.
 - Ideal target: Operator can run the day from one evidence-backed control room.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Operator Console | ui | ActionIntent | app://operator | Shows recommendations, blockers, approvals, outcomes, and lessons. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Human Action Gate | ActionIntent.action_type, RecommendationCard.risk_level | approved, blocked, needs_review | External sends, money movement, deletion, legal claims, and user-visible changes need approval. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Route Action | Action Engine | recommendation_report | action_queue | human_action_gate |
+| Capture Outcome | Outcome Worker | action_queue | outcome_ledger | human_action_gate |
 
 ## Artifacts
 
@@ -163,6 +338,19 @@ flowchart TD
 | Name | Kind | Required Fields | Privacy Notes | Purpose |
 |---|---|---|---|---|
 | SourceEnvelope | sanitized_event | source_id, observed_at, source_type, summary, rights_status | Raw source bodies and credentials are never included. | Describes a source observation without exposing raw vendor payloads. |
+
+Example `SourceEnvelope`:
+
+```json
+{
+  "observed_at": "2026-06-08T14:00:00Z",
+  "rights_status": "internal_review",
+  "source_id": "support_summary",
+  "source_type": "ticket_rollup",
+  "summary": "12 tickets mention billing delay"
+}
+```
+
 | EvidenceFact | graph_fact | fact_id, subject, kind, payload, valid_at, source_ref | Payload should be redacted or fake in public examples. | Stores traceable evidence used by recommendations. |
 | RecommendationCard | decision_input | recommendation_id, subject, confidence, reason, evidence_refs, risk_level |  | Explains why the system recommends an action. |
 | ActionIntent | downstream_action | action_id, recommendation_id, action_type, human_gate_required, status |  | Represents a proposed action before execution. |

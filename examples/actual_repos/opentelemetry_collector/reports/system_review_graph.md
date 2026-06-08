@@ -1,8 +1,9 @@
 # OpenTelemetry Collector Public Repo System Review Graph
 
-Generated: `2026-06-08T19:26:52+00:00`
+Generated: `2026-06-08T19:36:11+00:00`
 Scope: A public-safe system map of the OpenTelemetry Collector open-source repository based on public source directories and documentation.
 One line: The OpenTelemetry Collector routes telemetry through configurable receivers, processors, connectors, extensions, and exporters.
+Depth: `deep`
 
 ## Bigger Picture
 
@@ -40,6 +41,61 @@ flowchart LR
   receive_telemetry --> process_telemetry["Process Telemetry"]
   process_telemetry --> route_or_export["Route Or Export"]
   route_or_export --> observe_collector["Observe Collector"]
+```
+
+## Artifact And Schema Map
+
+```mermaid
+flowchart LR
+  system_configuration_system["Configuration System"]
+  system_configuration_system --> artifact_confmap_tree["Configuration Map Tree"]
+  artifact_confmap_tree --> schema_CollectorConfig["CollectorConfig"]
+  system_configuration_system --> artifact_service_tree["Service Tree"]
+  artifact_service_tree --> schema_CollectorConfig["CollectorConfig"]
+  system_receiver_layer["Receiver Layer"]
+  system_receiver_layer --> artifact_receiver_tree["Receiver Tree"]
+  artifact_receiver_tree --> schema_ReceiverContract["ReceiverContract"]
+  system_processor_layer["Processor Layer"]
+  system_processor_layer --> artifact_processor_tree["Processor Tree"]
+  artifact_processor_tree --> schema_ProcessorContract["ProcessorContract"]
+  system_connector_extension_layer["Connector And Extension Layer"]
+  system_connector_extension_layer --> artifact_connector_tree["Connector Tree"]
+  artifact_connector_tree --> schema_TelemetryBatch["TelemetryBatch"]
+  system_connector_extension_layer --> artifact_extension_tree["Extension Tree"]
+  artifact_extension_tree --> schema_ComponentStatus["ComponentStatus"]
+  system_exporter_layer["Exporter Layer"]
+  system_exporter_layer --> artifact_exporter_tree["Exporter Tree"]
+  artifact_exporter_tree --> schema_ExporterContract["ExporterContract"]
+  system_service_orchestrator["Service Orchestrator"]
+  system_service_orchestrator --> artifact_service_tree["Service Tree"]
+  artifact_service_tree --> schema_CollectorConfig["CollectorConfig"]
+  system_service_orchestrator --> artifact_docs_tree["Docs Tree"]
+  artifact_docs_tree --> schema_CollectorConfig["CollectorConfig"]
+```
+
+## Gate Map
+
+```mermaid
+flowchart LR
+  gate_config_validation_gate{"Configuration Validation Gate"}
+  gate_config_validation_gate --> out_config_validation_gate_valid_config["valid_config"]
+  gate_config_validation_gate --> out_config_validation_gate_config_error["config_error"]
+  gate_component_lifecycle_gate{"Component Lifecycle Gate"}
+  gate_component_lifecycle_gate --> out_component_lifecycle_gate_component_started["component_started"]
+  gate_component_lifecycle_gate --> out_component_lifecycle_gate_component_failed["component_failed"]
+  gate_backpressure_gate{"Backpressure And Memory Gate"}
+  gate_backpressure_gate --> out_backpressure_gate_accept_batch["accept_batch"]
+  gate_backpressure_gate --> out_backpressure_gate_drop_or_throttle["drop_or_throttle"]
+  gate_export_delivery_gate{"Export Delivery Gate"}
+  gate_export_delivery_gate --> out_export_delivery_gate_exported["exported"]
+  gate_export_delivery_gate --> out_export_delivery_gate_retry["retry"]
+  gate_export_delivery_gate --> out_export_delivery_gate_failed_export["failed_export"]
+  gate_config_validation_gate{"Configuration Validation Gate"} --> step_load_configuration["Load Configuration"]
+  gate_component_lifecycle_gate{"Component Lifecycle Gate"} --> step_start_components["Start Components"]
+  gate_component_lifecycle_gate{"Component Lifecycle Gate"} --> step_receive_telemetry["Receive Telemetry"]
+  gate_backpressure_gate{"Backpressure And Memory Gate"} --> step_process_telemetry["Process Telemetry"]
+  gate_export_delivery_gate{"Export Delivery Gate"} --> step_route_or_export["Route Or Export"]
+  gate_component_lifecycle_gate{"Component Lifecycle Gate"} --> step_observe_collector["Observe Collector"]
 ```
 
 ## Relationship Graph
@@ -99,6 +155,17 @@ flowchart TD
   component_lifecycle_gate["Component Lifecycle Gate"] -- "gates" --> observe_collector["Observe Collector"]
 ```
 
+## Expansion Index
+
+| Level | Use It To Answer | Report Section |
+|---|---|---|
+| 0. Situation | What is true now? | Current Truth |
+| 1. Flow | How does the system move end to end? | Lifecycle Map |
+| 2. Ownership | Which subsystem owns which artifact? | Artifact And Schema Map |
+| 3. Control | Which rules advance, wait, or block? | Gate Map |
+| 4. Implementation | Which files, APIs, docs, or outputs should I inspect? | System Details |
+| 5. Audit | What should an external reviewer ask next? | Review Questions |
+
 ## Systems
 
 | System | Owner | Stack | Architecture | Lifecycle | Boundary | Ideal Target |
@@ -121,6 +188,26 @@ flowchart TD
 - Boundary: Configuration describes desired telemetry flow; startup gates decide whether it can run.
 - Ideal target: Every pipeline is explicit, valid, and inspectable before startup.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Configuration Map Tree | source_directory | CollectorConfig | confmap/ | Loads and resolves configuration maps and providers. |
+| Service Tree | source_directory | CollectorConfig | service/ | Coordinates configuration, pipelines, component lifecycle, telemetry, and host capabilities. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Configuration Validation Gate | CollectorConfig | valid_config, config_error | The collector should not start an invalid pipeline. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Load Configuration | Configuration System | config_file, confmap_tree | CollectorConfig | config_validation_gate |
+| Start Components | Service Orchestrator | CollectorConfig, service_tree | ComponentStatus | component_lifecycle_gate |
+
 ### Receiver Layer
 
 - Purpose: Accepts telemetry from external sources and injects it into pipelines.
@@ -129,6 +216,26 @@ flowchart TD
 - Decision gates: `component_lifecycle_gate`
 - Boundary: A receiver only starts when configuration and lifecycle checks pass.
 - Ideal target: Telemetry ingress is explicit and observable.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Receiver Tree | source_directory | ReceiverContract | receiver/ | Defines receiver interfaces, helpers, and built-in receiver components. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Component Lifecycle Gate | ReceiverContract, ProcessorContract, ExporterContract, ComponentStatus | component_started, component_failed | Telemetry should flow only after required components start successfully. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Start Components | Service Orchestrator | CollectorConfig, service_tree | ComponentStatus | component_lifecycle_gate |
+| Receive Telemetry | Receiver Layer | external_signal, ReceiverContract | TelemetryBatch | component_lifecycle_gate |
+| Observe Collector | Service Orchestrator | ComponentStatus, export_result | service_telemetry | component_lifecycle_gate |
 
 ### Processor Layer
 
@@ -139,6 +246,28 @@ flowchart TD
 - Boundary: Processor behavior is bounded by pipeline order and configuration.
 - Ideal target: Transformations are predictable, measurable, and resource-aware.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Processor Tree | source_directory | ProcessorContract | processor/ | Defines processors that transform, batch, limit, or otherwise mediate telemetry. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Backpressure And Memory Gate | TelemetryBatch, ComponentStatus | accept_batch, drop_or_throttle | A collector should protect host resources under load. |
+| Component Lifecycle Gate | ReceiverContract, ProcessorContract, ExporterContract, ComponentStatus | component_started, component_failed | Telemetry should flow only after required components start successfully. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Start Components | Service Orchestrator | CollectorConfig, service_tree | ComponentStatus | component_lifecycle_gate |
+| Receive Telemetry | Receiver Layer | external_signal, ReceiverContract | TelemetryBatch | component_lifecycle_gate |
+| Process Telemetry | Processor Layer | TelemetryBatch, ProcessorContract | TelemetryBatch | backpressure_gate |
+| Observe Collector | Service Orchestrator | ComponentStatus, export_result | service_telemetry | component_lifecycle_gate |
+
 ### Connector And Extension Layer
 
 - Purpose: Bridges pipelines and adds service-level capabilities.
@@ -147,6 +276,27 @@ flowchart TD
 - Decision gates: `component_lifecycle_gate`
 - Boundary: Connectors and extensions can change topology or service behavior; they must start cleanly.
 - Ideal target: Optional capabilities are explicit and health-reporting.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Connector Tree | source_directory | TelemetryBatch | connector/ | Defines connectors that can route telemetry between pipelines. |
+| Extension Tree | source_directory | ComponentStatus | extension/ | Defines service extensions such as auth, zpages, memory limiters, and capabilities. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Component Lifecycle Gate | ReceiverContract, ProcessorContract, ExporterContract, ComponentStatus | component_started, component_failed | Telemetry should flow only after required components start successfully. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Start Components | Service Orchestrator | CollectorConfig, service_tree | ComponentStatus | component_lifecycle_gate |
+| Receive Telemetry | Receiver Layer | external_signal, ReceiverContract | TelemetryBatch | component_lifecycle_gate |
+| Observe Collector | Service Orchestrator | ComponentStatus, export_result | service_telemetry | component_lifecycle_gate |
 
 ### Exporter Layer
 
@@ -157,6 +307,28 @@ flowchart TD
 - Boundary: Delivery depends on destination, queue, retry, and failure policy.
 - Ideal target: Export behavior is reliable, backpressure-aware, and observable.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Exporter Tree | source_directory | ExporterContract | exporter/ | Defines exporters and exporter helper behavior. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Export Delivery Gate | TelemetryBatch, ExporterContract | exported, retry, failed_export | Telemetry delivery failures should follow retry and queue policy. |
+| Component Lifecycle Gate | ReceiverContract, ProcessorContract, ExporterContract, ComponentStatus | component_started, component_failed | Telemetry should flow only after required components start successfully. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Start Components | Service Orchestrator | CollectorConfig, service_tree | ComponentStatus | component_lifecycle_gate |
+| Receive Telemetry | Receiver Layer | external_signal, ReceiverContract | TelemetryBatch | component_lifecycle_gate |
+| Route Or Export | Connector And Exporter Layers | TelemetryBatch, ExporterContract | exported, retry, failed_export | export_delivery_gate |
+| Observe Collector | Service Orchestrator | ComponentStatus, export_result | service_telemetry | component_lifecycle_gate |
+
 ### Service Orchestrator
 
 - Purpose: Coordinates component lifecycle, pipelines, host capabilities, and service telemetry.
@@ -165,6 +337,29 @@ flowchart TD
 - Decision gates: `config_validation_gate`, `component_lifecycle_gate`
 - Boundary: The service can expose health and telemetry, but configured components determine data path.
 - Ideal target: A running collector is explainable from config to component status.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Service Tree | source_directory | CollectorConfig | service/ | Coordinates configuration, pipelines, component lifecycle, telemetry, and host capabilities. |
+| Docs Tree | public_docs | CollectorConfig | docs/ | Documents collector behavior, proposals, and images. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Configuration Validation Gate | CollectorConfig | valid_config, config_error | The collector should not start an invalid pipeline. |
+| Component Lifecycle Gate | ReceiverContract, ProcessorContract, ExporterContract, ComponentStatus | component_started, component_failed | Telemetry should flow only after required components start successfully. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Load Configuration | Configuration System | config_file, confmap_tree | CollectorConfig | config_validation_gate |
+| Start Components | Service Orchestrator | CollectorConfig, service_tree | ComponentStatus | component_lifecycle_gate |
+| Receive Telemetry | Receiver Layer | external_signal, ReceiverContract | TelemetryBatch | component_lifecycle_gate |
+| Observe Collector | Service Orchestrator | ComponentStatus, export_result | service_telemetry | component_lifecycle_gate |
 
 ## Artifacts
 

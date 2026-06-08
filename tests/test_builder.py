@@ -30,9 +30,25 @@ def test_markdown_contains_review_sections():
     mermaid = render_mermaid(graph)
 
     assert "## Source Links" in markdown
+    assert "## Artifact And Schema Map" in markdown
+    assert "## Gate Map" in markdown
+    assert "## Expansion Index" in markdown
+    assert "Workflow touchpoints" in markdown
     assert "## Review Questions" in markdown
     assert "FastAPI Public Repo System Review Graph" in markdown
     assert "flowchart TD" in mermaid
+
+
+def test_overview_depth_omits_deep_sections():
+    manifest = read_json(Path("examples/actual_repos/duckdb/system_review_manifest.json"))
+    graph = build_system_review(manifest)
+
+    markdown = render_markdown(graph, depth="overview")
+
+    assert "Depth: `overview`" in markdown
+    assert "## Expansion Index" in markdown
+    assert "## Artifact And Schema Map" not in markdown
+    assert "Workflow touchpoints" not in markdown
 
 
 def test_validation_catches_unknown_references():

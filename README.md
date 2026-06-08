@@ -39,7 +39,8 @@ python -m pip install -e .
 system-review-graph validate --manifest examples/fictional_ai_ops/system_review_manifest.json
 system-review-graph build \
   --manifest examples/fictional_ai_ops/system_review_manifest.json \
-  --out-dir examples/fictional_ai_ops/reports
+  --out-dir examples/fictional_ai_ops/reports \
+  --depth deep
 ```
 
 Open:
@@ -67,6 +68,23 @@ system-review-graph build \
 
 The actual-repo examples are educational public-review maps, not official
 maintainer audits.
+
+## Depth Levels
+
+Reports are generated with `--depth deep` by default.
+
+| Depth | Use When | Includes |
+|---|---|---|
+| `overview` | You need the fastest orientation. | Current truth, source links, lifecycle map, expansion index, systems, architecture patterns, walkthroughs, review questions. |
+| `standard` | You want a normal audit handoff. | Overview plus artifact/schema map, gate map, system details, artifacts, schemas, gates, and workflows. |
+| `deep` | You want blueprint-level inspection. | Standard plus relationship graph, schema examples, and per-system artifact/gate/workflow drill-downs. |
+
+```bash
+system-review-graph build \
+  --manifest examples/actual_repos/duckdb/system_review_manifest.json \
+  --out-dir /tmp/duckdb-system-review \
+  --depth deep
+```
 
 ## Manifest-First Design
 

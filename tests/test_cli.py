@@ -26,12 +26,15 @@ def test_cli_build_example(tmp_path):
             "examples/actual_repos/duckdb/system_review_manifest.json",
             "--out-dir",
             str(tmp_path),
+            "--depth",
+            "overview",
         ]
     )
 
     assert exit_code == 0
     assert (tmp_path / "system_review_graph.json").exists()
     assert (tmp_path / "system_review_graph.md").exists()
+    assert "Depth: `overview`" in (tmp_path / "system_review_graph.md").read_text()
 
 
 def test_cli_init_named_example(tmp_path):

@@ -516,7 +516,7 @@
       ]
     }
   ],
-  "generated_at": "2026-06-08T19:26:52+00:00",
+  "generated_at": "2026-06-08T19:36:11+00:00",
   "known_boundaries": [
     "This is a public educational map, not an official OpenTelemetry maintainer audit.",
     "It maps the collector architecture at a high level, not every component or distribution.",

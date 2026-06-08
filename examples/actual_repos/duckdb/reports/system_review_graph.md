@@ -1,8 +1,9 @@
 # DuckDB Public Repo System Review Graph
 
-Generated: `2026-06-08T19:26:52+00:00`
+Generated: `2026-06-08T19:36:11+00:00`
 Scope: A public-safe system map of the DuckDB open-source repository based on public source directories and documentation.
 One line: DuckDB turns SQL and local data access into vectorized analytical execution inside an embedded database engine.
+Depth: `deep`
 
 ## Bigger Picture
 
@@ -40,6 +41,60 @@ flowchart LR
   plan_and_optimize --> execute_plan["Execute Plan"]
   execute_plan --> commit_or_return["Commit Or Return Results"]
   load_extension --> parse_and_bind["Parse And Bind"]
+```
+
+## Artifact And Schema Map
+
+```mermaid
+flowchart LR
+  system_sql_front_door["SQL Front Door"]
+  system_sql_front_door --> artifact_parser_source["Parser Source"]
+  artifact_parser_source --> schema_SQLRequest["SQLRequest"]
+  system_planner_optimizer["Planner And Optimizer"]
+  system_planner_optimizer --> artifact_planner_source["Planner Source"]
+  artifact_planner_source --> schema_LogicalPlan["LogicalPlan"]
+  system_planner_optimizer --> artifact_optimizer_source["Optimizer Source"]
+  artifact_optimizer_source --> schema_LogicalPlan["LogicalPlan"]
+  system_vectorized_execution_engine["Vectorized Execution Engine"]
+  system_vectorized_execution_engine --> artifact_execution_source["Execution Source"]
+  artifact_execution_source --> schema_PhysicalPlan["PhysicalPlan"]
+  system_storage_transaction_layer["Storage And Transaction Layer"]
+  system_storage_transaction_layer --> artifact_storage_source["Storage Source"]
+  artifact_storage_source --> schema_StorageTransaction["StorageTransaction"]
+  system_storage_transaction_layer --> artifact_transaction_source["Transaction Source"]
+  artifact_transaction_source --> schema_StorageTransaction["StorageTransaction"]
+  system_extension_system["Extension System"]
+  system_extension_system --> artifact_extension_tree["Extension Tree"]
+  artifact_extension_tree --> schema_ExtensionSpec["ExtensionSpec"]
+  system_quality_compatibility_loop["Quality And Compatibility Loop"]
+  system_quality_compatibility_loop --> artifact_test_suite["Test Suite"]
+  artifact_test_suite --> schema_SQLRequest["SQLRequest"]
+```
+
+## Gate Map
+
+```mermaid
+flowchart LR
+  gate_parse_bind_gate{"Parse And Bind Gate"}
+  gate_parse_bind_gate --> out_parse_bind_gate_LogicalPlan["LogicalPlan"]
+  gate_parse_bind_gate --> out_parse_bind_gate_query_error["query_error"]
+  gate_optimization_gate{"Optimization Gate"}
+  gate_optimization_gate --> out_optimization_gate_optimized_plan["optimized_plan"]
+  gate_optimization_gate --> out_optimization_gate_fallback_plan["fallback_plan"]
+  gate_execution_gate{"Execution Gate"}
+  gate_execution_gate --> out_execution_gate_DataChunk["DataChunk"]
+  gate_execution_gate --> out_execution_gate_execution_error["execution_error"]
+  gate_storage_commit_gate{"Storage Commit Gate"}
+  gate_storage_commit_gate --> out_storage_commit_gate_committed["committed"]
+  gate_storage_commit_gate --> out_storage_commit_gate_rolled_back["rolled_back"]
+  gate_extension_load_gate{"Extension Load Gate"}
+  gate_extension_load_gate --> out_extension_load_gate_extension_loaded["extension_loaded"]
+  gate_extension_load_gate --> out_extension_load_gate_extension_blocked["extension_blocked"]
+  gate_parse_bind_gate{"Parse And Bind Gate"} --> step_parse_and_bind["Parse And Bind"]
+  gate_optimization_gate{"Optimization Gate"} --> step_plan_and_optimize["Plan And Optimize"]
+  gate_execution_gate{"Execution Gate"} --> step_execute_plan["Execute Plan"]
+  gate_storage_commit_gate{"Storage Commit Gate"} --> step_commit_or_return["Commit Or Return Results"]
+  gate_extension_load_gate{"Extension Load Gate"} --> step_load_extension["Load Extension"]
 ```
 
 ## Relationship Graph
@@ -97,6 +152,17 @@ flowchart TD
   load_extension["Load Extension"] -- "routes to" --> parse_and_bind["Parse And Bind"]
 ```
 
+## Expansion Index
+
+| Level | Use It To Answer | Report Section |
+|---|---|---|
+| 0. Situation | What is true now? | Current Truth |
+| 1. Flow | How does the system move end to end? | Lifecycle Map |
+| 2. Ownership | Which subsystem owns which artifact? | Artifact And Schema Map |
+| 3. Control | Which rules advance, wait, or block? | Gate Map |
+| 4. Implementation | Which files, APIs, docs, or outputs should I inspect? | System Details |
+| 5. Audit | What should an external reviewer ask next? | Review Questions |
+
 ## Systems
 
 | System | Owner | Stack | Architecture | Lifecycle | Boundary | Ideal Target |
@@ -119,6 +185,25 @@ flowchart TD
 - Boundary: A parsed query is not executable until binding and planning succeed.
 - Ideal target: Query errors are caught early with clear semantics.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Parser Source | source_directory | SQLRequest | src/parser/ | Turns SQL text into parsed statements. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Parse And Bind Gate | SQLRequest, catalog_state | LogicalPlan, query_error | Invalid SQL or missing catalog references should not reach execution. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Receive SQL | SQL Front Door | client_request | SQLRequest |  |
+| Parse And Bind | SQL Front Door | SQLRequest, parser_source | LogicalPlan | parse_bind_gate |
+
 ### Planner And Optimizer
 
 - Purpose: Builds logical plans and rewrites them into better executable forms.
@@ -127,6 +212,25 @@ flowchart TD
 - Decision gates: `optimization_gate`
 - Boundary: Optimization must not change query meaning.
 - Ideal target: The cheapest safe plan is selected for execution.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Planner Source | source_directory | LogicalPlan | src/planner/ | Binds and plans parsed SQL into logical operators. |
+| Optimizer Source | source_directory | LogicalPlan | src/optimizer/ | Rewrites and improves logical plans before physical execution. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Optimization Gate | LogicalPlan, statistics | optimized_plan, fallback_plan | Optimization should preserve query semantics. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Plan And Optimize | Planner And Optimizer | LogicalPlan, planner_source, optimizer_source | PhysicalPlan | optimization_gate |
 
 ### Vectorized Execution Engine
 
@@ -137,6 +241,24 @@ flowchart TD
 - Boundary: Execution depends on valid plan, memory, transaction, and storage state.
 - Ideal target: Analytical queries execute predictably and efficiently.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Execution Source | source_directory | PhysicalPlan | src/execution/ | Executes physical operators and data pipelines. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Execution Gate | PhysicalPlan, StorageTransaction | DataChunk, execution_error | Physical operators should respect transaction and memory boundaries. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Execute Plan | Vectorized Execution Engine | PhysicalPlan, execution_source, StorageTransaction | DataChunk | execution_gate |
+
 ### Storage And Transaction Layer
 
 - Purpose: Persists data, scans tables, and coordinates transaction boundaries.
@@ -145,6 +267,27 @@ flowchart TD
 - Decision gates: `storage_commit_gate`, `execution_gate`
 - Boundary: Storage behavior is valid only within transaction rules.
 - Ideal target: Reads and writes remain consistent across local analytical workloads.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Storage Source | source_directory | StorageTransaction | src/storage/ | Handles table storage, persistence, scans, and writes. |
+| Transaction Source | source_directory | StorageTransaction | src/transaction/ | Coordinates transaction lifecycle and commit boundaries. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Storage Commit Gate | StorageTransaction | committed, rolled_back | Writes should commit atomically or roll back. |
+| Execution Gate | PhysicalPlan, StorageTransaction | DataChunk, execution_error | Physical operators should respect transaction and memory boundaries. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Execute Plan | Vectorized Execution Engine | PhysicalPlan, execution_source, StorageTransaction | DataChunk | execution_gate |
+| Commit Or Return Results | Storage And Transaction Layer | DataChunk, StorageTransaction | query_result, committed | storage_commit_gate |
 
 ### Extension System
 
@@ -155,6 +298,24 @@ flowchart TD
 - Boundary: Extensions expand behavior but must respect engine compatibility and load policy.
 - Ideal target: New capabilities plug in without destabilizing core execution.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Extension Tree | source_directory | ExtensionSpec | extension/ | Hosts built-in and optional extension surfaces such as parquet, json, icu, tpch, and tpcds. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Extension Load Gate | ExtensionSpec | extension_loaded, extension_blocked | Extensions should load only when compatible and allowed by policy. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Load Extension | Extension System | ExtensionSpec, extension_tree | extension_loaded | extension_load_gate |
+
 ### Quality And Compatibility Loop
 
 - Purpose: Exercises SQL, storage, extension, and compatibility scenarios.
@@ -163,6 +324,28 @@ flowchart TD
 - Decision gates: `parse_bind_gate`, `execution_gate`, `storage_commit_gate`
 - Boundary: This report does not replace upstream CI or benchmark review.
 - Ideal target: Engine changes remain behaviorally compatible and measurable.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Test Suite | tests | SQLRequest | test/ | Protects SQL behavior, storage behavior, extensions, and compatibility. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Parse And Bind Gate | SQLRequest, catalog_state | LogicalPlan, query_error | Invalid SQL or missing catalog references should not reach execution. |
+| Execution Gate | PhysicalPlan, StorageTransaction | DataChunk, execution_error | Physical operators should respect transaction and memory boundaries. |
+| Storage Commit Gate | StorageTransaction | committed, rolled_back | Writes should commit atomically or roll back. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Parse And Bind | SQL Front Door | SQLRequest, parser_source | LogicalPlan | parse_bind_gate |
+| Execute Plan | Vectorized Execution Engine | PhysicalPlan, execution_source, StorageTransaction | DataChunk | execution_gate |
+| Commit Or Return Results | Storage And Transaction Layer | DataChunk, StorageTransaction | query_result, committed | storage_commit_gate |
 
 ## Artifacts
 

@@ -1,8 +1,9 @@
 # FastAPI Public Repo System Review Graph
 
-Generated: `2026-06-08T19:26:52+00:00`
+Generated: `2026-06-08T19:36:11+00:00`
 Scope: A public-safe system map of the FastAPI open-source repository based on public source directories and documentation.
 One line: FastAPI turns Python type hints and path-operation declarations into validated API runtime behavior and OpenAPI contracts.
+Depth: `deep`
 
 ## Bigger Picture
 
@@ -40,6 +41,59 @@ flowchart LR
   resolve_dependencies --> validate_and_execute["Validate And Execute"]
   validate_and_execute --> publish_contract["Publish OpenAPI Contract"]
   publish_contract --> test_behavior["Test Behavior"]
+```
+
+## Artifact And Schema Map
+
+```mermaid
+flowchart LR
+  system_developer_declaration_surface["Developer Declaration Surface"]
+  system_developer_declaration_surface --> artifact_fastapi_package["FastAPI Package"]
+  artifact_fastapi_package --> schema_PathOperationDeclaration["PathOperationDeclaration"]
+  system_routing_layer["Routing Layer"]
+  system_routing_layer --> artifact_routing_source["Routing Source"]
+  artifact_routing_source --> schema_PathOperationDeclaration["PathOperationDeclaration"]
+  system_dependency_engine["Dependency Engine"]
+  system_dependency_engine --> artifact_dependency_source["Dependency Source"]
+  artifact_dependency_source --> schema_DependencySpec["DependencySpec"]
+  system_validation_serialization["Validation And Serialization"]
+  system_validation_serialization --> artifact_fastapi_package["FastAPI Package"]
+  artifact_fastapi_package --> schema_PathOperationDeclaration["PathOperationDeclaration"]
+  system_openapi_docs_engine["OpenAPI And Docs Engine"]
+  system_openapi_docs_engine --> artifact_openapi_source["OpenAPI Source"]
+  artifact_openapi_source --> schema_OpenAPIContract["OpenAPIContract"]
+  system_openapi_docs_engine --> artifact_docs_site["Documentation Site"]
+  artifact_docs_site --> schema_OpenAPIContract["OpenAPIContract"]
+  system_quality_release_loop["Quality And Release Loop"]
+  system_quality_release_loop --> artifact_test_suite["Test Suite"]
+  artifact_test_suite --> schema_TestScenario["TestScenario"]
+```
+
+## Gate Map
+
+```mermaid
+flowchart LR
+  gate_declaration_gate{"Declaration Gate"}
+  gate_declaration_gate --> out_declaration_gate_registered_route["registered_route"]
+  gate_declaration_gate --> out_declaration_gate_invalid_declaration["invalid_declaration"]
+  gate_dependency_resolution_gate{"Dependency Resolution Gate"}
+  gate_dependency_resolution_gate --> out_dependency_resolution_gate_resolved_inputs["resolved_inputs"]
+  gate_dependency_resolution_gate --> out_dependency_resolution_gate_dependency_error["dependency_error"]
+  gate_validation_gate{"Request And Response Validation Gate"}
+  gate_validation_gate --> out_validation_gate_valid_payload["valid_payload"]
+  gate_validation_gate --> out_validation_gate_validation_error["validation_error"]
+  gate_openapi_contract_gate{"OpenAPI Contract Gate"}
+  gate_openapi_contract_gate --> out_openapi_contract_gate_openapi_document["openapi_document"]
+  gate_openapi_contract_gate --> out_openapi_contract_gate_docs_gap["docs_gap"]
+  gate_test_release_gate{"Test And Release Gate"}
+  gate_test_release_gate --> out_test_release_gate_release_candidate["release_candidate"]
+  gate_test_release_gate --> out_test_release_gate_blocked_release["blocked_release"]
+  gate_declaration_gate{"Declaration Gate"} --> step_declare_path_operation["Declare Path Operation"]
+  gate_declaration_gate{"Declaration Gate"} --> step_match_request["Match Request"]
+  gate_dependency_resolution_gate{"Dependency Resolution Gate"} --> step_resolve_dependencies["Resolve Dependencies"]
+  gate_validation_gate{"Request And Response Validation Gate"} --> step_validate_and_execute["Validate And Execute"]
+  gate_openapi_contract_gate{"OpenAPI Contract Gate"} --> step_publish_contract["Publish OpenAPI Contract"]
+  gate_test_release_gate{"Test And Release Gate"} --> step_test_behavior["Test Behavior"]
 ```
 
 ## Relationship Graph
@@ -93,6 +147,17 @@ flowchart TD
   test_release_gate["Test And Release Gate"] -- "gates" --> test_behavior["Test Behavior"]
 ```
 
+## Expansion Index
+
+| Level | Use It To Answer | Report Section |
+|---|---|---|
+| 0. Situation | What is true now? | Current Truth |
+| 1. Flow | How does the system move end to end? | Lifecycle Map |
+| 2. Ownership | Which subsystem owns which artifact? | Artifact And Schema Map |
+| 3. Control | Which rules advance, wait, or block? | Gate Map |
+| 4. Implementation | Which files, APIs, docs, or outputs should I inspect? | System Details |
+| 5. Audit | What should an external reviewer ask next? | Review Questions |
+
 ## Systems
 
 | System | Owner | Stack | Architecture | Lifecycle | Boundary | Ideal Target |
@@ -115,6 +180,25 @@ flowchart TD
 - Boundary: A declaration is intent; runtime gates still validate requests and dependencies.
 - Ideal target: Small Python declarations produce predictable API behavior.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| FastAPI Package | python_package | PathOperationDeclaration | fastapi/ | Public framework package imported by application authors. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Declaration Gate | PathOperationDeclaration | registered_route, invalid_declaration | Invalid route declarations should fail before they become runtime behavior. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Declare Path Operation | Application Author | python_type_hints, endpoint_callable | fastapi_package, PathOperationDeclaration | declaration_gate |
+| Match Request | Routing Layer | PathOperationDeclaration, http_request | routing_source | declaration_gate |
+
 ### Routing Layer
 
 - Purpose: Matches incoming HTTP requests to declared path operations.
@@ -123,6 +207,25 @@ flowchart TD
 - Decision gates: `declaration_gate`
 - Boundary: Route matching does not mean endpoint execution is safe yet.
 - Ideal target: Every request lands on the right endpoint contract or fails clearly.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Routing Source | source_directory | PathOperationDeclaration | fastapi/routing.py | Connects declared routes to request handling. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Declaration Gate | PathOperationDeclaration | registered_route, invalid_declaration | Invalid route declarations should fail before they become runtime behavior. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Declare Path Operation | Application Author | python_type_hints, endpoint_callable | fastapi_package, PathOperationDeclaration | declaration_gate |
+| Match Request | Routing Layer | PathOperationDeclaration, http_request | routing_source | declaration_gate |
 
 ### Dependency Engine
 
@@ -133,6 +236,24 @@ flowchart TD
 - Boundary: Dependencies can block execution before endpoint logic runs.
 - Ideal target: Dependency behavior is traceable and test-covered.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Dependency Source | source_directory | DependencySpec | fastapi/dependencies/ | Resolves dependency graphs and request-time inputs. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Dependency Resolution Gate | DependencySpec, request_state | resolved_inputs, dependency_error | Endpoint code should not run with unresolved dependencies. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Resolve Dependencies | Dependency Engine | DependencySpec, http_request | resolved_inputs | dependency_resolution_gate |
+
 ### Validation And Serialization
 
 - Purpose: Validates request inputs and serializes endpoint responses according to declared contracts.
@@ -141,6 +262,25 @@ flowchart TD
 - Decision gates: `validation_gate`
 - Boundary: Validation is bounded by declared models and framework compatibility behavior.
 - Ideal target: Runtime payloads match documented contracts.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| FastAPI Package | python_package | PathOperationDeclaration | fastapi/ | Public framework package imported by application authors. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Request And Response Validation Gate | ValidationContract, request_body, response_body | valid_payload, validation_error | Payload shape should match declared contracts. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Declare Path Operation | Application Author | python_type_hints, endpoint_callable | fastapi_package, PathOperationDeclaration | declaration_gate |
+| Validate And Execute | Validation And Serialization | resolved_inputs, ValidationContract | response_body | validation_gate |
 
 ### OpenAPI And Docs Engine
 
@@ -151,6 +291,25 @@ flowchart TD
 - Boundary: Generated docs describe declared framework behavior, not an external production service.
 - Ideal target: Docs and runtime contracts stay aligned.
 
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| OpenAPI Source | source_directory | OpenAPIContract | fastapi/openapi/ | Builds OpenAPI artifacts from application declarations. |
+| Documentation Site | public_docs | OpenAPIContract | docs/ | Explains framework usage and examples for application authors. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| OpenAPI Contract Gate | PathOperationDeclaration, ValidationContract | openapi_document, docs_gap | Generated docs should reflect declared API behavior. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Publish OpenAPI Contract | OpenAPI And Docs Engine | PathOperationDeclaration, ValidationContract | openapi_source, docs_site | openapi_contract_gate |
+
 ### Quality And Release Loop
 
 - Purpose: Uses tests and review to protect framework compatibility.
@@ -159,6 +318,24 @@ flowchart TD
 - Decision gates: `test_release_gate`
 - Boundary: This public map does not replace maintainer CI or release policy.
 - Ideal target: Framework changes are reviewable, tested, and documented.
+
+Artifact expansion:
+
+| Artifact | Kind | Schema | Path | Why It Matters |
+|---|---|---|---|---|
+| Test Suite | tests | TestScenario | tests/ | Protects behavior across routing, validation, docs, security, and compatibility. |
+
+Gate expansion:
+
+| Gate | Inputs | Outputs | Risk Boundary |
+|---|---|---|---|
+| Test And Release Gate | TestScenario, source_change | release_candidate, blocked_release | Framework behavior changes should be protected by tests and maintainer review. |
+
+Workflow touchpoints:
+
+| Step | Actor | Consumes | Produces | Gates |
+|---|---|---|---|---|
+| Test Behavior | Quality And Release Loop | source_change, TestScenario | test_suite | test_release_gate |
 
 ## Artifacts
 

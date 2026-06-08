@@ -19,7 +19,8 @@ manifest valid
 ```bash
 system-review-graph build \
   --manifest examples/fictional_ai_ops/system_review_manifest.json \
-  --out-dir examples/fictional_ai_ops/reports
+  --out-dir examples/fictional_ai_ops/reports \
+  --depth deep
 ```
 
 Outputs:
@@ -28,6 +29,12 @@ Outputs:
 examples/fictional_ai_ops/reports/system_review_graph.json
 examples/fictional_ai_ops/reports/system_review_graph.md
 ```
+
+Depth options:
+
+- `overview`: fastest orientation.
+- `standard`: normal audit handoff.
+- `deep`: blueprint-level report with relationship graph and per-system drill-downs.
 
 ## 3. Read The Report Like A Reviewer
 
@@ -98,7 +105,8 @@ audits.
 ```bash
 system-review-graph build \
   --manifest examples/actual_repos/duckdb/system_review_manifest.json \
-  --out-dir examples/actual_repos/duckdb/reports
+  --out-dir examples/actual_repos/duckdb/reports \
+  --depth deep
 ```
 
 Use these examples to learn how different architecture shapes map into the same

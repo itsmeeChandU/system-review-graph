@@ -8,7 +8,7 @@ from pathlib import Path
 
 from system_review_graph.builder import build_system_review
 from system_review_graph.io import read_json, write_json
-from system_review_graph.render import render_markdown
+from system_review_graph.render import REPORT_DEPTHS, render_markdown
 from system_review_graph.serialize import to_dict
 from system_review_graph.validate import validate_manifest
 
@@ -36,7 +36,10 @@ def _build(args: argparse.Namespace) -> int:
     graph = build_system_review(manifest)
     write_json(out_dir / "system_review_graph.json", to_dict(graph))
     (out_dir / "system_review_graph.md").parent.mkdir(parents=True, exist_ok=True)
-    (out_dir / "system_review_graph.md").write_text(render_markdown(graph), encoding="utf-8")
+    (out_dir / "system_review_graph.md").write_text(
+        render_markdown(graph, depth=args.depth),
+        encoding="utf-8",
+    )
     print(out_dir / "system_review_graph.md")
     return 0
 
@@ -81,6 +84,12 @@ def main(argv: list[str] | None = None) -> int:
     build = sub.add_parser("build", help="Build JSON and Markdown reports")
     build.add_argument("--manifest", required=True)
     build.add_argument("--out-dir", required=True)
+    build.add_argument(
+        "--depth",
+        choices=sorted(REPORT_DEPTHS),
+        default="deep",
+        help="Report detail level",
+    )
     build.set_defaults(func=_build)
 
     validate = sub.add_parser("validate", help="Validate a manifest")

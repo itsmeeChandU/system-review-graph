@@ -163,3 +163,17 @@ Use `redaction` on artifacts:
 ## Design Principle
 
 If the database is private, describe the contract and boundary. A reviewer should still understand what the system does.
+
+## Report Depth
+
+The manifest does not need to change when you want more or less detail. Choose
+depth at render time:
+
+```bash
+system-review-graph build --manifest system_review_manifest.json --out-dir reports --depth overview
+system-review-graph build --manifest system_review_manifest.json --out-dir reports --depth standard
+system-review-graph build --manifest system_review_manifest.json --out-dir reports --depth deep
+```
+
+`deep` reports add relationship graphs, schema examples, and per-system
+artifact/gate/workflow expansion.
