@@ -1,10 +1,29 @@
 # System Review Graph
 
-<img src="assets/system-review-graph-mark.svg" alt="System Review Graph mark" width="84">
+<p align="center">
+  <img src="assets/system-review-graph-mark.svg" alt="System Review Graph mark" width="96">
+</p>
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-2f855a.svg)](LICENSE)
-[![Version: 0.5.1](https://img.shields.io/badge/version-0.5.1-1456cc.svg)](CHANGELOG.md)
-[![Cite this repo](https://img.shields.io/badge/citation-CITATION.cff-b8872f.svg)](CITATION.cff)
+<p align="center">
+  <a href="CHANGELOG.md"><img alt="Version 0.5.1" src="https://img.shields.io/badge/version-0.5.1-1456cc.svg"></a>
+  <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-2f855a.svg"></a>
+  <a href="CITATION.cff"><img alt="Citation metadata" src="https://img.shields.io/badge/citation-CITATION.cff-b8872f.svg"></a>
+  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-234b6d.svg">
+</p>
+
+<p align="center">
+  <a href="docs/METHODOLOGY.md"><img alt="Manifest first" src="https://img.shields.io/badge/method-manifest--first-172033.svg"></a>
+  <a href="docs/METHODOLOGY.md"><img alt="System not code only" src="https://img.shields.io/badge/maps-system%20%3E%20code-176b78.svg"></a>
+  <a href="#language-and-project-surface-support"><img alt="Mixed language scanner" src="https://img.shields.io/badge/scanner-mixed--language-d7a441.svg"></a>
+  <a href="#depth-levels"><img alt="Blueprint depth" src="https://img.shields.io/badge/depth-blueprint-172033.svg"></a>
+</p>
+
+<p align="center">
+  <a href="docs/MCP.md"><img alt="MCP server" src="https://img.shields.io/badge/MCP-agent--ready-176b78.svg"></a>
+  <a href="examples/actual_repos/linux_kernel/reports/system_review_graph.md"><img alt="Linux atlas example" src="https://img.shields.io/badge/example-Linux%20atlas-2f855a.svg"></a>
+  <a href="#quick-start"><img alt="Quick start" src="https://img.shields.io/badge/quick%20start-get%20started-d7a441.svg"></a>
+  <a href="#credit-citation-and-license"><img alt="Credit preserved" src="https://img.shields.io/badge/credit-preserved-b8872f.svg"></a>
+</p>
 
 Generate system-level review graphs: what a repo actually does, not just what
 code exists.
