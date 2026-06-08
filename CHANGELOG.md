@@ -4,6 +4,8 @@ All notable changes to System Review Graph are documented here.
 
 ## Unreleased
 
+## 0.5.3 - 2026-06-08
+
 Added:
 
 - GitHub Actions CI workflow for lint, tests, package builds, wheel smoke
@@ -11,6 +13,16 @@ Added:
 - PyPI Trusted Publishing workflow for automated release uploads.
 - PyPI release guide with pending-publisher setup fields for
   `system-review-graph`.
+- Live PyPI, PyPI downloads, and CI badges in the README.
+- PyPI project and CI links in package metadata.
+- Extra PyPI keywords for agent tooling, MCP, repo maps, architecture graphs,
+  monorepos, software audit, and system architecture discovery.
+
+Changed:
+
+- Converted README logo, badge, docs, credit, and package links to absolute
+  public URLs so they render correctly on PyPI.
+- Made the PyPI release guide wheel smoke test version-independent.
 
 ## 0.5.2 - 2026-06-08
 

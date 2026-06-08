@@ -1,26 +1,30 @@
 # System Review Graph
 
 <p align="center">
-  <img src="assets/system-review-graph-mark.svg" alt="System Review Graph mark" width="96">
+  <a href="https://github.com/itsmeeChandU/system-review-graph">
+    <img src="https://raw.githubusercontent.com/itsmeeChandU/system-review-graph/main/assets/system-review-graph-mark.svg" alt="System Review Graph mark" width="96">
+  </a>
 </p>
 
 <p align="center">
-  <a href="CHANGELOG.md"><img alt="Version 0.5.2" src="https://img.shields.io/badge/version-0.5.2-1456cc.svg"></a>
-  <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-2f855a.svg"></a>
-  <a href="CITATION.cff"><img alt="Citation metadata" src="https://img.shields.io/badge/citation-CITATION.cff-b8872f.svg"></a>
+  <a href="https://pypi.org/project/system-review-graph/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/system-review-graph.svg?color=1456cc"></a>
+  <a href="https://pypistats.org/packages/system-review-graph"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/system-review-graph.svg?color=176b78"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/itsmeeChandU/system-review-graph/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-2f855a.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/CITATION.cff"><img alt="Citation metadata" src="https://img.shields.io/badge/citation-CITATION.cff-b8872f.svg"></a>
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-234b6d.svg">
 </p>
 
 <p align="center">
-  <a href="docs/METHODOLOGY.md"><img alt="Manifest first" src="https://img.shields.io/badge/method-manifest--first-172033.svg"></a>
-  <a href="docs/METHODOLOGY.md"><img alt="System not code only" src="https://img.shields.io/badge/maps-system%20%3E%20code-176b78.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/METHODOLOGY.md"><img alt="Manifest first" src="https://img.shields.io/badge/method-manifest--first-172033.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/METHODOLOGY.md"><img alt="System not code only" src="https://img.shields.io/badge/maps-system%20%3E%20code-176b78.svg"></a>
   <a href="#language-and-project-surface-support"><img alt="Mixed language scanner" src="https://img.shields.io/badge/scanner-mixed--language-d7a441.svg"></a>
   <a href="#depth-levels"><img alt="Blueprint depth" src="https://img.shields.io/badge/depth-blueprint-172033.svg"></a>
 </p>
 
 <p align="center">
-  <a href="docs/MCP.md"><img alt="MCP server" src="https://img.shields.io/badge/MCP-agent--ready-176b78.svg"></a>
-  <a href="examples/actual_repos/linux_kernel/reports/system_review_graph.md"><img alt="Linux atlas example" src="https://img.shields.io/badge/example-Linux%20atlas-2f855a.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/MCP.md"><img alt="MCP server" src="https://img.shields.io/badge/MCP-agent--ready-176b78.svg"></a>
+  <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/examples/actual_repos/linux_kernel/reports/system_review_graph.md"><img alt="Linux atlas example" src="https://img.shields.io/badge/example-Linux%20atlas-2f855a.svg"></a>
   <a href="#quick-start"><img alt="Quick start" src="https://img.shields.io/badge/quick%20start-get%20started-d7a441.svg"></a>
   <a href="#credit-citation-and-license"><img alt="Credit preserved" src="https://img.shields.io/badge/credit-preserved-b8872f.svg"></a>
 </p>
@@ -99,7 +103,8 @@ Use code as evidence, but not the only evidence:
 - queues, reports, dashboards, and logs,
 - human/legal/security gates.
 
-Read more in [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
+Read more in
+[`docs/METHODOLOGY.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/METHODOLOGY.md).
 
 ## What It Looks Like
 
@@ -288,7 +293,8 @@ Example MCP client entry:
 }
 ```
 
-See [`docs/MCP.md`](docs/MCP.md).
+See
+[`docs/MCP.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/MCP.md).
 
 ## Example Gallery
 
@@ -451,16 +457,16 @@ examples/
 
 | Document | Purpose |
 |---|---|
-| [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | Explains code map vs system map and the review methodology. |
-| [`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md) | Step-by-step usage walkthrough. |
-| [`docs/SCHEMA.md`](docs/SCHEMA.md) | Manifest fields and depth options. |
-| [`docs/MCP.md`](docs/MCP.md) | MCP stdio server setup and tools. |
-| [`docs/schema/system_review_manifest.schema.json`](docs/schema/system_review_manifest.schema.json) | JSON Schema for editor/tool validation. |
-| [`docs/ARCHITECTURE_PATTERNS.md`](docs/ARCHITECTURE_PATTERNS.md) | How different system shapes map into the manifest. |
-| [`docs/OPEN_SOURCE_LAUNCH.md`](docs/OPEN_SOURCE_LAUNCH.md) | How to make the repo findable and launch it publicly. |
-| [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md) | Build, verify, and publish package instructions. |
-| [`ROADMAP.md`](ROADMAP.md) | Future work. |
-| [`CHANGELOG.md`](CHANGELOG.md) | Release history. |
+| [`docs/METHODOLOGY.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/METHODOLOGY.md) | Explains code map vs system map and the review methodology. |
+| [`docs/WALKTHROUGH.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/WALKTHROUGH.md) | Step-by-step usage walkthrough. |
+| [`docs/SCHEMA.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/SCHEMA.md) | Manifest fields and depth options. |
+| [`docs/MCP.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/MCP.md) | MCP stdio server setup and tools. |
+| [`docs/schema/system_review_manifest.schema.json`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/schema/system_review_manifest.schema.json) | JSON Schema for editor/tool validation. |
+| [`docs/ARCHITECTURE_PATTERNS.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/ARCHITECTURE_PATTERNS.md) | How different system shapes map into the manifest. |
+| [`docs/OPEN_SOURCE_LAUNCH.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/OPEN_SOURCE_LAUNCH.md) | How to make the repo findable and launch it publicly. |
+| [`docs/PYPI_RELEASE.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/PYPI_RELEASE.md) | Build, verify, and publish package instructions. |
+| [`ROADMAP.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/ROADMAP.md) | Future work. |
+| [`CHANGELOG.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/CHANGELOG.md) | Release history. |
 
 ## Development
 
@@ -494,19 +500,23 @@ python -m build
 python -m twine check dist/*
 ```
 
-See [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md) before publishing.
+See
+[`docs/PYPI_RELEASE.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/PYPI_RELEASE.md)
+before publishing.
 
 Release automation:
 
 - CI runs lint, tests, package builds, wheel smoke tests, example report builds,
   and atlas generation on pushes and pull requests.
 - PyPI publishing is wired through GitHub Actions and PyPI Trusted Publishing
-  with the `pypi` environment. See [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md).
+  with the `pypi` environment. See
+  [`docs/PYPI_RELEASE.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/docs/PYPI_RELEASE.md).
 
 ## Credit, Citation, And License
 
 System Review Graph was created by Sai Chandra Madduri and is released under the
-[`MIT License`](LICENSE). MIT keeps the project easy to use while requiring the
+[`MIT License`](https://github.com/itsmeeChandU/system-review-graph/blob/main/LICENSE).
+MIT keeps the project easy to use while requiring the
 copyright and license notice to be preserved in copies or substantial portions
 of the software.
 
@@ -518,19 +528,25 @@ https://github.com/itsmeeChandU/system-review-graph
 ```
 
 For research, talks, public examples, benchmarks, or audits, use
-[`CITATION.cff`](CITATION.cff). GitHub reads this file and shows a
+[`CITATION.cff`](https://github.com/itsmeeChandU/system-review-graph/blob/main/CITATION.cff).
+GitHub reads this file and shows a
 `Cite this repository` entry on the repository page.
 
 Credit files:
 
-- [`AUTHORS.md`](AUTHORS.md)
-- [`NOTICE.md`](NOTICE.md)
-- [`CITATION.cff`](CITATION.cff)
+- [`AUTHORS.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/AUTHORS.md)
+- [`NOTICE.md`](https://github.com/itsmeeChandU/system-review-graph/blob/main/NOTICE.md)
+- [`CITATION.cff`](https://github.com/itsmeeChandU/system-review-graph/blob/main/CITATION.cff)
 
 Visual assets:
 
-- [`assets/system-review-graph-mark.svg`](assets/system-review-graph-mark.svg)
-- [`assets/social-preview.svg`](assets/social-preview.svg)
+- [`assets/system-review-graph-mark.svg`](https://github.com/itsmeeChandU/system-review-graph/blob/main/assets/system-review-graph-mark.svg)
+- [`assets/social-preview.svg`](https://github.com/itsmeeChandU/system-review-graph/blob/main/assets/social-preview.svg)
+
+Package links:
+
+- [PyPI package](https://pypi.org/project/system-review-graph/)
+- [PyPI download stats](https://pypistats.org/packages/system-review-graph)
 
 ## Discoverability
 
