@@ -136,9 +136,13 @@ system-review-graph scan \
   --out /tmp/system_review_manifest.json
 ```
 
-The scanner detects starter surfaces for C, C++, Java, C#, Python,
+The manifest/report model is language-neutral. The automatic scanner currently
+detects starter surfaces for C, C++, Java/Kotlin, C#/.NET, Python,
 JavaScript/TypeScript, Go, Rust, docs, tests, and common build/config files.
-It is a starting point, not a proof of runtime behavior.
+It is a starting point, not a proof of runtime behavior. For a language or
+architecture the scanner does not detect yet, write the manifest directly and
+set `language_stack`, `code_surfaces`, artifacts, workflows, gates, and
+boundaries yourself.
 
 ## 9. Try Actual Public Repos
 

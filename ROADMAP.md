@@ -23,6 +23,10 @@ orientation.
 - Generated coverage, evidence, gap, and action registers in Markdown and HTML reports.
 - Merge-time atlas generation pattern for CI.
 - Linux kernel atlas stress-test example.
+- README language-support matrix that distinguishes the language-neutral
+  manifest model from automatic scanner detection.
+- Regression coverage that proves the scanner detects the supported language,
+  docs, tests, and config surfaces.
 
 ## Near Term
 
@@ -34,6 +38,18 @@ orientation.
 - Add deeper language-specific scanners for Python, TypeScript, Go, Rust, Java, C#, C, and C++.
 - Add an interactive review mode that asks missing-methodology questions.
 - Add hosted documentation pages.
+
+## Let It Breathe
+
+The project is ready to pause after the current public baseline if maintainers
+want real usage feedback before adding more machinery. The next useful signals
+should come from:
+
+- one or two outside users trying `scan` on their own repos,
+- one maintainer reviewing whether the generated registers feel audit-friendly,
+- one large-repo test beyond Linux,
+- one private-system/sanitized-manifest test,
+- one MCP-capable agent using `load-atlas-context` during a real review.
 
 ## Later
 

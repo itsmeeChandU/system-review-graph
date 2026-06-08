@@ -2,6 +2,17 @@
 
 All notable changes to System Review Graph are documented here.
 
+## Unreleased
+
+Added:
+
+- README language-support matrix for automatic scanner detection versus
+  language-neutral manifest/report support.
+- Scanner regression coverage for Python, JavaScript/TypeScript, C/C++, Java,
+  Kotlin, C#/.NET, Go, Rust, docs, tests, and config/build surfaces.
+- Roadmap pause criteria for letting the project breathe after the public
+  baseline.
+
 ## 0.5.0 - 2026-06-08
 
 Audit-register release.

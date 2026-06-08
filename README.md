@@ -186,6 +186,33 @@ for C, C++, Java, C#, Python, JavaScript/TypeScript, Go, Rust, docs, tests, and
 common build/config files. Scanner output is intentionally marked as inferred;
 it is a starting map, not proof of runtime behavior.
 
+## Language And Project Surface Support
+
+System Review Graph has two levels of language support:
+
+- The manifest/report model is language-neutral. You can describe any stack if
+  you provide systems, artifacts, schemas, workflows, gates, and boundaries.
+- The automatic `scan` command detects starter surfaces for the languages and
+  project markers below. It creates a first-pass map that humans or agents
+  should refine.
+
+| Surface | Detected From | What The Scanner Creates |
+|---|---|---|
+| Python | `.py`, `pyproject.toml`, `setup.py`, `setup.cfg`, `requirements.txt` | Python source/build surface |
+| JavaScript / TypeScript | `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `package.json`, `tsconfig.json`, Vite/Next config | JavaScript/TypeScript source/build surface |
+| C / C++ | `.c`, `.cc`, `.cpp`, `.cxx`, `.h`, `.hpp`, `.hh`, `CMakeLists.txt`, `Makefile`, `configure.ac` | C/C++ source/build surface |
+| Java / Kotlin | `.java`, `.kt`, `pom.xml`, Gradle files | Java/Kotlin source/build surface |
+| C# / .NET | `.cs`, `.csproj`, `.sln`, `Directory.Build.props`, `global.json` | C#/.NET source/build surface |
+| Go | `.go`, `go.mod`, `go.sum` | Go source/build surface |
+| Rust | `.rs`, `Cargo.toml`, `Cargo.lock` | Rust source/build surface |
+| Docs | `docs/`, `doc/`, `Documentation/` | Documentation artifact surface |
+| Tests | `test/`, `tests/`, `spec/`, `specs/`, `__tests__/` | Test artifact surface |
+| Build/config | Docker, Compose, Make, CMake, Python, Node, Maven, Go, and Cargo markers | Config/build artifact surface |
+
+For languages not detected automatically yet, use the manifest directly. The
+report renderer, HTML output, Mermaid maps, registers, MCP server, atlas mode,
+and blueprint sections do not care what language the system is written in.
+
 For a huge repository, generate an atlas instead of one giant flat graph:
 
 ```bash

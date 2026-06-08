@@ -94,6 +94,50 @@ def test_cli_scan(tmp_path):
     assert "system_review_manifest.json" in text
 
 
+def test_cli_scan_detects_supported_language_and_project_surfaces(tmp_path):
+    repo = tmp_path / "repo"
+    paths = [
+        "app/main.py",
+        "web/app.tsx",
+        "native/core.cpp",
+        "native/include/core.hpp",
+        "jvm/src/App.java",
+        "jvm/src/Worker.kt",
+        "dotnet/App.cs",
+        "dotnet/App.csproj",
+        "cmd/server.go",
+        "rust/src/lib.rs",
+        "docs/index.md",
+        "tests/test_app.py",
+        "Dockerfile",
+        "package.json",
+        "pom.xml",
+        "go.mod",
+        "Cargo.toml",
+        "CMakeLists.txt",
+    ]
+    for relative_path in paths:
+        path = repo / relative_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("// starter surface\n")
+    manifest = tmp_path / "supported_surfaces_manifest.json"
+
+    exit_code = main(["scan", "--repo", str(repo), "--out", str(manifest)])
+
+    text = manifest.read_text()
+    assert exit_code == 0
+    assert "Python Surface" in text
+    assert "JavaScript / TypeScript Surface" in text
+    assert "C / C++ Surface" in text
+    assert "Java Surface" in text
+    assert "C# / .NET Surface" in text
+    assert "Go Surface" in text
+    assert "Rust Surface" in text
+    assert "Documentation Surface" in text
+    assert "Test Surface" in text
+    assert "Config And Build Surface" in text
+
+
 def test_cli_scan_atlas(tmp_path):
     repo = tmp_path / "repo"
     (repo / "drivers").mkdir(parents=True)
