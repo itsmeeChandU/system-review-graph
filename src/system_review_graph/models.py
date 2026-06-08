@@ -105,6 +105,21 @@ class ChildMap:
 
 
 @dataclass(frozen=True)
+class BlueprintSection:
+    """A source-evidence-backed system flow for blueprint-level review."""
+
+    section_id: str
+    title: str
+    purpose: str = ""
+    subsystems: list[str] = field(default_factory=list)
+    source_evidence: list[dict[str, str]] = field(default_factory=list)
+    flow: list[dict[str, str]] = field(default_factory=list)
+    control_points: list[dict[str, str]] = field(default_factory=list)
+    review_questions: list[str] = field(default_factory=list)
+    known_boundaries: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
 class SystemReviewGraph:
     """Complete system review graph plus report-ready metadata."""
 
@@ -119,6 +134,7 @@ class SystemReviewGraph:
     workflows: list[WorkflowStep]
     edges: list[GraphEdge]
     child_maps: list[ChildMap]
+    blueprint_sections: list[BlueprintSection]
     current_truth: dict[str, Any]
     bigger_picture: str
     source_links: list[dict[str, str]]

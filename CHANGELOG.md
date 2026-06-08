@@ -2,6 +2,23 @@
 
 All notable changes to System Review Graph are documented here.
 
+## 0.4.0 - 2026-06-08
+
+Blueprint-depth release.
+
+Added:
+
+- `blueprint` report depth.
+- `blueprint_sections` manifest support for source-evidence-backed system flows.
+- Blueprint Mermaid map and detailed Markdown source-evidence, operational-flow,
+  control-point, review-question, and known-gap sections.
+- Blueprint summary table in HTML reports.
+- MCP atlas context now includes blueprint sections.
+- Linux kernel root atlas upgraded to a blueprint report with 11 major
+  source-backed flows: build/config, boot/init, process scheduler, syscall
+  boundary, memory, VFS/block IO, networking, driver model/probe, LSM security,
+  modules/BPF/tracing, and Rust integration.
+
 ## 0.3.0 - 2026-06-08
 
 Large-repository atlas release.

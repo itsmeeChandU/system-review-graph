@@ -59,6 +59,16 @@ def doctor_manifest(manifest: dict[str, Any]) -> list[dict[str, str]]:
                 ),
             }
         )
+    if _count(manifest, "systems") > 12 and _count(manifest, "blueprint_sections") == 0:
+        findings.append(
+            {
+                "severity": "info",
+                "message": (
+                    "large manifest has no blueprint_sections; add source-evidence-backed "
+                    "flows for blueprint-level review"
+                ),
+            }
+        )
     if _count(manifest, "workflows") == 0:
         findings.append(
             {

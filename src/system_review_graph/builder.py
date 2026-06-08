@@ -7,6 +7,7 @@ from typing import Any
 
 from system_review_graph.models import (
     Artifact,
+    BlueprintSection,
     ChildMap,
     DecisionGate,
     GraphEdge,
@@ -123,6 +124,27 @@ def _child_map(row: dict[str, Any]) -> ChildMap:
     )
 
 
+def _string_dict_list(value: Any) -> list[dict[str, str]]:
+    return [
+        {str(k): str(v) for k, v in _dict(row).items()}
+        for row in _list(value)
+    ]
+
+
+def _blueprint_section(row: dict[str, Any]) -> BlueprintSection:
+    return BlueprintSection(
+        section_id=str(row.get("section_id") or ""),
+        title=str(row.get("title") or ""),
+        purpose=str(row.get("purpose") or ""),
+        subsystems=[str(item) for item in _list(row.get("subsystems"))],
+        source_evidence=_string_dict_list(row.get("source_evidence")),
+        flow=_string_dict_list(row.get("flow")),
+        control_points=_string_dict_list(row.get("control_points")),
+        review_questions=[str(item) for item in _list(row.get("review_questions"))],
+        known_boundaries=[str(item) for item in _list(row.get("known_boundaries"))],
+    )
+
+
 def _derived_edges(systems: list[SystemNode], workflows: list[WorkflowStep]) -> list[GraphEdge]:
     edges: list[GraphEdge] = []
     for system in systems:
@@ -184,6 +206,9 @@ def build_system_review(manifest: dict[str, Any]) -> SystemReviewGraph:
     systems = [_system(row) for row in _list(manifest.get("systems"))]
     explicit_edges = [_edge(row) for row in _list(manifest.get("edges"))]
     child_maps = [_child_map(row) for row in _list(manifest.get("child_maps"))]
+    blueprint_sections = [
+        _blueprint_section(row) for row in _list(manifest.get("blueprint_sections"))
+    ]
     derived_edges = _derived_edges(systems, workflows)
     return SystemReviewGraph(
         title=str(manifest.get("title") or "System Review Graph"),
@@ -203,6 +228,7 @@ def build_system_review(manifest: dict[str, Any]) -> SystemReviewGraph:
         workflows=workflows,
         edges=[*explicit_edges, *derived_edges],
         child_maps=child_maps,
+        blueprint_sections=blueprint_sections,
         current_truth=_dict(manifest.get("current_truth")),
         bigger_picture=str(manifest.get("bigger_picture") or ""),
         source_links=[_dict(row) for row in _list(manifest.get("source_links"))],

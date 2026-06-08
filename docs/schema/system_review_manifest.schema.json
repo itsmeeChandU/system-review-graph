@@ -42,6 +42,10 @@
       "type": "array",
       "items": { "$ref": "#/$defs/child_map" }
     },
+    "blueprint_sections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/blueprint_section" }
+    },
     "architecture_patterns": {
       "type": "array",
       "items": { "type": "object" }
@@ -207,6 +211,39 @@
         },
         "status": { "type": "string" },
         "review_hint": { "type": "string" }
+      }
+    },
+    "blueprint_section": {
+      "type": "object",
+      "required": ["section_id", "title"],
+      "properties": {
+        "section_id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "purpose": { "type": "string" },
+        "subsystems": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "source_evidence": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "flow": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "control_points": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "review_questions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "known_boundaries": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
       }
     }
   }

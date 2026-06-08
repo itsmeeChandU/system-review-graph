@@ -125,3 +125,60 @@ def test_child_maps_render_as_atlas_section():
     assert graph.child_maps[0].report_path.endswith("system_review_graph.md")
     assert "## Map Of Maps" in markdown
     assert "## Child Maps" in markdown
+
+
+def test_blueprint_sections_render_source_evidence():
+    manifest = {
+        "title": "Blueprint",
+        "systems": [{"system_id": "kernel", "name": "kernel/", "purpose": "Kernel core"}],
+        "artifacts": [],
+        "schemas": [],
+        "decision_gates": [],
+        "workflows": [],
+        "blueprint_sections": [
+            {
+                "section_id": "boot",
+                "title": "Boot Flow",
+                "purpose": "Track boot into init.",
+                "subsystems": ["init", "kernel"],
+                "source_evidence": [
+                    {
+                        "path": "init/main.c:1017",
+                        "symbol": "start_kernel",
+                        "role": "entry",
+                        "notes": "Generic entry point.",
+                        "proof_level": "source-confirmed",
+                    }
+                ],
+                "flow": [
+                    {
+                        "step": "Start",
+                        "actor": "kernel",
+                        "consumes": "boot state",
+                        "produces": "init state",
+                        "next": "rest_init",
+                        "evidence": "init/main.c",
+                    }
+                ],
+                "control_points": [
+                    {
+                        "gate": "Init order",
+                        "location": "include/linux/module.h",
+                        "decision": "order initcalls",
+                        "failure_mode": "late dependency",
+                        "evidence": "module_init",
+                    }
+                ],
+            }
+        ],
+    }
+
+    errors = validate_manifest(manifest)
+    graph = build_system_review(manifest)
+    markdown = render_markdown(graph, depth="blueprint")
+
+    assert errors == []
+    assert graph.blueprint_sections[0].section_id == "boot"
+    assert "## Blueprint Sections" in markdown
+    assert "Source evidence:" in markdown
+    assert "init/main.c:1017" in markdown

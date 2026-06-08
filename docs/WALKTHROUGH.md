@@ -35,6 +35,7 @@ Depth options:
 - `overview`: fastest orientation.
 - `standard`: normal audit handoff.
 - `deep`: blueprint-level report with relationship graph and per-system drill-downs.
+- `blueprint`: deepest report with source evidence, operational flows, control points, and gaps.
 
 ## 3. Read The Report Like A Reviewer
 
@@ -199,3 +200,29 @@ system-review-graph scan \
 
 The generated report can be attached to pull requests or compared after merges
 to spot architecture drift, missing gates, and new subsystem surfaces.
+
+## 11. Read A Blueprint Report
+
+When a project needs a true blueprint, add `blueprint_sections` and render with
+`--depth blueprint`:
+
+```bash
+system-review-graph build \
+  --manifest examples/actual_repos/linux_kernel/system_review_manifest.json \
+  --out-dir examples/actual_repos/linux_kernel/reports \
+  --depth blueprint \
+  --html \
+  --dot
+```
+
+Read it like this:
+
+- Start with `Current Truth` to know the proof boundary.
+- Use `Map Of Maps` to choose a subsystem.
+- Use `Blueprint Map` to choose an end-to-end flow.
+- Use `Blueprint Sections` to inspect source evidence, flow steps, control
+  points, review questions, and known gaps.
+
+A blueprint section is how SRG turns code evidence into system meaning. It does
+not merely say that two functions connect. It says what operational path those
+functions represent and how confidently that path is proven.

@@ -98,6 +98,7 @@ TOOLS: list[dict[str, Any]] = [
             "manifest_path": {"type": "string"},
             "include_children": {"type": "boolean", "default": False},
             "max_child_maps": {"type": "integer", "default": 12, "minimum": 0},
+            "max_blueprint_sections": {"type": "integer", "default": 12, "minimum": 0},
             "max_chars": {"type": "integer", "default": 30000, "minimum": 1000},
         },
         ["manifest_path"],
@@ -271,6 +272,7 @@ def _tool_load_atlas_context(args: dict[str, Any]) -> dict[str, Any]:
     manifest_path = _path(args, "manifest_path")
     manifest = read_json(manifest_path)
     max_child_maps = _int(args, "max_child_maps", 12)
+    max_blueprint_sections = _int(args, "max_blueprint_sections", 12)
     context: dict[str, Any] = {
         "title": manifest.get("title"),
         "one_line": manifest.get("one_line"),
@@ -278,6 +280,9 @@ def _tool_load_atlas_context(args: dict[str, Any]) -> dict[str, Any]:
         "current_truth": manifest.get("current_truth", {}),
         "systems": manifest.get("systems", []),
         "child_maps": (manifest.get("child_maps") or [])[:max_child_maps],
+        "blueprint_sections": (manifest.get("blueprint_sections") or [])[
+            :max_blueprint_sections
+        ],
         "review_questions": manifest.get("review_questions", []),
         "known_boundaries": manifest.get("known_boundaries", []),
         "source_links": manifest.get("source_links", []),

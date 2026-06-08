@@ -49,6 +49,13 @@ This is useful for kernels, database engines, browser engines, platform
 monorepos, language runtimes, and company-internal source trees where one flat
 graph would hide the important context.
 
+For blueprint-depth reports, add source-backed flow sections:
+
+- entry point -> source evidence,
+- operational flow -> step table,
+- control points -> gates and failure modes,
+- known gaps -> what the report still does not prove.
+
 ## Web Application
 
 Map:

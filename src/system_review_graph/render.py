@@ -8,7 +8,9 @@ from html import escape
 
 from system_review_graph.models import SystemReviewGraph
 
-REPORT_DEPTHS = {"overview", "standard", "deep"}
+REPORT_DEPTHS = {"overview", "standard", "deep", "blueprint"}
+STANDARD_DEPTHS = {"standard", "deep", "blueprint"}
+DEEP_DEPTHS = {"deep", "blueprint"}
 
 
 def _row(values: list[object]) -> str:
@@ -70,6 +72,9 @@ def _label_map(graph: SystemReviewGraph) -> dict[str, str]:
     labels.update({step.step_id: step.name for step in graph.workflows})
     labels.update({schema.name: schema.name for schema in graph.schemas})
     labels.update({child_map.map_id: child_map.name for child_map in graph.child_maps})
+    labels.update(
+        {section.section_id: section.title for section in graph.blueprint_sections}
+    )
     return labels
 
 
@@ -126,6 +131,22 @@ def render_child_maps_mermaid(graph: SystemReviewGraph) -> str:
             lines.append(f'  {node} --> {system_node}["{_label(system_id)}"]')
     if len(lines) == 2:
         lines.append('  empty["No child maps declared"]')
+    return "\n".join(lines)
+
+
+def render_blueprint_mermaid(graph: SystemReviewGraph) -> str:
+    """Render blueprint sections and their subsystem coverage."""
+
+    lines = ["flowchart TD", f'  root["{_label(graph.title)}"]']
+    if not graph.blueprint_sections:
+        lines.append('  empty["No blueprint sections declared"]')
+        return "\n".join(lines)
+    for section in graph.blueprint_sections:
+        section_node = _node_id(f"blueprint_{section.section_id}")
+        lines.append(f'  root --> {section_node}["{_label(section.title)}"]')
+        for subsystem in section.subsystems[:10]:
+            subsystem_node = _node_id(f"blueprint_{section.section_id}_{subsystem}")
+            lines.append(f'  {section_node} --> {subsystem_node}["{_label(subsystem)}"]')
     return "\n".join(lines)
 
 
@@ -294,6 +315,37 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
         if graph.child_maps
         else ""
     )
+    blueprint_rows = "\n".join(
+        f"""
+        <tr>
+          <td>{escape(section.title)}</td>
+          <td>{escape(section.purpose)}</td>
+          <td>{escape(", ".join(section.subsystems))}</td>
+          <td>{len(section.source_evidence)}</td>
+          <td>{len(section.flow)}</td>
+          <td>{len(section.control_points)}</td>
+        </tr>
+        """
+        for section in graph.blueprint_sections
+    )
+    blueprint_detail_section = (
+        f"""
+        <section>
+          <h2>Blueprint Sections</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Section</th><th>Purpose</th><th>Subsystems</th>
+                <th>Evidence</th><th>Flow</th><th>Controls</th>
+              </tr>
+            </thead>
+            <tbody>{blueprint_rows}</tbody>
+          </table>
+        </section>
+        """
+        if graph.blueprint_sections
+        else ""
+    )
     artifact_map = (
         f"""
         <section>
@@ -305,7 +357,7 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
           <pre class="mermaid">{escape(render_gate_mermaid(graph))}</pre>
         </section>
         """
-        if depth in {"standard", "deep"}
+        if depth in STANDARD_DEPTHS
         else ""
     )
     relationship_graph = (
@@ -315,7 +367,17 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
           <pre class="mermaid">{escape(render_mermaid(graph))}</pre>
         </section>
         """
-        if depth == "deep"
+        if depth in DEEP_DEPTHS
+        else ""
+    )
+    blueprint_section = (
+        f"""
+        <section>
+          <h2>Blueprint Map</h2>
+          <pre class="mermaid">{escape(render_blueprint_mermaid(graph))}</pre>
+        </section>
+        """
+        if graph.blueprint_sections
         else ""
     )
     html = f"""<!doctype html>
@@ -382,6 +444,8 @@ def render_html(graph: SystemReviewGraph, depth: str = "deep") -> str:
       <h2>Lifecycle Map</h2>
       <pre class="mermaid">{escape(render_lifecycle_mermaid(graph))}</pre>
     </section>
+    {blueprint_section}
+    {blueprint_detail_section}
     {child_map_section}
     {artifact_map}
     {relationship_graph}
@@ -416,6 +480,17 @@ def _add_visuals(lines: list[str], graph: SystemReviewGraph, depth: str) -> None
                 "```",
             ]
         )
+    if graph.blueprint_sections:
+        lines.extend(
+            [
+                "",
+                "## Blueprint Map",
+                "",
+                "```mermaid",
+                render_blueprint_mermaid(graph),
+                "```",
+            ]
+        )
     lines.extend(
         [
             "",
@@ -426,7 +501,7 @@ def _add_visuals(lines: list[str], graph: SystemReviewGraph, depth: str) -> None
             "```",
         ]
     )
-    if depth in {"standard", "deep"}:
+    if depth in STANDARD_DEPTHS:
         lines.extend(
             [
                 "",
@@ -443,7 +518,7 @@ def _add_visuals(lines: list[str], graph: SystemReviewGraph, depth: str) -> None
                 "```",
             ]
         )
-    if depth == "deep":
+    if depth in DEEP_DEPTHS:
         lines.extend(
             [
                 "",
@@ -466,6 +541,13 @@ def _add_expansion_index(lines: list[str], graph: SystemReviewGraph, depth: str)
             "|---|---|---|",
             _row(["0. Situation", "What is true now?", "Current Truth"]),
             _row(["0.5. Atlas", "Which child map should I open next?", "Map Of Maps"]),
+            _row(
+                [
+                    "0.75. Blueprint",
+                    "Which source-backed flows explain the whole system?",
+                    "Blueprint Sections",
+                ]
+            ),
             _row(["1. Flow", "How does the system move end to end?", "Lifecycle Map"]),
             _row(
                 [
@@ -513,7 +595,7 @@ def _add_system_details(lines: list[str], graph: SystemReviewGraph, depth: str) 
                 "",
             ]
         )
-        if depth != "deep":
+        if depth not in DEEP_DEPTHS:
             continue
         if system.artifacts:
             lines.extend(
@@ -632,6 +714,121 @@ def _add_child_maps(lines: list[str], graph: SystemReviewGraph) -> None:
         )
 
 
+def _add_blueprint_sections(lines: list[str], graph: SystemReviewGraph, depth: str) -> None:
+    if not graph.blueprint_sections:
+        return
+    lines.extend(
+        [
+            "",
+            "## Blueprint Sections",
+            "",
+            "| Section | Purpose | Subsystems | Evidence | Flow Steps | Control Points |",
+            "|---|---|---|---|---|---|",
+        ]
+    )
+    for section in graph.blueprint_sections:
+        lines.append(
+            _row(
+                [
+                    section.title,
+                    section.purpose,
+                    ", ".join(section.subsystems),
+                    len(section.source_evidence),
+                    len(section.flow),
+                    len(section.control_points),
+                ]
+            )
+        )
+    if depth == "overview":
+        lines.extend(
+            [
+                "",
+                "This overview lists blueprint sections only. Rebuild with `--depth standard`, "
+                "`--depth deep`, or `--depth blueprint` for source evidence, flow tables, "
+                "control points, and reviewer gaps.",
+            ]
+        )
+        return
+    for section in graph.blueprint_sections:
+        lines.extend(["", f"### {section.title}", "", section.purpose or "No purpose declared."])
+        if section.subsystems:
+            lines.extend(["", f"- Subsystems: {_code_list(section.subsystems)}"])
+        if section.source_evidence:
+            lines.extend(
+                [
+                    "",
+                    "Source evidence:",
+                    "",
+                    "| Path | Symbol | Role | Notes | Proof Level |",
+                    "|---|---|---|---|---|",
+                ]
+            )
+            for evidence in section.source_evidence:
+                lines.append(
+                    _row(
+                        [
+                            evidence.get("path", ""),
+                            evidence.get("symbol", ""),
+                            evidence.get("role", ""),
+                            evidence.get("notes", ""),
+                            evidence.get("proof_level", ""),
+                        ]
+                    )
+                )
+        if section.flow:
+            lines.extend(
+                [
+                    "",
+                    "Operational flow:",
+                    "",
+                    "| Step | Actor | Consumes | Produces | Next | Evidence |",
+                    "|---|---|---|---|---|---|",
+                ]
+            )
+            for step in section.flow:
+                lines.append(
+                    _row(
+                        [
+                            step.get("step", ""),
+                            step.get("actor", ""),
+                            step.get("consumes", ""),
+                            step.get("produces", ""),
+                            step.get("next", ""),
+                            step.get("evidence", ""),
+                        ]
+                    )
+                )
+        if section.control_points:
+            lines.extend(
+                [
+                    "",
+                    "Control points:",
+                    "",
+                    "| Gate | Location | Decision | Failure Mode | Evidence |",
+                    "|---|---|---|---|---|",
+                ]
+            )
+            for point in section.control_points:
+                lines.append(
+                    _row(
+                        [
+                            point.get("gate", ""),
+                            point.get("location", ""),
+                            point.get("decision", ""),
+                            point.get("failure_mode", ""),
+                            point.get("evidence", ""),
+                        ]
+                    )
+                )
+        if section.review_questions:
+            lines.extend(["", "Review questions:"])
+            lines.extend(f"- {item}" for item in section.review_questions)
+        if depth == "blueprint" and section.known_boundaries:
+            lines.extend(["", "Known gaps:"])
+            lines.extend(f"- {item}" for item in section.known_boundaries)
+        lines.append("")
+
+
 def _add_artifacts(lines: list[str], graph: SystemReviewGraph) -> None:
     lines.extend(
         [
@@ -679,7 +876,7 @@ def _add_schemas(lines: list[str], graph: SystemReviewGraph, depth: str) -> None
                 ]
             )
         )
-        if depth == "deep" and schema.example:
+        if depth in DEEP_DEPTHS and schema.example:
             lines.extend(["", f"Example `{schema.name}`:", "", "```json"])
             lines.append(json.dumps(schema.example, indent=2, sort_keys=True))
             lines.extend(["```", ""])
@@ -789,7 +986,8 @@ def render_markdown(graph: SystemReviewGraph, depth: str = "deep") -> str:
             )
         )
     _add_child_maps(lines, graph)
-    if depth in {"standard", "deep"}:
+    _add_blueprint_sections(lines, graph, depth)
+    if depth in STANDARD_DEPTHS:
         _add_system_details(lines, graph, depth)
         _add_artifacts(lines, graph)
         _add_schemas(lines, graph, depth)

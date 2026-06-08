@@ -15,6 +15,7 @@ It turns a public or sanitized manifest into:
 - walkthrough examples for reviewers, maintainers, and AI agents.
 - optional HTML and Graphviz DOT outputs.
 - optional map-of-maps atlases for huge repositories.
+- blueprint-depth reports with source evidence, flows, control points, and known gaps.
 - an MCP server so agents can scan, build, validate, and load atlas context.
 
 This project is meant for open-source maintainers, platform teams, audit teams, AI coding agents, and new engineers who need to understand a repo as an operating system rather than a pile of files.
@@ -248,12 +249,24 @@ Reports are generated with `--depth deep` by default.
 | `overview` | You need the fastest orientation. | Current truth, source links, lifecycle map, expansion index, systems, architecture patterns, walkthroughs, review questions. |
 | `standard` | You want a normal audit handoff. | Overview plus artifact/schema map, gate map, system details, artifacts, schemas, gates, and workflows. |
 | `deep` | You want blueprint-level inspection. | Standard plus relationship graph, schema examples, and per-system artifact/gate/workflow drill-downs. |
+| `blueprint` | You want a wall-map view of how the system works. | Deep plus blueprint sections with source evidence, operational flow, control points, review questions, and known gaps. |
 
 ```bash
 system-review-graph build \
   --manifest examples/actual_repos/duckdb/system_review_manifest.json \
   --out-dir /tmp/duckdb-system-review \
   --depth deep
+```
+
+Linux-scale blueprint example:
+
+```bash
+system-review-graph build \
+  --manifest examples/actual_repos/linux_kernel/system_review_manifest.json \
+  --out-dir examples/actual_repos/linux_kernel/reports \
+  --depth blueprint \
+  --html \
+  --dot
 ```
 
 ## Manifest-First Design
@@ -282,6 +295,7 @@ A manifest describes:
 - workflows,
 - graph edges,
 - child maps for large-repo atlases,
+- blueprint sections for source-evidence-backed system flows,
 - source links,
 - current truth,
 - architecture patterns,

@@ -39,6 +39,7 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
         "decision_gates",
         "workflows",
         "child_maps",
+        "blueprint_sections",
     ):
         if key in manifest and not isinstance(manifest[key], list):
             errors.append(f"{key} must be a list")
@@ -49,6 +50,7 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
     schemas = manifest.get("schemas") or []
     edges = manifest.get("edges") or []
     child_maps = manifest.get("child_maps") or []
+    blueprint_sections = manifest.get("blueprint_sections") or []
     for label, values in (
         ("system_id", _ids(systems, "system_id")),
         ("artifact_id", _ids(artifacts, "artifact_id")),
@@ -56,6 +58,7 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
         ("step_id", _ids(workflows, "step_id")),
         ("schema name", _ids(schemas, "name")),
         ("child map_id", _ids(child_maps, "map_id")),
+        ("blueprint section_id", _ids(blueprint_sections, "section_id")),
     ):
         for duplicate in _seen_duplicates(values):
             errors.append(f"duplicate {label}: {duplicate}")
@@ -73,6 +76,13 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
         for field in ("map_id", "name", "path"):
             if not child_map.get(field):
                 errors.append(f"child_maps[{index}] missing {field}")
+    for index, section in enumerate(manifest.get("blueprint_sections") or []):
+        if not isinstance(section, dict):
+            errors.append(f"blueprint_sections[{index}] must be an object")
+            continue
+        for field in ("section_id", "title"):
+            if not section.get(field):
+                errors.append(f"blueprint_sections[{index}] missing {field}")
     for index, artifact in enumerate(manifest.get("artifacts") or []):
         if not isinstance(artifact, dict):
             errors.append(f"artifacts[{index}] must be an object")

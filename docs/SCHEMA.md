@@ -18,6 +18,7 @@ System Review Graph uses a JSON manifest. The manifest is deliberately simple so
 | `workflows` | array | Lifecycle steps. |
 | `edges` | array | Optional explicit graph edges. |
 | `child_maps` | array | Optional linked subsystem maps for large-repo atlases. |
+| `blueprint_sections` | array | Optional source-evidence-backed flows for blueprint-depth reports. |
 | `source_links` | array | Public links used for a public-safe report. |
 | `architecture_patterns` | array | How different project styles map into this model. |
 | `walkthroughs` | array | Human-readable examples. |
@@ -163,6 +164,53 @@ The root atlas stays small. The child maps carry local detail. This is useful
 when an AI agent, reviewer, or new maintainer needs one uploadable map that
 points to the rest of the context.
 
+## Blueprint Sections
+
+Use `blueprint_sections` when a report needs to explain how the system works,
+not only where files are.
+
+```json
+{
+  "section_id": "boot_init_userspace",
+  "title": "Boot, Kernel Init, And Userspace Handoff",
+  "purpose": "Track the early kernel path into the first userspace process.",
+  "subsystems": ["arch", "init", "kernel", "fs"],
+  "source_evidence": [
+    {
+      "path": "init/main.c:1017",
+      "symbol": "start_kernel",
+      "role": "generic kernel entry",
+      "notes": "Generic initialization begins after architecture handoff.",
+      "proof_level": "source-confirmed"
+    }
+  ],
+  "flow": [
+    {
+      "step": "Generic kernel initialization",
+      "actor": "start_kernel",
+      "consumes": "early boot state",
+      "produces": "initialized core services",
+      "next": "rest_init",
+      "evidence": "init/main.c:1017"
+    }
+  ],
+  "control_points": [
+    {
+      "gate": "Initcall ordering gate",
+      "location": "include/linux/module.h",
+      "decision": "early/core/subsys/fs/device/late order",
+      "failure_mode": "dependency starts too early or too late",
+      "evidence": "module_init/initcall macros"
+    }
+  ]
+}
+```
+
+This is the main difference from a code review graph. A code graph may show
+that functions reference each other. A blueprint section says what path those
+functions represent, what operation moves through them, what gates control the
+operation, and what proof level supports the claim.
+
 ## Review Questions
 
 Use `review_questions` to turn the report into an audit checklist:
@@ -198,10 +246,12 @@ depth at render time:
 system-review-graph build --manifest system_review_manifest.json --out-dir reports --depth overview
 system-review-graph build --manifest system_review_manifest.json --out-dir reports --depth standard
 system-review-graph build --manifest system_review_manifest.json --out-dir reports --depth deep
+system-review-graph build --manifest system_review_manifest.json --out-dir reports --depth blueprint
 ```
 
 `deep` reports add relationship graphs, schema examples, and per-system
-artifact/gate/workflow expansion.
+artifact/gate/workflow expansion. `blueprint` reports add source-evidence,
+operational-flow, control-point, and known-gap tables for blueprint sections.
 
 ## JSON Schema
 

@@ -42,7 +42,7 @@
     <h1>Linux Kernel System Review Atlas</h1>
     <p>Map-of-maps generated for a large repository: root atlas links to subsystem manifests.</p>
     <div class="meta">
-      <span class="pill">Depth: overview</span>
+      <span class="pill">Depth: blueprint</span>
       <span class="pill">Systems: 24</span>
       <span class="pill">Artifacts: 24</span>
       <span class="pill">Gates: 1</span>
@@ -52,7 +52,7 @@
   <main>
     <section>
       <h2>Bigger Picture</h2>
-      <p>This is a large-repository map-of-maps stress test for System Review Graph. It uses real Linux kernel tracked paths to create a root atlas and child subsystem maps. The example is useful for orientation, CI drift checks, and reviewer routing, but it is not an official Linux maintainer audit and does not prove runtime behavior.</p>
+      <p>This is a large-repository map-of-maps and blueprint stress test for System Review Graph. It uses real Linux kernel tracked paths plus source-evidence anchors to show the whole-system shape: build/config, boot/init, process scheduling, syscall entry, memory, filesystem/block IO, networking, driver probing, security hooks, modules/BPF/tracing, and Rust integration. The target reading experience is a blueprint wall: start with the root structure, then drill into the source-backed flow and child maps. It is still not an official Linux maintainer audit and does not prove runtime behavior without tests/traces.</p>
     </section>
     <section>
       <h2>Source Links</h2>
@@ -70,6 +70,204 @@
   open_child_maps --&gt; refine_atlas[&quot;Refine Atlas&quot;]
   refine_atlas --&gt; regenerate_on_merge[&quot;Regenerate On Merge&quot;]</pre>
     </section>
+
+        <section>
+          <h2>Blueprint Map</h2>
+          <pre class="mermaid">flowchart TD
+  root[&quot;Linux Kernel System Review Atlas&quot;]
+  root --&gt; blueprint_whole_repo_build_config[&quot;Whole Repository Coverage And Build Configuration&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_Kconfig[&quot;Kconfig&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_Makefile[&quot;Makefile&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_scripts[&quot;scripts&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_arch[&quot;arch&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_init[&quot;init&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_kernel[&quot;kernel&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_drivers[&quot;drivers&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_fs[&quot;fs&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_mm[&quot;mm&quot;]
+  blueprint_whole_repo_build_config --&gt; blueprint_whole_repo_build_config_net[&quot;net&quot;]
+  root --&gt; blueprint_boot_init_userspace[&quot;Boot, Kernel Init, And Userspace Handoff&quot;]
+  blueprint_boot_init_userspace --&gt; blueprint_boot_init_userspace_arch[&quot;arch&quot;]
+  blueprint_boot_init_userspace --&gt; blueprint_boot_init_userspace_init[&quot;init&quot;]
+  blueprint_boot_init_userspace --&gt; blueprint_boot_init_userspace_kernel[&quot;kernel&quot;]
+  blueprint_boot_init_userspace --&gt; blueprint_boot_init_userspace_usr[&quot;usr&quot;]
+  blueprint_boot_init_userspace --&gt; blueprint_boot_init_userspace_drivers[&quot;drivers&quot;]
+  blueprint_boot_init_userspace --&gt; blueprint_boot_init_userspace_fs[&quot;fs&quot;]
+  root --&gt; blueprint_process_scheduler_lifecycle[&quot;Process Lifetime And Scheduler Control Plane&quot;]
+  blueprint_process_scheduler_lifecycle --&gt; blueprint_process_scheduler_lifecycle_kernel[&quot;kernel&quot;]
+  blueprint_process_scheduler_lifecycle --&gt; blueprint_process_scheduler_lifecycle_include[&quot;include&quot;]
+  blueprint_process_scheduler_lifecycle --&gt; blueprint_process_scheduler_lifecycle_arch[&quot;arch&quot;]
+  root --&gt; blueprint_syscall_user_kernel_boundary[&quot;User-Kernel Boundary And Syscall Dispatch&quot;]
+  blueprint_syscall_user_kernel_boundary --&gt; blueprint_syscall_user_kernel_boundary_arch[&quot;arch&quot;]
+  blueprint_syscall_user_kernel_boundary --&gt; blueprint_syscall_user_kernel_boundary_include[&quot;include&quot;]
+  blueprint_syscall_user_kernel_boundary --&gt; blueprint_syscall_user_kernel_boundary_kernel[&quot;kernel&quot;]
+  blueprint_syscall_user_kernel_boundary --&gt; blueprint_syscall_user_kernel_boundary_fs[&quot;fs&quot;]
+  root --&gt; blueprint_memory_management_faults_allocations[&quot;Memory Management, Mappings, Faults, And Page Allocation&quot;]
+  blueprint_memory_management_faults_allocations --&gt; blueprint_memory_management_faults_allocations_mm[&quot;mm&quot;]
+  blueprint_memory_management_faults_allocations --&gt; blueprint_memory_management_faults_allocations_include[&quot;include&quot;]
+  blueprint_memory_management_faults_allocations --&gt; blueprint_memory_management_faults_allocations_kernel[&quot;kernel&quot;]
+  blueprint_memory_management_faults_allocations --&gt; blueprint_memory_management_faults_allocations_arch[&quot;arch&quot;]
+  root --&gt; blueprint_vfs_filesystem_block_io[&quot;Filesystem, VFS, Path Lookup, And Block IO&quot;]
+  blueprint_vfs_filesystem_block_io --&gt; blueprint_vfs_filesystem_block_io_fs[&quot;fs&quot;]
+  blueprint_vfs_filesystem_block_io --&gt; blueprint_vfs_filesystem_block_io_block[&quot;block&quot;]
+  blueprint_vfs_filesystem_block_io --&gt; blueprint_vfs_filesystem_block_io_include[&quot;include&quot;]
+  blueprint_vfs_filesystem_block_io --&gt; blueprint_vfs_filesystem_block_io_security[&quot;security&quot;]
+  blueprint_vfs_filesystem_block_io --&gt; blueprint_vfs_filesystem_block_io_drivers[&quot;drivers&quot;]
+  root --&gt; blueprint_network_packet_lifecycle[&quot;Networking Packet Receive, Protocol Dispatch, And Transmit&quot;]
+  blueprint_network_packet_lifecycle --&gt; blueprint_network_packet_lifecycle_net[&quot;net&quot;]
+  blueprint_network_packet_lifecycle --&gt; blueprint_network_packet_lifecycle_drivers[&quot;drivers&quot;]
+  blueprint_network_packet_lifecycle --&gt; blueprint_network_packet_lifecycle_include[&quot;include&quot;]
+  blueprint_network_packet_lifecycle --&gt; blueprint_network_packet_lifecycle_security[&quot;security&quot;]
+  root --&gt; blueprint_driver_model_device_probe[&quot;Driver Model, Device Matching, And Probe&quot;]
+  blueprint_driver_model_device_probe --&gt; blueprint_driver_model_device_probe_drivers[&quot;drivers&quot;]
+  blueprint_driver_model_device_probe --&gt; blueprint_driver_model_device_probe_include[&quot;include&quot;]
+  blueprint_driver_model_device_probe --&gt; blueprint_driver_model_device_probe_modules[&quot;modules&quot;]
+  blueprint_driver_model_device_probe --&gt; blueprint_driver_model_device_probe_bus_specific_subsystems[&quot;bus-specific subsystems&quot;]
+  root --&gt; blueprint_security_lsm_permission_hooks[&quot;Security And LSM Permission Hooks&quot;]
+  blueprint_security_lsm_permission_hooks --&gt; blueprint_security_lsm_permission_hooks_security[&quot;security&quot;]
+  blueprint_security_lsm_permission_hooks --&gt; blueprint_security_lsm_permission_hooks_include[&quot;include&quot;]
+  blueprint_security_lsm_permission_hooks --&gt; blueprint_security_lsm_permission_hooks_fs[&quot;fs&quot;]
+  blueprint_security_lsm_permission_hooks --&gt; blueprint_security_lsm_permission_hooks_kernel[&quot;kernel&quot;]
+  blueprint_security_lsm_permission_hooks --&gt; blueprint_security_lsm_permission_hooks_net[&quot;net&quot;]
+  blueprint_security_lsm_permission_hooks --&gt; blueprint_security_lsm_permission_hooks_bpf[&quot;bpf&quot;]
+  root --&gt; blueprint_extensibility_modules_bpf_tracing[&quot;Extensibility, Modules, BPF, And Tracing&quot;]
+  blueprint_extensibility_modules_bpf_tracing --&gt; blueprint_extensibility_modules_bpf_tracing_kernel[&quot;kernel&quot;]
+  blueprint_extensibility_modules_bpf_tracing --&gt; blueprint_extensibility_modules_bpf_tracing_include[&quot;include&quot;]
+  blueprint_extensibility_modules_bpf_tracing --&gt; blueprint_extensibility_modules_bpf_tracing_scripts[&quot;scripts&quot;]
+  blueprint_extensibility_modules_bpf_tracing --&gt; blueprint_extensibility_modules_bpf_tracing_security[&quot;security&quot;]
+  blueprint_extensibility_modules_bpf_tracing --&gt; blueprint_extensibility_modules_bpf_tracing_tools[&quot;tools&quot;]
+  root --&gt; blueprint_rust_kernel_integration[&quot;Rust Kernel Integration And Safety Boundary&quot;]
+  blueprint_rust_kernel_integration --&gt; blueprint_rust_kernel_integration_rust[&quot;rust&quot;]
+  blueprint_rust_kernel_integration --&gt; blueprint_rust_kernel_integration_drivers[&quot;drivers&quot;]
+  blueprint_rust_kernel_integration --&gt; blueprint_rust_kernel_integration_samples[&quot;samples&quot;]
+  blueprint_rust_kernel_integration --&gt; blueprint_rust_kernel_integration_scripts[&quot;scripts&quot;]
+  blueprint_rust_kernel_integration --&gt; blueprint_rust_kernel_integration_init[&quot;init&quot;]
+  blueprint_rust_kernel_integration --&gt; blueprint_rust_kernel_integration_Makefile[&quot;Makefile&quot;]</pre>
+        </section>
+
+
+        <section>
+          <h2>Blueprint Sections</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Section</th><th>Purpose</th><th>Subsystems</th>
+                <th>Evidence</th><th>Flow</th><th>Controls</th>
+              </tr>
+            </thead>
+            <tbody>
+        <tr>
+          <td>Whole Repository Coverage And Build Configuration</td>
+          <td>Shows how the top-level Linux source tree becomes configured build intent instead of treating directories as isolated folders.</td>
+          <td>Kconfig, Makefile, scripts, arch, init, kernel, drivers, fs, mm, net, security, crypto, lib, io_uring, rust</td>
+          <td>4</td>
+          <td>3</td>
+          <td>2</td>
+        </tr>
+
+
+        <tr>
+          <td>Boot, Kernel Init, And Userspace Handoff</td>
+          <td>Tracks the early kernel path from architecture handoff into generic kernel init and the first userspace process.</td>
+          <td>arch, init, kernel, usr, drivers, fs</td>
+          <td>4</td>
+          <td>4</td>
+          <td>2</td>
+        </tr>
+
+
+        <tr>
+          <td>Process Lifetime And Scheduler Control Plane</td>
+          <td>Maps how tasks are created, made runnable, selected, switched, woken, and exited.</td>
+          <td>kernel, include, arch</td>
+          <td>6</td>
+          <td>5</td>
+          <td>3</td>
+        </tr>
+
+
+        <tr>
+          <td>User-Kernel Boundary And Syscall Dispatch</td>
+          <td>Shows how user requests enter kernel-defined syscall contracts and land in subsystem implementations.</td>
+          <td>arch, include, kernel, fs</td>
+          <td>5</td>
+          <td>3</td>
+          <td>2</td>
+        </tr>
+
+
+        <tr>
+          <td>Memory Management, Mappings, Faults, And Page Allocation</td>
+          <td>Connects mmap/VMA decisions, page faults, allocator fast/slow paths, reclaim/compaction/OOM pressure, and exported memory contracts.</td>
+          <td>mm, include, kernel, arch</td>
+          <td>5</td>
+          <td>4</td>
+          <td>2</td>
+        </tr>
+
+
+        <tr>
+          <td>Filesystem, VFS, Path Lookup, And Block IO</td>
+          <td>Shows how file-oriented syscalls move through path lookup, file objects, VFS read/write, filesystem operations, and block-device submission.</td>
+          <td>fs, block, include, security, drivers</td>
+          <td>6</td>
+          <td>4</td>
+          <td>3</td>
+        </tr>
+
+
+        <tr>
+          <td>Networking Packet Receive, Protocol Dispatch, And Transmit</td>
+          <td>Maps packets from network device buffers through core receive, IP/TCP dispatch, and transmit queue submission.</td>
+          <td>net, drivers, include, security</td>
+          <td>5</td>
+          <td>5</td>
+          <td>3</td>
+        </tr>
+
+
+        <tr>
+          <td>Driver Model, Device Matching, And Probe</td>
+          <td>Shows how drivers register with buses, devices match to drivers, and probe binds runtime device behavior.</td>
+          <td>drivers, include, modules, bus-specific subsystems</td>
+          <td>5</td>
+          <td>4</td>
+          <td>2</td>
+        </tr>
+
+
+        <tr>
+          <td>Security And LSM Permission Hooks</td>
+          <td>Maps the reusable security hook layer that lets security modules gate file, inode, process, network, BPF, and other kernel operations.</td>
+          <td>security, include, fs, kernel, net, bpf</td>
+          <td>5</td>
+          <td>3</td>
+          <td>2</td>
+        </tr>
+
+
+        <tr>
+          <td>Extensibility, Modules, BPF, And Tracing</td>
+          <td>Shows how Linux extends runtime behavior through loadable modules, initcall/module_init surfaces, BPF program loading, and tracepoint/observability surfaces.</td>
+          <td>kernel, include, scripts, security, tools</td>
+          <td>6</td>
+          <td>4</td>
+          <td>2</td>
+        </tr>
+
+
+        <tr>
+          <td>Rust Kernel Integration And Safety Boundary</td>
+          <td>Maps Rust as a kernel language surface: config-gated availability, build integration, generated bindings, safe abstractions, and driver/sample integration.</td>
+          <td>rust, drivers, samples, scripts, init, Makefile</td>
+          <td>5</td>
+          <td>4</td>
+          <td>2</td>
+        </tr>
+        </tbody>
+          </table>
+        </section>
+
 
         <section>
           <h2>Map Of Maps</h2>
@@ -359,6 +557,205 @@
         </section>
 
 
+        <section>
+          <h2>Artifact And Schema Map</h2>
+          <pre class="mermaid">flowchart LR
+  system_arch[&quot;arch/&quot;]
+  system_arch --&gt; artifact_arch_child_map[&quot;arch/ Child System Map&quot;]
+  artifact_arch_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_block[&quot;block/&quot;]
+  system_block --&gt; artifact_block_child_map[&quot;block/ Child System Map&quot;]
+  artifact_block_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_certs[&quot;certs/&quot;]
+  system_certs --&gt; artifact_certs_child_map[&quot;certs/ Child System Map&quot;]
+  artifact_certs_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_crypto[&quot;crypto/&quot;]
+  system_crypto --&gt; artifact_crypto_child_map[&quot;crypto/ Child System Map&quot;]
+  artifact_crypto_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_documentation[&quot;Documentation/&quot;]
+  system_documentation --&gt; artifact_documentation_child_map[&quot;Documentation/ Child System Map&quot;]
+  artifact_documentation_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_drivers[&quot;drivers/&quot;]
+  system_drivers --&gt; artifact_drivers_child_map[&quot;drivers/ Child System Map&quot;]
+  artifact_drivers_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_fs[&quot;fs/&quot;]
+  system_fs --&gt; artifact_fs_child_map[&quot;fs/ Child System Map&quot;]
+  artifact_fs_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_include[&quot;include/&quot;]
+  system_include --&gt; artifact_include_child_map[&quot;include/ Child System Map&quot;]
+  artifact_include_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_init[&quot;init/&quot;]
+  system_init --&gt; artifact_init_child_map[&quot;init/ Child System Map&quot;]
+  artifact_init_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_io_uring[&quot;io_uring/&quot;]
+  system_io_uring --&gt; artifact_io_uring_child_map[&quot;io_uring/ Child System Map&quot;]
+  artifact_io_uring_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_ipc[&quot;ipc/&quot;]
+  system_ipc --&gt; artifact_ipc_child_map[&quot;ipc/ Child System Map&quot;]
+  artifact_ipc_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_kernel[&quot;kernel/&quot;]
+  system_kernel --&gt; artifact_kernel_child_map[&quot;kernel/ Child System Map&quot;]
+  artifact_kernel_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_lib[&quot;lib/&quot;]
+  system_lib --&gt; artifact_lib_child_map[&quot;lib/ Child System Map&quot;]
+  artifact_lib_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_mm[&quot;mm/&quot;]
+  system_mm --&gt; artifact_mm_child_map[&quot;mm/ Child System Map&quot;]
+  artifact_mm_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_net[&quot;net/&quot;]
+  system_net --&gt; artifact_net_child_map[&quot;net/ Child System Map&quot;]
+  artifact_net_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_rust[&quot;rust/&quot;]
+  system_rust --&gt; artifact_rust_child_map[&quot;rust/ Child System Map&quot;]
+  artifact_rust_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_samples[&quot;samples/&quot;]
+  system_samples --&gt; artifact_samples_child_map[&quot;samples/ Child System Map&quot;]
+  artifact_samples_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_scripts[&quot;scripts/&quot;]
+  system_scripts --&gt; artifact_scripts_child_map[&quot;scripts/ Child System Map&quot;]
+  artifact_scripts_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_security[&quot;security/&quot;]
+  system_security --&gt; artifact_security_child_map[&quot;security/ Child System Map&quot;]
+  artifact_security_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_sound[&quot;sound/&quot;]
+  system_sound --&gt; artifact_sound_child_map[&quot;sound/ Child System Map&quot;]
+  artifact_sound_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_tools[&quot;tools/&quot;]
+  system_tools --&gt; artifact_tools_child_map[&quot;tools/ Child System Map&quot;]
+  artifact_tools_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_usr[&quot;usr/&quot;]
+  system_usr --&gt; artifact_usr_child_map[&quot;usr/ Child System Map&quot;]
+  artifact_usr_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_virt[&quot;virt/&quot;]
+  system_virt --&gt; artifact_virt_child_map[&quot;virt/ Child System Map&quot;]
+  artifact_virt_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]
+  system_licenses[&quot;LICENSES/&quot;]
+  system_licenses --&gt; artifact_licenses_child_map[&quot;LICENSES/ Child System Map&quot;]
+  artifact_licenses_child_map --&gt; schema_SubsystemMap[&quot;SubsystemMap&quot;]</pre>
+        </section>
+        <section>
+          <h2>Gate Map</h2>
+          <pre class="mermaid">flowchart LR
+  gate_subsystem_review_gate{&quot;Subsystem Review Gate&quot;}
+  gate_subsystem_review_gate --&gt; out_subsystem_review_gate_accepted[&quot;accepted&quot;]
+  gate_subsystem_review_gate --&gt; out_subsystem_review_gate_needs_deeper_map[&quot;needs_deeper_map&quot;]
+  gate_subsystem_review_gate --&gt; out_subsystem_review_gate_split_or_merge[&quot;split_or_merge&quot;]
+  gate_subsystem_review_gate --&gt; out_subsystem_review_gate_rejected[&quot;rejected&quot;]
+  gate_subsystem_review_gate{&quot;Subsystem Review Gate&quot;} --&gt; step_scan_root_boundaries[&quot;Scan Root Boundaries&quot;]
+  gate_subsystem_review_gate{&quot;Subsystem Review Gate&quot;} --&gt; step_open_child_maps[&quot;Open Child Maps&quot;]
+  gate_subsystem_review_gate{&quot;Subsystem Review Gate&quot;} --&gt; step_refine_atlas[&quot;Refine Atlas&quot;]
+  gate_subsystem_review_gate{&quot;Subsystem Review Gate&quot;} --&gt; step_regenerate_on_merge[&quot;Regenerate On Merge&quot;]</pre>
+        </section>
+
+
+        <section>
+          <h2>Relationship Graph</h2>
+          <pre class="mermaid">flowchart TD
+  arch[&quot;arch/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; arch_child_map[&quot;arch/ Child System Map&quot;]
+  arch[&quot;arch/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  block[&quot;block/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; block_child_map[&quot;block/ Child System Map&quot;]
+  block[&quot;block/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  certs[&quot;certs/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; certs_child_map[&quot;certs/ Child System Map&quot;]
+  certs[&quot;certs/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  crypto[&quot;crypto/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; crypto_child_map[&quot;crypto/ Child System Map&quot;]
+  crypto[&quot;crypto/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  documentation[&quot;Documentation/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; documentation_child_map[&quot;Documentation/ Child System Map&quot;]
+  documentation[&quot;Documentation/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  drivers[&quot;drivers/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; drivers_child_map[&quot;drivers/ Child System Map&quot;]
+  drivers[&quot;drivers/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  fs[&quot;fs/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; fs_child_map[&quot;fs/ Child System Map&quot;]
+  fs[&quot;fs/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  include[&quot;include/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; include_child_map[&quot;include/ Child System Map&quot;]
+  include[&quot;include/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  init[&quot;init/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; init_child_map[&quot;init/ Child System Map&quot;]
+  init[&quot;init/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  io_uring[&quot;io_uring/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; io_uring_child_map[&quot;io_uring/ Child System Map&quot;]
+  io_uring[&quot;io_uring/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  ipc[&quot;ipc/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; ipc_child_map[&quot;ipc/ Child System Map&quot;]
+  ipc[&quot;ipc/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  kernel[&quot;kernel/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; kernel_child_map[&quot;kernel/ Child System Map&quot;]
+  kernel[&quot;kernel/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  lib[&quot;lib/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; lib_child_map[&quot;lib/ Child System Map&quot;]
+  lib[&quot;lib/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  mm[&quot;mm/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; mm_child_map[&quot;mm/ Child System Map&quot;]
+  mm[&quot;mm/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  net[&quot;net/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; net_child_map[&quot;net/ Child System Map&quot;]
+  net[&quot;net/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  rust[&quot;rust/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; rust_child_map[&quot;rust/ Child System Map&quot;]
+  rust[&quot;rust/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  samples[&quot;samples/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; samples_child_map[&quot;samples/ Child System Map&quot;]
+  samples[&quot;samples/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  scripts[&quot;scripts/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; scripts_child_map[&quot;scripts/ Child System Map&quot;]
+  scripts[&quot;scripts/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  security[&quot;security/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; security_child_map[&quot;security/ Child System Map&quot;]
+  security[&quot;security/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  sound[&quot;sound/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; sound_child_map[&quot;sound/ Child System Map&quot;]
+  sound[&quot;sound/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  tools[&quot;tools/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; tools_child_map[&quot;tools/ Child System Map&quot;]
+  tools[&quot;tools/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  usr[&quot;usr/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; usr_child_map[&quot;usr/ Child System Map&quot;]
+  usr[&quot;usr/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  virt[&quot;virt/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; virt_child_map[&quot;virt/ Child System Map&quot;]
+  virt[&quot;virt/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  licenses[&quot;LICENSES/ subsystem map&quot;] -- &quot;owns or uses&quot; --&gt; licenses_child_map[&quot;LICENSES/ Child System Map&quot;]
+  licenses[&quot;LICENSES/ subsystem map&quot;] -- &quot;is gated by&quot; --&gt; subsystem_review_gate[&quot;Subsystem Review Gate&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; arch_child_map[&quot;arch/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; block_child_map[&quot;block/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; certs_child_map[&quot;certs/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; crypto_child_map[&quot;crypto/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; documentation_child_map[&quot;Documentation/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; drivers_child_map[&quot;drivers/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; fs_child_map[&quot;fs/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; include_child_map[&quot;include/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; init_child_map[&quot;init/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; io_uring_child_map[&quot;io_uring/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; ipc_child_map[&quot;ipc/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; kernel_child_map[&quot;kernel/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; lib_child_map[&quot;lib/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; mm_child_map[&quot;mm/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; net_child_map[&quot;net/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; rust_child_map[&quot;rust/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; samples_child_map[&quot;samples/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; scripts_child_map[&quot;scripts/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; security_child_map[&quot;security/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; sound_child_map[&quot;sound/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; tools_child_map[&quot;tools/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; usr_child_map[&quot;usr/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; virt_child_map[&quot;virt/ Child System Map&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;produces&quot; --&gt; licenses_child_map[&quot;LICENSES/ Child System Map&quot;]
+  subsystem_review_gate[&quot;Subsystem Review Gate&quot;] -- &quot;gates&quot; --&gt; scan_root_boundaries[&quot;Scan Root Boundaries&quot;]
+  scan_root_boundaries[&quot;Scan Root Boundaries&quot;] -- &quot;routes to&quot; --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  arch_child_map[&quot;arch/ Child System Map&quot;] -- &quot;feeds&quot; --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  block_child_map[&quot;block/ Child System Map&quot;] -- &quot;feeds&quot; --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  certs_child_map[&quot;certs/ Child System Map&quot;] -- &quot;feeds&quot; --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  crypto_child_map[&quot;crypto/ Child System Map&quot;] -- &quot;feeds&quot; --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  documentation_child_map[&quot;Documentation/ Child System Map&quot;] -- &quot;feeds&quot; --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  drivers_child_map[&quot;drivers/ Child System Map&quot;] -- &quot;feeds&quot; --&gt; open_child_maps[&quot;Open Child Maps&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; arch[&quot;arch/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; block[&quot;block/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; certs[&quot;certs/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; crypto[&quot;crypto/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; documentation[&quot;Documentation/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; drivers[&quot;drivers/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; fs[&quot;fs/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; include[&quot;include/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; init[&quot;init/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; io_uring[&quot;io_uring/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; ipc[&quot;ipc/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; kernel[&quot;kernel/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; lib[&quot;lib/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; mm[&quot;mm/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; net[&quot;net/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; rust[&quot;rust/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; samples[&quot;samples/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; scripts[&quot;scripts/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; security[&quot;security/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; sound[&quot;sound/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; tools[&quot;tools/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; usr[&quot;usr/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; virt[&quot;virt/ subsystem map&quot;]
+  root_atlas[&quot;Atlas&quot;] -- &quot;links to&quot; --&gt; licenses[&quot;LICENSES/ subsystem map&quot;]</pre>
+        </section>
 
     <section>
       <h2>Systems</h2>

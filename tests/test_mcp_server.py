@@ -59,6 +59,13 @@ def test_mcp_load_atlas_context(tmp_path):
                         "path": "subsystems/drivers/system_review_manifest.json",
                     }
                 ],
+                "blueprint_sections": [
+                    {
+                        "section_id": "boot",
+                        "title": "Boot Flow",
+                        "purpose": "Track boot into init.",
+                    }
+                ],
             }
         )
     )
@@ -81,6 +88,7 @@ def test_mcp_load_atlas_context(tmp_path):
     assert response is not None
     text = response["result"]["content"][0]["text"]
     assert "drivers child" in text
+    assert "Boot Flow" in text
     assert response["result"]["structuredContent"]["truncated"] is False
 
 

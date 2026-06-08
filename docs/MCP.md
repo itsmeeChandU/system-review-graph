@@ -45,7 +45,7 @@ For local development from a checkout:
 | `srg_doctor_manifest` | Report audit-readiness warnings and missing review surfaces. |
 | `srg_build_report` | Build Markdown/JSON reports, with optional HTML and DOT. |
 | `srg_scan_repository` | Generate a starter manifest or large-repo atlas from a local repo. |
-| `srg_load_atlas_context` | Load a compact context bundle from a root atlas and optional child maps. |
+| `srg_load_atlas_context` | Load a compact context bundle from a root atlas, blueprint sections, and optional child maps. |
 
 ## Why MCP Matters For Atlases
 
@@ -55,6 +55,7 @@ surface is useful for agents:
 ```text
 agent -> srg_load_atlas_context(root manifest)
       -> choose changed/risky child map
+      -> choose source-backed blueprint section
       -> load child context
       -> validate/doctor/build updated reports
 ```
@@ -100,7 +101,8 @@ Load an atlas for an agent:
   "arguments": {
     "manifest_path": "reports/system-review-atlas/system_review_manifest.json",
     "include_children": true,
-    "max_child_maps": 8
+    "max_child_maps": 8,
+    "max_blueprint_sections": 8
   }
 }
 ```

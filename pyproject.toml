@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "system-review-graph"
-version = "0.3.0"
+version = "0.4.0"
 description = "Generate system-level review graphs: what a repo actually does, not just what code exists."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -33,10 +33,17 @@ Quick source-surface review:
 - The root atlas found 24 child maps including `arch`, `block`, `crypto`, `drivers`, `fs`, `include`, `init`, `io_uring`, `kernel`, `lib`, `mm`, `net`, `rust`, `scripts`, `security`, `tools`, and `virt`.
 - Most child maps are C/C++ surfaces, with Rust also detected in `drivers`, `lib`, `mm`, `rust`, `samples`, `scripts`, and `tools`.
 - `Documentation`, `scripts`, and `tools` show mixed source/support surfaces that should be reviewed differently from runtime kernel subsystems.
-- The useful next refinement would map real Linux workflows such as boot/init, syscall path, memory allocation, networking packet flow, filesystem IO, driver model/probing, security hooks, and Rust integration gates.
+
+Blueprint review:
+
+- The root report now includes 11 source-backed blueprint sections.
+- Covered flows: build/config, boot/init, process scheduler, syscall boundary, memory, VFS/block IO, networking, driver model/probe, LSM security hooks, modules/BPF/tracing, and Rust integration.
+- Each blueprint section lists source evidence, operational flow steps, control points, review questions, and known gaps.
+- The report should feel like a wall blueprint: root atlas first, subsystem map second, source-backed operational paths third.
 
 Known boundary:
 
 This is an inferred source-tree atlas, not an official Linux architecture audit.
 It does not inspect file contents, build configurations, tests, maintainership,
-or runtime behavior. Use it as a navigation and review-routing artifact.
+or runtime behavior exhaustively. Use it as a navigation, review-routing, and
+source-evidence blueprint artifact.
