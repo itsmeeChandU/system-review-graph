@@ -2,6 +2,16 @@
 
 All notable changes to System Review Graph are documented here.
 
+## Unreleased
+
+Added:
+
+- GitHub Actions CI workflow for lint, tests, package builds, wheel smoke
+  tests, example report builds, and atlas generation.
+- PyPI Trusted Publishing workflow for automated release uploads.
+- PyPI release guide with pending-publisher setup fields for
+  `system-review-graph`.
+
 ## 0.5.2 - 2026-06-08
 
 Added:

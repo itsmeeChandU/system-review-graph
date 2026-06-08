@@ -22,6 +22,9 @@ orientation.
 - Linux kernel blueprint with major source-backed operational paths.
 - Generated coverage, evidence, gap, and action registers in Markdown and HTML reports.
 - Merge-time atlas generation pattern for CI.
+- Committed GitHub Actions CI workflow for lint, tests, package build, wheel
+  smoke test, example report builds, and atlas generation.
+- Committed PyPI Trusted Publishing workflow for automated release uploads.
 - Linux kernel atlas stress-test example.
 - README language-support matrix that distinguishes the language-neutral
   manifest model from automatic scanner detection.
@@ -54,5 +57,4 @@ should come from:
 ## Later
 
 - Publish to PyPI.
-- Add GitHub Actions release workflow with trusted publishing.
 - Add examples contributed by other maintainers.

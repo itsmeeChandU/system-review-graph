@@ -59,6 +59,9 @@ system-review
 - `CITATION.cff`, `AUTHORS.md`, and `NOTICE.md` are present for clear credit.
 - A social preview image exists under `assets/social-preview.svg` and can be
   uploaded in GitHub repository settings.
+- CI and PyPI publishing workflows exist under `.github/workflows/`.
+- PyPI pending publisher is configured for `.github/workflows/publish.yml` with
+  the `pypi` environment.
 - Wheel install smoke test passes.
 
 ## Where To Share

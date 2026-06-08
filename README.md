@@ -470,11 +470,12 @@ python -m pytest
 python -m ruff check .
 ```
 
-A GitHub Actions CI template is available at
-`docs/ci/github-actions-ci.yml`. Copy it to `.github/workflows/ci.yml` in your
-own repository if you want automated lint, tests, and example-report builds.
-The template also shows how to regenerate an atlas on every push or pull
-request so architecture drift becomes a visible merge artifact.
+GitHub Actions workflows are committed under `.github/workflows/`:
+
+- `ci.yml` runs lint, tests, package builds, wheel smoke tests, example report
+  builds, and merge-time atlas generation.
+- `publish.yml` builds, validates, smoke-tests, and publishes to PyPI through
+  Trusted Publishing.
 
 ## Packaging
 
@@ -494,6 +495,13 @@ python -m twine check dist/*
 ```
 
 See [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md) before publishing.
+
+Release automation:
+
+- CI runs lint, tests, package builds, wheel smoke tests, example report builds,
+  and atlas generation on pushes and pull requests.
+- PyPI publishing is wired through GitHub Actions and PyPI Trusted Publishing
+  with the `pypi` environment. See [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md).
 
 ## Credit, Citation, And License
 
