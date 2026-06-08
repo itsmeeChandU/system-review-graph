@@ -1,0 +1,99 @@
+# Methodology
+
+System Review Graph does not claim that code structure alone proves system
+behavior. Code shows what can happen. A system review asks what actually moves,
+what controls it, what evidence supports it, and what outcomes it creates.
+
+## Code Map Versus System Map
+
+| Layer | Main Question | Typical Evidence |
+|---|---|---|
+| Code map | What files, modules, functions, imports, and calls exist? | source tree, call graph, imports, symbols |
+| System map | What does the system do from input to decision to output? | APIs, configs, docs, tests, schemas, queues, databases, reports, UI, runbooks |
+| Operating map | What is trusted, blocked, reviewed, or acted on? | decision gates, permissions, logs, outcomes, incidents, human review |
+
+System Review Graph starts from a manifest because the system boundary often
+cannot be recovered perfectly from code alone.
+
+## The Core Method
+
+Use this sequence:
+
+```text
+sources -> artifacts -> schemas -> systems -> workflows -> gates -> outcomes -> review questions
+```
+
+1. Identify external and internal sources.
+2. List inspectable artifacts: files, APIs, tables, queues, dashboards, reports, logs, configs.
+3. Describe schemas or contracts for each artifact.
+4. Group artifacts into systems or bounded contexts.
+5. Describe workflows: what consumes, gates, produces, and routes to the next step.
+6. Add decision gates: what advances, waits, blocks, or needs human review.
+7. Add current truth and boundaries: what is proven, unproven, private, or unsafe to publish.
+8. Add review questions so humans and agents know where to inspect next.
+
+## How It Works With Only Code
+
+If only source code is available, create a provisional system map from:
+
+- top-level package directories,
+- CLI entry points,
+- web/API route files,
+- config files,
+- database migrations,
+- tests,
+- examples,
+- docs,
+- package metadata,
+- generated outputs.
+
+Then mark uncertainty explicitly. For example:
+
+```json
+{
+  "truth_boundary": "Inferred from public source paths and tests; production deployment is not reviewed."
+}
+```
+
+## How It Works With Private Systems
+
+Private companies often cannot expose raw databases or records. In that case,
+publish:
+
+- logical service names,
+- API contracts,
+- schema-only artifacts,
+- counts instead of records,
+- fake examples,
+- redaction rules,
+- decision gates,
+- known boundaries.
+
+The report should teach the architecture without leaking the organization.
+
+## Why This Is Different From A Call Graph
+
+A call graph can say `function A calls function B`. It usually cannot tell you:
+
+- whether an external action is allowed,
+- whether a human gate is required,
+- whether a dataset is stale,
+- whether an artifact is safe to publish,
+- whether an output becomes an operational decision,
+- whether the outcome is captured and learned from.
+
+System Review Graph treats function calls as one source of evidence, not the
+whole truth.
+
+## Quality Bar
+
+A good report lets a reviewer answer:
+
+- What enters the system?
+- What transforms it?
+- What rules control it?
+- What artifacts prove each stage exists?
+- What leaves the system?
+- What is blocked?
+- What is not proven?
+- Where should I inspect next?

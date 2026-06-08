@@ -52,3 +52,13 @@ def test_cli_init_named_example(tmp_path):
 
     assert exit_code == 0
     assert Path(target / "system_review_manifest.json").exists()
+
+
+def test_cli_list_examples(capsys):
+    exit_code = main(["list-examples"])
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "fictional_ai_ops" in captured.out
+    assert "actual_repos/duckdb" in captured.out

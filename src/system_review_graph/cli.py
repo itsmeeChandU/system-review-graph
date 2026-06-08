@@ -12,8 +12,8 @@ from system_review_graph.render import REPORT_DEPTHS, render_markdown
 from system_review_graph.serialize import to_dict
 from system_review_graph.validate import validate_manifest
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[2]
-EXAMPLES_ROOT = PACKAGE_ROOT / "examples"
+PACKAGE_ROOT = Path(__file__).resolve().parent
+EXAMPLES_ROOT = PACKAGE_ROOT / "example_manifests"
 DEFAULT_EXAMPLE = "fictional_ai_ops"
 
 
@@ -74,6 +74,12 @@ def _init_example(args: argparse.Namespace) -> int:
     return 0
 
 
+def _list_examples(_args: argparse.Namespace) -> int:
+    for choice in _example_choices():
+        print(choice)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="system-review-graph",
@@ -101,6 +107,9 @@ def main(argv: list[str] | None = None) -> int:
     init.add_argument("--example", default=DEFAULT_EXAMPLE, help="Example path under examples/")
     init.add_argument("--force", action="store_true")
     init.set_defaults(func=_init_example)
+
+    list_examples = sub.add_parser("list-examples", help="List bundled starter manifests")
+    list_examples.set_defaults(func=_list_examples)
 
     args = parser.parse_args(argv)
     return int(args.func(args))

@@ -16,16 +16,26 @@ keywords = [
   "architecture",
   "audit",
   "code-review",
+  "codebase-map",
+  "developer-tools",
   "system-design",
+  "system-review",
   "software-architecture",
   "documentation",
-  "reverse-engineering"
+  "reverse-engineering",
+  "mermaid"
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Documentation",
   "Topic :: Software Development :: Documentation",
   "Topic :: Software Development :: Quality Assurance"
@@ -35,9 +45,31 @@ classifiers = [
 Homepage = "https://github.com/itsmeeChandU/system-review-graph"
 Repository = "https://github.com/itsmeeChandU/system-review-graph"
 Issues = "https://github.com/itsmeeChandU/system-review-graph/issues"
+Changelog = "https://github.com/itsmeeChandU/system-review-graph/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/itsmeeChandU/system-review-graph#readme"
+Security = "https://github.com/itsmeeChandU/system-review-graph/blob/main/SECURITY.md"
 
 [project.scripts]
 system-review-graph = "system_review_graph.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/system_review_graph"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/examples",
+  "/docs",
+  "/README.md",
+  "/LICENSE",
+  "/CHANGELOG.md",
+  "/SECURITY.md",
+  "/SUPPORT.md",
+  "/CODE_OF_CONDUCT.md",
+  "/ROADMAP.md",
+  "/pyproject.toml"
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
