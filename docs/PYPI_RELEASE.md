@@ -24,7 +24,7 @@ python -m twine check dist/*
 ```bash
 python -m venv /tmp/srg-test
 source /tmp/srg-test/bin/activate
-python -m pip install dist/system_review_graph-0.5.1-py3-none-any.whl
+python -m pip install dist/system_review_graph-0.5.2-py3-none-any.whl
 system-review-graph list-examples
 system-review-graph init-example --example fictional_ai_ops --out-dir /tmp/srg-example --force
 system-review-graph build --manifest /tmp/srg-example/system_review_manifest.json --out-dir /tmp/srg-report

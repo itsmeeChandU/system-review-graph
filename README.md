@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="CHANGELOG.md"><img alt="Version 0.5.1" src="https://img.shields.io/badge/version-0.5.1-1456cc.svg"></a>
+  <a href="CHANGELOG.md"><img alt="Version 0.5.2" src="https://img.shields.io/badge/version-0.5.2-1456cc.svg"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-2f855a.svg"></a>
   <a href="CITATION.cff"><img alt="Citation metadata" src="https://img.shields.io/badge/citation-CITATION.cff-b8872f.svg"></a>
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-234b6d.svg">
@@ -497,7 +497,7 @@ See [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md) before publishing.
 
 ## Credit, Citation, And License
 
-System Review Graph was created by Chandu and is released under the
+System Review Graph was created by Sai Chandra Madduri and is released under the
 [`MIT License`](LICENSE). MIT keeps the project easy to use while requiring the
 copyright and license notice to be preserved in copies or substantial portions
 of the software.
@@ -505,7 +505,7 @@ of the software.
 For attribution, use:
 
 ```text
-System Review Graph by Chandu and contributors
+System Review Graph by Sai Chandra Madduri and contributors
 https://github.com/itsmeeChandU/system-review-graph
 ```
 

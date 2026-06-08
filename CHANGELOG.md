@@ -2,12 +2,17 @@
 
 All notable changes to System Review Graph are documented here.
 
-## Unreleased
+## 0.5.2 - 2026-06-08
 
 Added:
 
 - Centered README badge/tag strip for project identity, language support,
   methodology, MCP, Linux atlas, quick start, and credit surfaces.
+
+Changed:
+
+- Updated creator, copyright, package author, notice, README attribution, and
+  citation metadata to `Sai Chandra Madduri`.
 
 ## 0.5.1 - 2026-06-08
 

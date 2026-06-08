@@ -1,6 +1,6 @@
 # Authors
 
-System Review Graph was created by Chandu.
+System Review Graph was created by Sai Chandra Madduri.
 
 Project home:
 
