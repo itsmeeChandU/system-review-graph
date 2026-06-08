@@ -26,8 +26,8 @@ jobs:
           - "3.12"
           - "3.13"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install package and test tools
@@ -44,8 +44,8 @@ jobs:
     name: Package and report smoke test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Install build tools
@@ -90,7 +90,7 @@ jobs:
       - name: Generate merge-time atlas
         run: |
           system-review-graph scan --repo . --atlas --out /tmp/system-review-atlas --max-subsystems 16 --build-reports --depth overview
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: system-review-graph-dist
           path: dist/*

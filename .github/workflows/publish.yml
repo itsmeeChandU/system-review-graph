@@ -21,8 +21,8 @@ jobs:
     name: Build release distributions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Install tools
@@ -58,7 +58,7 @@ jobs:
           /tmp/srg-wheel-smoke/bin/system-review-graph list-examples
           /tmp/srg-wheel-smoke/bin/system-review-graph init-example --example fictional_ai_ops --out-dir /tmp/srg-example --force
           /tmp/srg-wheel-smoke/bin/system-review-graph build --manifest /tmp/srg-example/system_review_manifest.json --out-dir /tmp/srg-report --depth overview
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: release-distributions
           path: dist/*
@@ -76,7 +76,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: release-distributions
           path: dist
