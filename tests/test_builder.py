@@ -1,0 +1,57 @@
+from pathlib import Path
+
+from system_review_graph.builder import build_system_review
+from system_review_graph.io import read_json
+from system_review_graph.render import render_markdown, render_mermaid
+from system_review_graph.validate import validate_manifest
+
+
+def test_build_fictional_example():
+    manifest = read_json(Path("examples/fictional_ai_ops/system_review_manifest.json"))
+
+    errors = validate_manifest(manifest)
+    graph = build_system_review(manifest)
+
+    assert errors == []
+    assert graph.title == "Fictional AI Ops System Review Graph"
+    assert graph.systems
+    assert graph.artifacts
+    assert graph.gates
+    assert graph.workflows
+    assert graph.review_questions
+    assert any(edge.relation == "owns_or_uses" for edge in graph.edges)
+
+
+def test_markdown_contains_review_sections():
+    manifest = read_json(Path("examples/actual_repos/fastapi/system_review_manifest.json"))
+    graph = build_system_review(manifest)
+
+    markdown = render_markdown(graph)
+    mermaid = render_mermaid(graph)
+
+    assert "## Source Links" in markdown
+    assert "## Review Questions" in markdown
+    assert "FastAPI Public Repo System Review Graph" in markdown
+    assert "flowchart TD" in mermaid
+
+
+def test_validation_catches_unknown_references():
+    manifest = {
+        "title": "Broken",
+        "systems": [
+            {
+                "system_id": "system",
+                "name": "System",
+                "purpose": "Broken reference test",
+                "artifacts": ["missing_artifact"],
+            }
+        ],
+        "artifacts": [],
+        "schemas": [],
+        "decision_gates": [],
+        "workflows": [],
+    }
+
+    errors = validate_manifest(manifest)
+
+    assert "systems[0] references unknown artifact missing_artifact" in errors

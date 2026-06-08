@@ -1,0 +1,337 @@
+# FastAPI Public Repo System Review Graph
+
+Generated: `2026-06-08T19:26:52+00:00`
+Scope: A public-safe system map of the FastAPI open-source repository based on public source directories and documentation.
+One line: FastAPI turns Python type hints and path-operation declarations into validated API runtime behavior and OpenAPI contracts.
+
+## Bigger Picture
+
+This example shows how to map a framework repo. The system is not one deployed application; it is a reusable engine that lets application authors declare routes, dependencies, models, security, and documentation contracts. A reviewer should follow how a developer declaration becomes runtime routing, validation, response handling, and OpenAPI documentation.
+
+## Current Truth
+
+- `example_type`: `actual_public_repo`
+- `repo`: `fastapi/fastapi`
+- `source_accessed_at`: `2026-06-08`
+- `private_database_required`: `false`
+- `production_data_required`: `false`
+- `official_maintainer_audit`: `false`
+
+## Source Links
+
+| Source | Notes |
+|---|---|
+| [GitHub repository](https://github.com/fastapi/fastapi) | Primary public source used for repo identity and source paths. |
+| [FastAPI documentation](https://fastapi.tiangolo.com/) | Public docs for framework concepts and user-facing behavior. |
+| [Public OpenAPI docs concept](https://fastapi.tiangolo.com/features/) | High-level feature surface for generated API documentation and validation. |
+
+## Lifecycle Map
+
+```mermaid
+flowchart LR
+  declare_path_operation["Declare Path Operation"]
+  match_request["Match Request"]
+  resolve_dependencies["Resolve Dependencies"]
+  validate_and_execute["Validate And Execute"]
+  publish_contract["Publish OpenAPI Contract"]
+  test_behavior["Test Behavior"]
+  declare_path_operation --> match_request["Match Request"]
+  match_request --> resolve_dependencies["Resolve Dependencies"]
+  resolve_dependencies --> validate_and_execute["Validate And Execute"]
+  validate_and_execute --> publish_contract["Publish OpenAPI Contract"]
+  publish_contract --> test_behavior["Test Behavior"]
+```
+
+## Relationship Graph
+
+```mermaid
+flowchart TD
+  openapi_docs_engine["OpenAPI And Docs Engine"] -- "documents" --> developer_declaration_surface["Developer Declaration Surface"]
+  developer_declaration_surface["Developer Declaration Surface"] -- "owns or uses" --> fastapi_package["FastAPI Package"]
+  developer_declaration_surface["Developer Declaration Surface"] -- "is gated by" --> declaration_gate["Declaration Gate"]
+  routing_layer["Routing Layer"] -- "owns or uses" --> routing_source["Routing Source"]
+  routing_layer["Routing Layer"] -- "is gated by" --> declaration_gate["Declaration Gate"]
+  dependency_engine["Dependency Engine"] -- "owns or uses" --> dependency_source["Dependency Source"]
+  dependency_engine["Dependency Engine"] -- "is gated by" --> dependency_resolution_gate["Dependency Resolution Gate"]
+  validation_serialization["Validation And Serialization"] -- "owns or uses" --> fastapi_package["FastAPI Package"]
+  validation_serialization["Validation And Serialization"] -- "is gated by" --> validation_gate["Request And Response Validation Gate"]
+  openapi_docs_engine["OpenAPI And Docs Engine"] -- "owns or uses" --> openapi_source["OpenAPI Source"]
+  openapi_docs_engine["OpenAPI And Docs Engine"] -- "owns or uses" --> docs_site["Documentation Site"]
+  openapi_docs_engine["OpenAPI And Docs Engine"] -- "is gated by" --> openapi_contract_gate["OpenAPI Contract Gate"]
+  quality_release_loop["Quality And Release Loop"] -- "owns or uses" --> test_suite["Test Suite"]
+  quality_release_loop["Quality And Release Loop"] -- "is gated by" --> test_release_gate["Test And Release Gate"]
+  python_type_hints["python_type_hints"] -- "feeds" --> declare_path_operation["Declare Path Operation"]
+  endpoint_callable["endpoint_callable"] -- "feeds" --> declare_path_operation["Declare Path Operation"]
+  declare_path_operation["Declare Path Operation"] -- "produces" --> fastapi_package["FastAPI Package"]
+  declare_path_operation["Declare Path Operation"] -- "produces" --> PathOperationDeclaration["PathOperationDeclaration"]
+  declaration_gate["Declaration Gate"] -- "gates" --> declare_path_operation["Declare Path Operation"]
+  declare_path_operation["Declare Path Operation"] -- "routes to" --> match_request["Match Request"]
+  PathOperationDeclaration["PathOperationDeclaration"] -- "feeds" --> match_request["Match Request"]
+  http_request["http_request"] -- "feeds" --> match_request["Match Request"]
+  match_request["Match Request"] -- "produces" --> routing_source["Routing Source"]
+  declaration_gate["Declaration Gate"] -- "gates" --> match_request["Match Request"]
+  match_request["Match Request"] -- "routes to" --> resolve_dependencies["Resolve Dependencies"]
+  DependencySpec["DependencySpec"] -- "feeds" --> resolve_dependencies["Resolve Dependencies"]
+  http_request["http_request"] -- "feeds" --> resolve_dependencies["Resolve Dependencies"]
+  resolve_dependencies["Resolve Dependencies"] -- "produces" --> resolved_inputs["resolved_inputs"]
+  dependency_resolution_gate["Dependency Resolution Gate"] -- "gates" --> resolve_dependencies["Resolve Dependencies"]
+  resolve_dependencies["Resolve Dependencies"] -- "routes to" --> validate_and_execute["Validate And Execute"]
+  resolved_inputs["resolved_inputs"] -- "feeds" --> validate_and_execute["Validate And Execute"]
+  ValidationContract["ValidationContract"] -- "feeds" --> validate_and_execute["Validate And Execute"]
+  validate_and_execute["Validate And Execute"] -- "produces" --> response_body["response_body"]
+  validation_gate["Request And Response Validation Gate"] -- "gates" --> validate_and_execute["Validate And Execute"]
+  validate_and_execute["Validate And Execute"] -- "routes to" --> publish_contract["Publish OpenAPI Contract"]
+  PathOperationDeclaration["PathOperationDeclaration"] -- "feeds" --> publish_contract["Publish OpenAPI Contract"]
+  ValidationContract["ValidationContract"] -- "feeds" --> publish_contract["Publish OpenAPI Contract"]
+  publish_contract["Publish OpenAPI Contract"] -- "produces" --> openapi_source["OpenAPI Source"]
+  publish_contract["Publish OpenAPI Contract"] -- "produces" --> docs_site["Documentation Site"]
+  openapi_contract_gate["OpenAPI Contract Gate"] -- "gates" --> publish_contract["Publish OpenAPI Contract"]
+  publish_contract["Publish OpenAPI Contract"] -- "routes to" --> test_behavior["Test Behavior"]
+  source_change["source_change"] -- "feeds" --> test_behavior["Test Behavior"]
+  TestScenario["TestScenario"] -- "feeds" --> test_behavior["Test Behavior"]
+  test_behavior["Test Behavior"] -- "produces" --> test_suite["Test Suite"]
+  test_release_gate["Test And Release Gate"] -- "gates" --> test_behavior["Test Behavior"]
+```
+
+## Systems
+
+| System | Owner | Stack | Architecture | Lifecycle | Boundary | Ideal Target |
+|---|---|---|---|---|---|---|
+| Developer Declaration Surface | framework | Python | library API | developer code -> path operation declaration -> route registry | A declaration is intent; runtime gates still validate requests and dependencies. | Small Python declarations produce predictable API behavior. |
+| Routing Layer | framework | Python, ASGI | request router | request -> route match -> dependency resolution | Route matching does not mean endpoint execution is safe yet. | Every request lands on the right endpoint contract or fails clearly. |
+| Dependency Engine | framework | Python | dependency graph resolver | route match -> dependency graph -> endpoint arguments | Dependencies can block execution before endpoint logic runs. | Dependency behavior is traceable and test-covered. |
+| Validation And Serialization | framework | Python, Pydantic | schema-driven runtime validation | endpoint args -> endpoint result -> response model | Validation is bounded by declared models and framework compatibility behavior. | Runtime payloads match documented contracts. |
+| OpenAPI And Docs Engine | docs | Python, Markdown | contract renderer | path operation declarations -> OpenAPI document -> docs UI | Generated docs describe declared framework behavior, not an external production service. | Docs and runtime contracts stay aligned. |
+| Quality And Release Loop | quality | Python | test and maintainer gate | source change -> test scenario -> release candidate | This public map does not replace maintainer CI or release policy. | Framework changes are reviewable, tested, and documented. |
+
+## System Details
+
+### Developer Declaration Surface
+
+- Purpose: The public API application authors use to declare routes, models, dependencies, and metadata.
+- Code surfaces: `fastapi/`
+- Artifacts: `fastapi_package`
+- Decision gates: `declaration_gate`
+- Boundary: A declaration is intent; runtime gates still validate requests and dependencies.
+- Ideal target: Small Python declarations produce predictable API behavior.
+
+### Routing Layer
+
+- Purpose: Matches incoming HTTP requests to declared path operations.
+- Code surfaces: `fastapi/routing.py`
+- Artifacts: `routing_source`
+- Decision gates: `declaration_gate`
+- Boundary: Route matching does not mean endpoint execution is safe yet.
+- Ideal target: Every request lands on the right endpoint contract or fails clearly.
+
+### Dependency Engine
+
+- Purpose: Resolves nested dependencies, security requirements, and request-time inputs.
+- Code surfaces: `fastapi/dependencies/`
+- Artifacts: `dependency_source`
+- Decision gates: `dependency_resolution_gate`
+- Boundary: Dependencies can block execution before endpoint logic runs.
+- Ideal target: Dependency behavior is traceable and test-covered.
+
+### Validation And Serialization
+
+- Purpose: Validates request inputs and serializes endpoint responses according to declared contracts.
+- Code surfaces: `fastapi/_compat/`, `fastapi/routing.py`
+- Artifacts: `fastapi_package`
+- Decision gates: `validation_gate`
+- Boundary: Validation is bounded by declared models and framework compatibility behavior.
+- Ideal target: Runtime payloads match documented contracts.
+
+### OpenAPI And Docs Engine
+
+- Purpose: Turns route declarations and schemas into machine-readable OpenAPI and human documentation.
+- Code surfaces: `fastapi/openapi/`, `docs/`
+- Artifacts: `openapi_source`, `docs_site`
+- Decision gates: `openapi_contract_gate`
+- Boundary: Generated docs describe declared framework behavior, not an external production service.
+- Ideal target: Docs and runtime contracts stay aligned.
+
+### Quality And Release Loop
+
+- Purpose: Uses tests and review to protect framework compatibility.
+- Code surfaces: `tests/`
+- Artifacts: `test_suite`
+- Decision gates: `test_release_gate`
+- Boundary: This public map does not replace maintainer CI or release policy.
+- Ideal target: Framework changes are reviewable, tested, and documented.
+
+## Artifacts
+
+| Artifact | Kind | Schema | Owner | Path | Redaction | Purpose |
+|---|---|---|---|---|---|---|
+| FastAPI Package | python_package | PathOperationDeclaration | framework | fastapi/ | safe_to_share | Public framework package imported by application authors. |
+| Routing Source | source_directory | PathOperationDeclaration | framework | fastapi/routing.py | safe_to_share | Connects declared routes to request handling. |
+| Dependency Source | source_directory | DependencySpec | framework | fastapi/dependencies/ | safe_to_share | Resolves dependency graphs and request-time inputs. |
+| OpenAPI Source | source_directory | OpenAPIContract | framework | fastapi/openapi/ | safe_to_share | Builds OpenAPI artifacts from application declarations. |
+| Documentation Site | public_docs | OpenAPIContract | docs | docs/ | safe_to_share | Explains framework usage and examples for application authors. |
+| Test Suite | tests | TestScenario | quality | tests/ | safe_to_share | Protects behavior across routing, validation, docs, security, and compatibility. |
+
+## Schemas And Contracts
+
+| Name | Kind | Required Fields | Privacy Notes | Purpose |
+|---|---|---|---|---|
+| PathOperationDeclaration | developer_contract | path, method, endpoint_callable, response_model, dependencies | This is a framework contract, not user production data. | Describes what an application author declares when registering an API endpoint. |
+| DependencySpec | runtime_contract | callable, scope, parameters, security_requirements |  | Represents dependencies that must be resolved before an endpoint runs. |
+| ValidationContract | request_response_contract | input_schema, output_schema, status_code, error_shape |  | Connects Python type hints and model definitions to request and response validation. |
+| OpenAPIContract | documentation_contract | paths, components, schemas, security, responses |  | The generated machine-readable API contract used by docs and clients. |
+| TestScenario | quality_contract | feature, input, expected_status, expected_body |  | A public test scenario that protects framework behavior. |
+
+## Decision Gates
+
+### Declaration Gate
+
+- Inputs: `PathOperationDeclaration`
+- Outputs: `registered_route, invalid_declaration`
+- Human gate: `false`
+- Risk boundary: Invalid route declarations should fail before they become runtime behavior.
+
+| If | Then |
+|---|---|
+| endpoint callable and method/path are valid | registered_route |
+| required route metadata is malformed | invalid_declaration |
+
+### Dependency Resolution Gate
+
+- Inputs: `DependencySpec, request_state`
+- Outputs: `resolved_inputs, dependency_error`
+- Human gate: `false`
+- Risk boundary: Endpoint code should not run with unresolved dependencies.
+
+| If | Then |
+|---|---|
+| all dependencies resolve | resolved_inputs |
+| dependency raises or security requirement fails | dependency_error |
+
+### Request And Response Validation Gate
+
+- Inputs: `ValidationContract, request_body, response_body`
+- Outputs: `valid_payload, validation_error`
+- Human gate: `false`
+- Risk boundary: Payload shape should match declared contracts.
+
+| If | Then |
+|---|---|
+| payload matches declared schema | valid_payload |
+| payload violates declared schema | validation_error |
+
+### OpenAPI Contract Gate
+
+- Inputs: `PathOperationDeclaration, ValidationContract`
+- Outputs: `openapi_document, docs_gap`
+- Human gate: `false`
+- Risk boundary: Generated docs should reflect declared API behavior.
+
+| If | Then |
+|---|---|
+| route metadata and schemas are complete | openapi_document |
+| documentation metadata is missing or inconsistent | docs_gap |
+
+### Test And Release Gate
+
+- Inputs: `TestScenario, source_change`
+- Outputs: `release_candidate, blocked_release`
+- Human gate: `true`
+- Risk boundary: Framework behavior changes should be protected by tests and maintainer review.
+
+| If | Then |
+|---|---|
+| tests pass and review accepts compatibility impact | release_candidate |
+| regression or undocumented behavior change | blocked_release |
+
+## Workflows
+
+| Step | Actor | Consumes | Gates | Produces | Next | Purpose |
+|---|---|---|---|---|---|---|
+| Declare Path Operation | Application Author | python_type_hints, endpoint_callable | declaration_gate | fastapi_package, PathOperationDeclaration | match_request | Create the API contract from Python code. |
+| Match Request | Routing Layer | PathOperationDeclaration, http_request | declaration_gate | routing_source | resolve_dependencies | Route incoming requests to the correct declared endpoint. |
+| Resolve Dependencies | Dependency Engine | DependencySpec, http_request | dependency_resolution_gate | resolved_inputs | validate_and_execute | Build endpoint arguments and enforce dependency/security requirements. |
+| Validate And Execute | Validation And Serialization | resolved_inputs, ValidationContract | validation_gate | response_body | publish_contract | Run endpoint logic after validation and serialize the result. |
+| Publish OpenAPI Contract | OpenAPI And Docs Engine | PathOperationDeclaration, ValidationContract | openapi_contract_gate | openapi_source, docs_site | test_behavior | Expose route behavior as docs and machine-readable contract. |
+| Test Behavior | Quality And Release Loop | source_change, TestScenario | test_release_gate | test_suite |  | Protect framework behavior before release. |
+
+## Architecture Patterns
+
+### Framework repo
+
+- Works for: Web frameworks, SDKs, CLI frameworks, and runtime libraries
+- How to map it: Map public APIs as systems, declaration objects as schemas, runtime guards as gates, and tests/docs as release surfaces.
+- What to redact: Usually safe to share source paths; do not invent production deployment details.
+
+### Generated contract surface
+
+- Works for: OpenAPI, GraphQL, protobuf, and typed client generation
+- How to map it: Show how developer declarations become generated contracts and how the contract is validated.
+- What to redact: Use public sample schemas or fake app examples.
+
+## Walkthroughs
+
+### One route from declaration to response
+
+A developer declares a path operation. FastAPI registers the route, resolves dependencies for an incoming request, validates inputs, executes endpoint logic, validates/serializes the response, and exposes the route in OpenAPI.
+
+```json
+{
+  "developer_intent": "GET /items/{item_id}",
+  "public_contract": "OpenAPIContract",
+  "route_gate": "declaration_gate",
+  "runtime_gates": [
+    "dependency_resolution_gate",
+    "validation_gate"
+  ]
+}
+```
+
+### How to audit without production data
+
+A reviewer does not need a real app database. They inspect the framework path: declaration, routing, dependency resolution, validation, OpenAPI output, tests, and docs.
+
+```json
+{
+  "requires_private_database": false,
+  "review_artifacts": [
+    "fastapi/routing.py",
+    "fastapi/dependencies/",
+    "fastapi/openapi/",
+    "tests/",
+    "docs/"
+  ]
+}
+```
+
+## Review Questions
+
+- How does a Python route declaration become runtime route behavior?
+- Which gates prevent unresolved dependencies or invalid payloads from reaching endpoint logic?
+- How does generated OpenAPI stay aligned with runtime behavior?
+- Which tests protect compatibility for routing, validation, dependencies, security, and docs?
+- What should a reviewer inspect if auditing a specific FastAPI application built on top of this framework?
+
+## Rebuild Recipe
+
+### validate
+
+- Goal: Check the FastAPI public repo manifest.
+
+```bash
+system-review-graph validate --manifest examples/actual_repos/fastapi/system_review_manifest.json
+```
+
+### build
+
+- Goal: Generate the FastAPI system review report.
+
+```bash
+system-review-graph build --manifest examples/actual_repos/fastapi/system_review_manifest.json --out-dir examples/actual_repos/fastapi/reports
+```
+
+## Known Boundaries
+
+- This is a public educational map, not an official FastAPI maintainer audit.
+- It maps framework behavior, not a specific deployed FastAPI application.
+- Runtime details may evolve as the upstream repo changes.
+- A real audit should inspect the exact commit, CI status, tests, and release notes.
