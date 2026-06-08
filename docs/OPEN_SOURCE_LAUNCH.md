@@ -55,6 +55,10 @@ system-review
 - GitHub topics are set.
 - PyPI name is checked before publishing.
 - README includes visual examples.
+- README includes license, version, and citation badges.
+- `CITATION.cff`, `AUTHORS.md`, and `NOTICE.md` are present for clear credit.
+- A social preview image exists under `assets/social-preview.svg` and can be
+  uploaded in GitHub repository settings.
 - Wheel install smoke test passes.
 
 ## Where To Share

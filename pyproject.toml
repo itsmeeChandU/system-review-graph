@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "system-review-graph"
-version = "0.5.0"
+version = "0.5.1"
 description = "Generate system-level review graphs: what a repo actually does, not just what code exists."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
-  { name = "System Review Graph contributors" }
+  { name = "Chandu and System Review Graph contributors" }
 ]
 keywords = [
   "architecture",
@@ -62,8 +62,12 @@ include = [
   "/tests",
   "/examples",
   "/docs",
+  "/assets",
   "/README.md",
   "/LICENSE",
+  "/NOTICE.md",
+  "/AUTHORS.md",
+  "/CITATION.cff",
   "/CHANGELOG.md",
   "/SECURITY.md",
   "/SUPPORT.md",

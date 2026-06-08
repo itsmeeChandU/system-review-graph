@@ -2,7 +2,7 @@
 
 All notable changes to System Review Graph are documented here.
 
-## Unreleased
+## 0.5.1 - 2026-06-08
 
 Added:
 
@@ -12,6 +12,8 @@ Added:
   Kotlin, C#/.NET, Go, Rust, docs, tests, and config/build surfaces.
 - Roadmap pause criteria for letting the project breathe after the public
   baseline.
+- Credit and citation files: `AUTHORS.md`, `NOTICE.md`, and `CITATION.cff`.
+- Project visual assets for README identity and GitHub social preview.
 
 ## 0.5.0 - 2026-06-08
 

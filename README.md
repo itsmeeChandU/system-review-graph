@@ -1,5 +1,11 @@
 # System Review Graph
 
+<img src="assets/system-review-graph-mark.svg" alt="System Review Graph mark" width="84">
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-2f855a.svg)](LICENSE)
+[![Version: 0.5.1](https://img.shields.io/badge/version-0.5.1-1456cc.svg)](CHANGELOG.md)
+[![Cite this repo](https://img.shields.io/badge/citation-CITATION.cff-b8872f.svg)](CITATION.cff)
+
 Generate system-level review graphs: what a repo actually does, not just what
 code exists.
 
@@ -469,6 +475,35 @@ python -m twine check dist/*
 ```
 
 See [`docs/PYPI_RELEASE.md`](docs/PYPI_RELEASE.md) before publishing.
+
+## Credit, Citation, And License
+
+System Review Graph was created by Chandu and is released under the
+[`MIT License`](LICENSE). MIT keeps the project easy to use while requiring the
+copyright and license notice to be preserved in copies or substantial portions
+of the software.
+
+For attribution, use:
+
+```text
+System Review Graph by Chandu and contributors
+https://github.com/itsmeeChandU/system-review-graph
+```
+
+For research, talks, public examples, benchmarks, or audits, use
+[`CITATION.cff`](CITATION.cff). GitHub reads this file and shows a
+`Cite this repository` entry on the repository page.
+
+Credit files:
+
+- [`AUTHORS.md`](AUTHORS.md)
+- [`NOTICE.md`](NOTICE.md)
+- [`CITATION.cff`](CITATION.cff)
+
+Visual assets:
+
+- [`assets/system-review-graph-mark.svg`](assets/system-review-graph-mark.svg)
+- [`assets/social-preview.svg`](assets/social-preview.svg)
 
 ## Discoverability
 
