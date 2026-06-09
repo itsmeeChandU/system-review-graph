@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "system-review-graph"
 version = "0.5.4"
-description = "Generate system-level review graphs: what a repo actually does, not just what code exists."
+description = "Turn any repo into a system-level review map: what it does, what it trusts, what it blocks, and what reviewers should inspect next."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
