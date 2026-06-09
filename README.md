@@ -21,10 +21,25 @@
   <a href="https://github.com/itsmeeChandU/system-review-graph/blob/main/examples/actual_repos/linux_kernel/reports/system_review_graph.md"><img alt="Linux atlas example" src="https://img.shields.io/badge/example-Linux%20atlas-2f855a.svg"></a>
 </p>
 
-Generate system-level review graphs: what a repo actually does, not just what
-code exists.
+Turn any repo into a system-level review map:
+what it does, what it trusts, what it blocks, and what reviewers should inspect next.
 
-Code-review graphs tell you what code exists. System Review Graph tells you what the system actually does.
+## 30-second demo
+
+```bash
+pip install system-review-graph
+system-review-graph scan --repo ./my-repo --out system_review_manifest.json
+system-review-graph build --manifest system_review_manifest.json --out-dir reports --html
+```
+
+<img src="https://raw.githubusercontent.com/itsmeeChandU/system-review-graph/main/assets/social-preview.svg" alt="System Review Graph demo" width="800">
+
+## See generated reports
+
+- [FastAPI system review](https://github.com/itsmeeChandU/system-review-graph/blob/main/examples/actual_repos/fastapi/reports/system_review_graph.md)
+- [DuckDB system review](https://github.com/itsmeeChandU/system-review-graph/blob/main/examples/actual_repos/duckdb/reports/system_review_graph.md)
+- [OpenTelemetry Collector system review](https://github.com/itsmeeChandU/system-review-graph/blob/main/examples/actual_repos/opentelemetry_collector/reports/system_review_graph.md)
+- [Linux Kernel atlas](https://github.com/itsmeeChandU/system-review-graph/blob/main/examples/actual_repos/linux_kernel/reports/system_review_graph.md)
 
 It turns a public or sanitized manifest into:
 
@@ -159,7 +174,7 @@ flowchart TD
 ## Quick Start
 
 ```bash
-python -m pip install -e .
+pip install system-review-graph
 system-review-graph list-examples
 system-review-graph validate --manifest examples/fictional_ai_ops/system_review_manifest.json
 system-review-graph doctor --manifest examples/fictional_ai_ops/system_review_manifest.json
