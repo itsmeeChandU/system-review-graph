@@ -10,7 +10,10 @@ from system_review_graph.models import (
     BlueprintSection,
     ChildMap,
     DecisionGate,
+    DocumentationSource,
     GraphEdge,
+    KnowledgeEdge,
+    KnowledgeNode,
     SchemaContract,
     SystemNode,
     SystemReviewGraph,
@@ -124,6 +127,44 @@ def _child_map(row: dict[str, Any]) -> ChildMap:
     )
 
 
+def _documentation_source(row: dict[str, Any]) -> DocumentationSource:
+    return DocumentationSource(
+        artifact=str(row.get("artifact") or row.get("path") or ""),
+        role=str(row.get("role") or ""),
+        incorporated_information=[
+            str(item) for item in _list(row.get("incorporated_information"))
+        ],
+        notes=str(row.get("notes") or ""),
+    )
+
+
+def _knowledge_node(row: dict[str, Any]) -> KnowledgeNode:
+    attributes = _dict(row.get("attributes")).copy()
+    for key, value in row.items():
+        if key not in {"node_id", "id", "type", "node_type", "label", "attributes"}:
+            attributes[str(key)] = value
+    return KnowledgeNode(
+        node_id=str(row.get("node_id") or row.get("id") or ""),
+        type=str(row.get("type") or row.get("node_type") or "unknown"),
+        label=str(row.get("label") or row.get("node_id") or row.get("id") or ""),
+        attributes=attributes,
+    )
+
+
+def _knowledge_edge(row: dict[str, Any]) -> KnowledgeEdge:
+    attributes = _dict(row.get("attributes")).copy()
+    for key, value in row.items():
+        if key not in {"source", "src", "target", "dst", "relation", "type", "why", "attributes"}:
+            attributes[str(key)] = value
+    return KnowledgeEdge(
+        source=str(row.get("source") or row.get("src") or ""),
+        target=str(row.get("target") or row.get("dst") or ""),
+        relation=str(row.get("relation") or row.get("type") or ""),
+        why=str(row.get("why") or ""),
+        attributes=attributes,
+    )
+
+
 def _string_dict_list(value: Any) -> list[dict[str, str]]:
     return [
         {str(k): str(v) for k, v in _dict(row).items()}
@@ -206,6 +247,11 @@ def build_system_review(manifest: dict[str, Any]) -> SystemReviewGraph:
     systems = [_system(row) for row in _list(manifest.get("systems"))]
     explicit_edges = [_edge(row) for row in _list(manifest.get("edges"))]
     child_maps = [_child_map(row) for row in _list(manifest.get("child_maps"))]
+    documentation_sources = [
+        _documentation_source(row) for row in _list(manifest.get("documentation_sources"))
+    ]
+    knowledge_nodes = [_knowledge_node(row) for row in _list(manifest.get("knowledge_nodes"))]
+    knowledge_edges = [_knowledge_edge(row) for row in _list(manifest.get("knowledge_edges"))]
     blueprint_sections = [
         _blueprint_section(row) for row in _list(manifest.get("blueprint_sections"))
     ]
@@ -228,6 +274,9 @@ def build_system_review(manifest: dict[str, Any]) -> SystemReviewGraph:
         workflows=workflows,
         edges=[*explicit_edges, *derived_edges],
         child_maps=child_maps,
+        documentation_sources=documentation_sources,
+        knowledge_nodes=knowledge_nodes,
+        knowledge_edges=knowledge_edges,
         blueprint_sections=blueprint_sections,
         current_truth=_dict(manifest.get("current_truth")),
         bigger_picture=str(manifest.get("bigger_picture") or ""),

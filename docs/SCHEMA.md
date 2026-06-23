@@ -18,6 +18,9 @@ System Review Graph uses a JSON manifest. The manifest is deliberately simple so
 | `workflows` | array | Lifecycle steps. |
 | `edges` | array | Optional explicit graph edges. |
 | `child_maps` | array | Optional linked subsystem maps for large-repo atlases. |
+| `documentation_sources` | array | Optional generated or maintained documentation artifacts used as repo knowledge inputs. |
+| `knowledge_nodes` | array | Optional documentation-knowledge nodes such as concepts, files, owner modules, stages, statuses, and cleanup labels. |
+| `knowledge_edges` | array | Optional documentation-knowledge relationships between those nodes. |
 | `blueprint_sections` | array | Optional source-evidence-backed flows for blueprint-depth reports. |
 | `source_links` | array | Public links used for a public-safe report. |
 | `architecture_patterns` | array | How different project styles map into this model. |
@@ -163,6 +166,48 @@ microservice families, or product lanes.
 The root atlas stays small. The child maps carry local detail. This is useful
 when an AI agent, reviewer, or new maintainer needs one uploadable map that
 points to the rest of the context.
+
+## Documentation Knowledge Graph
+
+Use `documentation_sources`, `knowledge_nodes`, and `knowledge_edges` when a
+repo has its own documentation catalog, file inventory, source-code graph,
+cleanup audit, or generated documentation graph. This keeps SRG from flattening
+deep repo knowledge into prose only.
+
+```json
+{
+  "documentation_sources": [
+    {
+      "artifact": "data/intelligence/global_repository_documentation_rows.jsonl",
+      "role": "complete row-per-file documentation catalog",
+      "incorporated_information": ["path", "owner", "purpose", "cleanup action"]
+    }
+  ],
+  "knowledge_nodes": [
+    {
+      "node_id": "concept:stock_selection",
+      "type": "concept",
+      "label": "Stock selection",
+      "attributes": {
+        "description": "How source, market, catalyst, and risk proof select candidates."
+      }
+    }
+  ],
+  "knowledge_edges": [
+    {
+      "source": "concept:stock_selection",
+      "relation": "USES_OWNER",
+      "target": "owner:stock_market_system"
+    }
+  ]
+}
+```
+
+For very large documentation graphs, keep the full nodes/edges in JSONL files
+and use the MCP/CLI context loader to pull only the slice needed for a review.
+These artifacts are designed first for agents and LLMs, so prefer stable IDs,
+typed relations, explicit boundaries, query recipes, and compact context slices
+over narrative-only documentation.
 
 ## Blueprint Sections
 

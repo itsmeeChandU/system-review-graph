@@ -10,6 +10,7 @@ from typing import Any
 from system_review_graph import __version__
 from system_review_graph.builder import build_system_review
 from system_review_graph.doctor import doctor_manifest, format_doctor_findings
+from system_review_graph.documentation_graph import load_documentation_graph_context
 from system_review_graph.io import read_json, write_json
 from system_review_graph.render import (
     REPORT_DEPTHS,
@@ -102,6 +103,22 @@ TOOLS: list[dict[str, Any]] = [
             "max_chars": {"type": "integer", "default": 30000, "minimum": 1000},
         },
         ["manifest_path"],
+        read_only=True,
+    ),
+    _tool_schema(
+        "srg_load_documentation_graph_context",
+        "Load a compact context slice from documentation knowledge graph nodes/edges JSONL files.",
+        {
+            "nodes_path": {"type": "string"},
+            "edges_path": {"type": "string"},
+            "start_node": {"type": "string", "default": ""},
+            "node_type": {"type": "string", "default": ""},
+            "relation": {"type": "string", "default": ""},
+            "max_nodes": {"type": "integer", "default": 80, "minimum": 1},
+            "max_edges": {"type": "integer", "default": 160, "minimum": 1},
+            "max_chars": {"type": "integer", "default": 30000, "minimum": 1000},
+        },
+        ["nodes_path", "edges_path"],
         read_only=True,
     ),
 ]
@@ -323,12 +340,27 @@ def _tool_load_atlas_context(args: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _tool_load_documentation_graph_context(args: dict[str, Any]) -> dict[str, Any]:
+    context = load_documentation_graph_context(
+        nodes_path=_path(args, "nodes_path"),
+        edges_path=_path(args, "edges_path"),
+        start_node=_str(args, "start_node"),
+        node_type=_str(args, "node_type"),
+        relation=_str(args, "relation"),
+        max_nodes=_int(args, "max_nodes", 80),
+        max_edges=_int(args, "max_edges", 160),
+        max_chars=_int(args, "max_chars", 30000),
+    )
+    return _tool_result(context)
+
+
 TOOL_HANDLERS = {
     "srg_validate_manifest": _tool_validate,
     "srg_doctor_manifest": _tool_doctor,
     "srg_build_report": _tool_build,
     "srg_scan_repository": _tool_scan,
     "srg_load_atlas_context": _tool_load_atlas_context,
+    "srg_load_documentation_graph_context": _tool_load_documentation_graph_context,
 }
 
 

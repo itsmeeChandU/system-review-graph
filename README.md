@@ -53,6 +53,7 @@ It turns a public or sanitized manifest into:
 - optional HTML and Graphviz DOT outputs.
 - optional map-of-maps atlases for huge repositories.
 - blueprint-depth reports with source evidence, flows, control points, and known gaps.
+- documentation knowledge graph support for repo file catalogs, concept/file/status nodes, cleanup links, and bounded MCP context slices.
 - an MCP server so agents can scan, build, validate, and load atlas context.
 
 This project is meant for open-source maintainers, platform teams, audit teams, AI coding agents, and new engineers who need to understand a repo as an operating system rather than a pile of files.
@@ -217,6 +218,19 @@ system-review-graph scan \
   --out /tmp/system_review_manifest.json \
   --title "My Project System Review Graph"
 ```
+
+Load a compact slice from a generated documentation knowledge graph:
+
+```bash
+system-review-graph load-documentation-graph-context \
+  --nodes /path/to/documentation_knowledge_graph_nodes.jsonl \
+  --edges /path/to/documentation_knowledge_graph_edges.jsonl \
+  --start-node concept:stock_selection
+```
+
+The generated documentation artifacts are agent/LLM surfaces first. Use stable
+node IDs, typed edges, bounded context slices, and explicit proof boundaries so
+agents can audit or hand off work without rereading an entire repository.
 
 The scanner supports mixed-language repositories. It detects starter surfaces
 for C, C++, Java, C#, Python, JavaScript/TypeScript, Go, Rust, docs, tests, and

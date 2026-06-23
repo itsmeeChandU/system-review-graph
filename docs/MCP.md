@@ -46,6 +46,7 @@ For local development from a checkout:
 | `srg_build_report` | Build Markdown/JSON reports, with optional HTML and DOT. |
 | `srg_scan_repository` | Generate a starter manifest or large-repo atlas from a local repo. |
 | `srg_load_atlas_context` | Load a compact context bundle from a root atlas, blueprint sections, and optional child maps. |
+| `srg_load_documentation_graph_context` | Load a compact slice from documentation knowledge graph nodes/edges JSONL files. |
 
 ## Why MCP Matters For Atlases
 
@@ -63,6 +64,11 @@ agent -> srg_load_atlas_context(root manifest)
 That makes the atlas a live context object. A reviewer can attach one root map,
 and an agent can discover the linked subsystem maps without reading the entire
 repo at once.
+
+The same applies to documentation knowledge graphs. Generated docs should be
+loaded as bounded, machine-readable context for agents and LLMs: start from a
+stable concept or file node, follow typed edges, inspect summaries and
+`next_moves`, then open source artifacts only when the task needs proof.
 
 ## Example Tool Calls
 
@@ -107,9 +113,26 @@ Load an atlas for an agent:
 }
 ```
 
+Load a documentation graph slice for an agent:
+
+```json
+{
+  "name": "srg_load_documentation_graph_context",
+  "arguments": {
+    "nodes_path": "/path/to/documentation_knowledge_graph_nodes.jsonl",
+    "edges_path": "/path/to/documentation_knowledge_graph_edges.jsonl",
+    "start_node": "concept:stock_selection",
+    "max_nodes": 80,
+    "max_edges": 160
+  }
+}
+```
+
 ## Boundaries
 
 - The MCP server does not execute arbitrary shell commands.
 - It reads and writes only the paths supplied by the MCP client.
 - Atlas scans are source-surface maps, not proof of runtime behavior.
+- Documentation graph context is a bounded slice; use narrower node/relation
+  filters or load the source artifact when more detail is needed.
 - Keep private data, secrets, and production records out of manifests.

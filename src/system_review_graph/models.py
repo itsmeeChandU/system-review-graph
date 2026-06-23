@@ -105,6 +105,37 @@ class ChildMap:
 
 
 @dataclass(frozen=True)
+class DocumentationSource:
+    """A generated or maintained documentation artifact used by a review graph."""
+
+    artifact: str
+    role: str
+    incorporated_information: list[str] = field(default_factory=list)
+    notes: str = ""
+
+
+@dataclass(frozen=True)
+class KnowledgeNode:
+    """A documentation-knowledge node imported from a catalog, atlas, or manifest."""
+
+    node_id: str
+    type: str
+    label: str
+    attributes: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class KnowledgeEdge:
+    """A relationship between documentation-knowledge nodes."""
+
+    source: str
+    target: str
+    relation: str
+    why: str = ""
+    attributes: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
 class BlueprintSection:
     """A source-evidence-backed system flow for blueprint-level review."""
 
@@ -134,6 +165,9 @@ class SystemReviewGraph:
     workflows: list[WorkflowStep]
     edges: list[GraphEdge]
     child_maps: list[ChildMap]
+    documentation_sources: list[DocumentationSource]
+    knowledge_nodes: list[KnowledgeNode]
+    knowledge_edges: list[KnowledgeEdge]
     blueprint_sections: list[BlueprintSection]
     current_truth: dict[str, Any]
     bigger_picture: str

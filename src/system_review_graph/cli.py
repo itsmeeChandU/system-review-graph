@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 from pathlib import Path
 
 from system_review_graph.builder import build_system_review
 from system_review_graph.doctor import doctor_manifest, format_doctor_findings
+from system_review_graph.documentation_graph import load_documentation_graph_context
 from system_review_graph.io import read_json, write_json
 from system_review_graph.render import (
     REPORT_DEPTHS,
@@ -162,6 +164,21 @@ def _scan(args: argparse.Namespace) -> int:
     return 0
 
 
+def _load_documentation_graph_context(args: argparse.Namespace) -> int:
+    context = load_documentation_graph_context(
+        nodes_path=Path(args.nodes),
+        edges_path=Path(args.edges),
+        start_node=args.start_node or "",
+        node_type=args.node_type or "",
+        relation=args.relation or "",
+        max_nodes=args.max_nodes,
+        max_edges=args.max_edges,
+        max_chars=args.max_chars,
+    )
+    print(json.dumps(context, indent=2, sort_keys=True))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="system-review-graph",
@@ -220,6 +237,20 @@ def main(argv: list[str] | None = None) -> int:
     scan.add_argument("--html", action="store_true", help="With --build-reports, also write HTML")
     scan.add_argument("--dot", action="store_true", help="With --build-reports, also write DOT")
     scan.set_defaults(func=_scan)
+
+    doc_context = sub.add_parser(
+        "load-documentation-graph-context",
+        help="Load a compact slice from documentation knowledge graph JSONL files",
+    )
+    doc_context.add_argument("--nodes", required=True, help="Path to nodes JSONL")
+    doc_context.add_argument("--edges", required=True, help="Path to edges JSONL")
+    doc_context.add_argument("--start-node", default="", help="Node id to expand from")
+    doc_context.add_argument("--node-type", default="", help="Filter/seed by node type")
+    doc_context.add_argument("--relation", default="", help="Filter edges by relation")
+    doc_context.add_argument("--max-nodes", type=int, default=80)
+    doc_context.add_argument("--max-edges", type=int, default=160)
+    doc_context.add_argument("--max-chars", type=int, default=30000)
+    doc_context.set_defaults(func=_load_documentation_graph_context)
 
     args = parser.parse_args(argv)
     return int(args.func(args))

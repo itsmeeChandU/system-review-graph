@@ -75,6 +75,7 @@ def _label_map(graph: SystemReviewGraph) -> dict[str, str]:
     labels.update(
         {section.section_id: section.title for section in graph.blueprint_sections}
     )
+    labels.update({node.node_id: node.label for node in graph.knowledge_nodes})
     return labels
 
 
@@ -310,6 +311,24 @@ def _coverage_register_rows(graph: SystemReviewGraph) -> list[list[object]]:
             "Use this to verify whether blueprint claims are source-backed.",
         ],
         [
+            "Documentation sources",
+            len(graph.documentation_sources),
+            "Generated or maintained docs/catalogs used by the report.",
+            "Use this to see where repo knowledge entered the review graph.",
+        ],
+        [
+            "Knowledge nodes",
+            len(graph.knowledge_nodes),
+            "Concept, file, owner, stage, status, or other documentation graph nodes.",
+            "Use this to traverse the repo documentation rather than reading prose only.",
+        ],
+        [
+            "Knowledge edges",
+            len(graph.knowledge_edges),
+            "Relationships between documentation graph nodes.",
+            "Use this to answer linked questions such as concept -> files -> cleanup state.",
+        ],
+        [
             "Source links",
             len(graph.source_links),
             "External or public references used by the report.",
@@ -346,6 +365,16 @@ def _evidence_register_rows(graph: SystemReviewGraph) -> list[list[object]]:
         notes = source.get("notes", "")
         evidence = f"[{label}]({url})" if label and url else label
         rows.append([evidence, "source link", "whole report", "declared", notes])
+    for source in graph.documentation_sources:
+        rows.append(
+            [
+                source.artifact,
+                "documentation source",
+                source.role,
+                "declared",
+                ", ".join(source.incorporated_information) or source.notes,
+            ]
+        )
     for section in graph.blueprint_sections:
         for evidence in section.source_evidence:
             path = evidence.get("path", "")
@@ -480,6 +509,16 @@ def _gap_register_rows(graph: SystemReviewGraph) -> list[list[object]]:
                 "review",
                 "Many systems are declared but no linked child maps exist.",
                 "Split into an atlas if the report becomes hard to navigate.",
+            ]
+        )
+    if graph.documentation_sources and not graph.knowledge_nodes:
+        rows.append(
+            [
+                "Documentation graph not imported",
+                "documentation",
+                "review",
+                "Documentation sources exist but no knowledge nodes were declared.",
+                "Import concept/file/status nodes or load graph JSONL through MCP.",
             ]
         )
     if not graph.blueprint_sections:
@@ -1015,6 +1054,13 @@ def _add_expansion_index(lines: list[str], graph: SystemReviewGraph, depth: str)
             _row(["0.5. Atlas", "Which child map should I open next?", "Map Of Maps"]),
             _row(
                 [
+                    "0.6. Documentation",
+                    "How do repo docs, files, concepts, and cleanup states connect?",
+                    "Documentation Knowledge Graph",
+                ]
+            ),
+            _row(
+                [
                     "0.75. Blueprint",
                     "Which source-backed flows explain the whole system?",
                     "Blueprint Sections",
@@ -1184,6 +1230,109 @@ def _add_child_maps(lines: list[str], graph: SystemReviewGraph) -> None:
                 ]
             )
         )
+
+
+def _add_documentation_knowledge_graph(
+    lines: list[str], graph: SystemReviewGraph, depth: str
+) -> None:
+    if not graph.documentation_sources and not graph.knowledge_nodes and not graph.knowledge_edges:
+        return
+    lines.extend(["", "## Documentation Knowledge Graph", ""])
+    if graph.documentation_sources:
+        lines.extend(
+            [
+                "| Source Artifact | Role | Information Incorporated | Notes |",
+                "|---|---|---|---|",
+            ]
+        )
+        for source in graph.documentation_sources:
+            lines.append(
+                _row(
+                    [
+                        source.artifact,
+                        source.role,
+                        ", ".join(source.incorporated_information),
+                        source.notes,
+                    ]
+                )
+            )
+        lines.append("")
+    node_counts: dict[str, int] = {}
+    for node in graph.knowledge_nodes:
+        node_counts[node.type] = node_counts.get(node.type, 0) + 1
+    edge_counts: dict[str, int] = {}
+    for edge in graph.knowledge_edges:
+        edge_counts[edge.relation] = edge_counts.get(edge.relation, 0) + 1
+    if node_counts:
+        lines.extend(["Node types:", "", "| Type | Count |", "|---|---:|"])
+        for key, value in sorted(node_counts.items()):
+            lines.append(_row([key, value]))
+        lines.append("")
+    if edge_counts:
+        lines.extend(["Edge relations:", "", "| Relation | Count |", "|---|---:|"])
+        for key, value in sorted(edge_counts.items()):
+            lines.append(_row([key, value]))
+        lines.append("")
+    limit = 20 if depth == "overview" else 80 if depth == "standard" else 200
+    if graph.knowledge_nodes:
+        lines.extend(
+            [
+                "Sample nodes:",
+                "",
+                "| Node | Type | Label | Key Attributes |",
+                "|---|---|---|---|",
+            ]
+        )
+        for node in graph.knowledge_nodes[:limit]:
+            attributes = {
+                key: value
+                for key, value in node.attributes.items()
+                if key
+                in {
+                    "path",
+                    "owner_system_module",
+                    "flow_stage",
+                    "file_kind",
+                    "cleanup_action",
+                }
+            }
+            if not attributes:
+                attributes = dict(list(node.attributes.items())[:4])
+            lines.append(_row([node.node_id, node.type, node.label, _value(attributes)]))
+        if len(graph.knowledge_nodes) > limit:
+            lines.append(
+                _row(
+                    [
+                        "omitted",
+                        "",
+                        "",
+                        f"{len(graph.knowledge_nodes) - limit} nodes omitted at {depth} depth.",
+                    ]
+                )
+            )
+        lines.append("")
+    if graph.knowledge_edges and depth in DEEP_DEPTHS:
+        lines.extend(
+            [
+                "Sample edges:",
+                "",
+                "| Source | Relation | Target | Why |",
+                "|---|---|---|---|",
+            ]
+        )
+        for edge in graph.knowledge_edges[:limit]:
+            lines.append(_row([edge.source, edge.relation, edge.target, edge.why]))
+        if len(graph.knowledge_edges) > limit:
+            lines.append(
+                _row(
+                    [
+                        "omitted",
+                        "",
+                        "",
+                        f"{len(graph.knowledge_edges) - limit} edges omitted at {depth} depth.",
+                    ]
+                )
+            )
 
 
 def _add_blueprint_sections(lines: list[str], graph: SystemReviewGraph, depth: str) -> None:
@@ -1459,6 +1608,7 @@ def render_markdown(graph: SystemReviewGraph, depth: str = "deep") -> str:
             )
         )
     _add_child_maps(lines, graph)
+    _add_documentation_knowledge_graph(lines, graph, depth)
     _add_blueprint_sections(lines, graph, depth)
     if depth in STANDARD_DEPTHS:
         _add_system_details(lines, graph, depth)

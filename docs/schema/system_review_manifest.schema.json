@@ -42,6 +42,18 @@
       "type": "array",
       "items": { "$ref": "#/$defs/child_map" }
     },
+    "documentation_sources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/documentation_source" }
+    },
+    "knowledge_nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/knowledge_node" }
+    },
+    "knowledge_edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/knowledge_edge" }
+    },
     "blueprint_sections": {
       "type": "array",
       "items": { "$ref": "#/$defs/blueprint_section" }
@@ -212,6 +224,47 @@
         "status": { "type": "string" },
         "review_hint": { "type": "string" }
       }
+    },
+    "documentation_source": {
+      "type": "object",
+      "required": ["artifact", "role"],
+      "properties": {
+        "artifact": { "type": "string", "minLength": 1 },
+        "role": { "type": "string" },
+        "incorporated_information": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "knowledge_node": {
+      "type": "object",
+      "required": ["node_id", "type", "label"],
+      "properties": {
+        "node_id": { "type": "string", "minLength": 1 },
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "node_type": { "type": "string" },
+        "label": { "type": "string" },
+        "attributes": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "knowledge_edge": {
+      "type": "object",
+      "required": ["source", "target", "relation"],
+      "properties": {
+        "source": { "type": "string" },
+        "src": { "type": "string" },
+        "target": { "type": "string" },
+        "dst": { "type": "string" },
+        "relation": { "type": "string" },
+        "type": { "type": "string" },
+        "why": { "type": "string" },
+        "attributes": { "type": "object" }
+      },
+      "additionalProperties": true
     },
     "blueprint_section": {
       "type": "object",
