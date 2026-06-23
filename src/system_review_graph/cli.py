@@ -17,6 +17,7 @@ from system_review_graph.render import (
     render_html,
     render_markdown,
 )
+from system_review_graph.repo_context_bundle import load_repo_context_bundle
 from system_review_graph.scanner import scan_repository, scan_repository_atlas
 from system_review_graph.serialize import to_dict
 from system_review_graph.validate import validate_manifest
@@ -179,6 +180,27 @@ def _load_documentation_graph_context(args: argparse.Namespace) -> int:
     return 0
 
 
+def _load_repo_context_bundle(args: argparse.Namespace) -> int:
+    context = load_repo_context_bundle(
+        manifest_path=Path(args.manifest),
+        documentation_nodes_path=Path(args.documentation_nodes)
+        if args.documentation_nodes
+        else None,
+        documentation_edges_path=Path(args.documentation_edges)
+        if args.documentation_edges
+        else None,
+        code_review_graph_path=Path(args.code_review_graph) if args.code_review_graph else None,
+        start_node=args.start_node or "",
+        node_type=args.node_type or "",
+        relation=args.relation or "",
+        max_nodes=args.max_nodes,
+        max_edges=args.max_edges,
+        max_chars=args.max_chars,
+    )
+    print(json.dumps(context, indent=2, sort_keys=True))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="system-review-graph",
@@ -251,6 +273,26 @@ def main(argv: list[str] | None = None) -> int:
     doc_context.add_argument("--max-edges", type=int, default=160)
     doc_context.add_argument("--max-chars", type=int, default=30000)
     doc_context.set_defaults(func=_load_documentation_graph_context)
+
+    repo_context = sub.add_parser(
+        "load-repo-context-bundle",
+        help="Load bounded SRG, documentation graph, and code-review graph context",
+    )
+    repo_context.add_argument("--manifest", required=True, help="Path to SRG manifest JSON")
+    repo_context.add_argument("--documentation-nodes", default="", help="Documentation nodes JSONL")
+    repo_context.add_argument("--documentation-edges", default="", help="Documentation edges JSONL")
+    repo_context.add_argument(
+        "--code-review-graph",
+        default="",
+        help="Code-review graph contract JSON",
+    )
+    repo_context.add_argument("--start-node", default="", help="Documentation graph node to expand")
+    repo_context.add_argument("--node-type", default="", help="Documentation graph node type")
+    repo_context.add_argument("--relation", default="", help="Documentation graph edge relation")
+    repo_context.add_argument("--max-nodes", type=int, default=80)
+    repo_context.add_argument("--max-edges", type=int, default=160)
+    repo_context.add_argument("--max-chars", type=int, default=30000)
+    repo_context.set_defaults(func=_load_repo_context_bundle)
 
     args = parser.parse_args(argv)
     return int(args.func(args))

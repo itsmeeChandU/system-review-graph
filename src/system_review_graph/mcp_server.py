@@ -18,6 +18,7 @@ from system_review_graph.render import (
     render_html,
     render_markdown,
 )
+from system_review_graph.repo_context_bundle import load_repo_context_bundle
 from system_review_graph.scanner import scan_repository, scan_repository_atlas
 from system_review_graph.serialize import to_dict
 from system_review_graph.validate import validate_manifest
@@ -119,6 +120,24 @@ TOOLS: list[dict[str, Any]] = [
             "max_chars": {"type": "integer", "default": 30000, "minimum": 1000},
         },
         ["nodes_path", "edges_path"],
+        read_only=True,
+    ),
+    _tool_schema(
+        "srg_load_repo_context_bundle",
+        "Load bounded SRG, documentation graph, and code-review graph context for agents.",
+        {
+            "manifest_path": {"type": "string"},
+            "documentation_nodes_path": {"type": "string", "default": ""},
+            "documentation_edges_path": {"type": "string", "default": ""},
+            "code_review_graph_path": {"type": "string", "default": ""},
+            "start_node": {"type": "string", "default": ""},
+            "node_type": {"type": "string", "default": ""},
+            "relation": {"type": "string", "default": ""},
+            "max_nodes": {"type": "integer", "default": 80, "minimum": 1},
+            "max_edges": {"type": "integer", "default": 160, "minimum": 1},
+            "max_chars": {"type": "integer", "default": 30000, "minimum": 1000},
+        },
+        ["manifest_path"],
         read_only=True,
     ),
 ]
@@ -354,6 +373,27 @@ def _tool_load_documentation_graph_context(args: dict[str, Any]) -> dict[str, An
     return _tool_result(context)
 
 
+def _optional_path(args: dict[str, Any], key: str) -> Path | None:
+    value = _str(args, key)
+    return Path(value) if value else None
+
+
+def _tool_load_repo_context_bundle(args: dict[str, Any]) -> dict[str, Any]:
+    context = load_repo_context_bundle(
+        manifest_path=_path(args, "manifest_path"),
+        documentation_nodes_path=_optional_path(args, "documentation_nodes_path"),
+        documentation_edges_path=_optional_path(args, "documentation_edges_path"),
+        code_review_graph_path=_optional_path(args, "code_review_graph_path"),
+        start_node=_str(args, "start_node"),
+        node_type=_str(args, "node_type"),
+        relation=_str(args, "relation"),
+        max_nodes=_int(args, "max_nodes", 80),
+        max_edges=_int(args, "max_edges", 160),
+        max_chars=_int(args, "max_chars", 30000),
+    )
+    return _tool_result(context)
+
+
 TOOL_HANDLERS = {
     "srg_validate_manifest": _tool_validate,
     "srg_doctor_manifest": _tool_doctor,
@@ -361,6 +401,7 @@ TOOL_HANDLERS = {
     "srg_scan_repository": _tool_scan,
     "srg_load_atlas_context": _tool_load_atlas_context,
     "srg_load_documentation_graph_context": _tool_load_documentation_graph_context,
+    "srg_load_repo_context_bundle": _tool_load_repo_context_bundle,
 }
 
 

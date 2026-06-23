@@ -6,6 +6,7 @@ from system_review_graph.cli import main
 from system_review_graph.documentation_graph import load_documentation_graph_context
 from system_review_graph.mcp_server import handle_message
 from system_review_graph.render import render_markdown
+from system_review_graph.repo_context_bundle import load_repo_context_bundle
 from system_review_graph.validate import validate_manifest
 
 
@@ -174,3 +175,100 @@ def test_mcp_load_documentation_graph_context_tool(tmp_path):
     assert response is not None
     text = response["result"]["content"][0]["text"]
     assert "concept:source_data" in text
+
+
+def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
+    manifest = tmp_path / "system_review_manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "title": "Agentic repo",
+                "one_line": "Coordinates agents",
+                "systems": [{"system_id": "coordinator", "name": "Coordinator"}],
+                "artifacts": [],
+                "schemas": [],
+                "decision_gates": [],
+                "workflows": [],
+                "review_questions": ["Which graph should an agent load first?"],
+                "known_boundaries": ["Generated docs are not runtime proof."],
+            }
+        ),
+        encoding="utf-8",
+    )
+    nodes = tmp_path / "nodes.jsonl"
+    edges = tmp_path / "edges.jsonl"
+    _write_jsonl(nodes, [{"id": "concept:agentic_workflow", "type": "concept"}])
+    _write_jsonl(edges, [])
+    contract = tmp_path / "code_review_graph_contract.json"
+    contract.write_text(
+        json.dumps(
+            {
+                "contract_version": "code-review-graph.agent-contract.v1",
+                "summary": {"files": 1, "symbols": 1, "edges": 0},
+                "files": [],
+                "modules": [],
+                "symbols": [],
+                "imports": [],
+                "edges": [],
+                "tests": [],
+                "generated_artifacts": [],
+                "risk_ownership_hints": [],
+                "proof_boundary": "structural only",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    bundle = load_repo_context_bundle(
+        manifest_path=manifest,
+        documentation_nodes_path=nodes,
+        documentation_edges_path=edges,
+        code_review_graph_path=contract,
+        node_type="concept",
+    )
+
+    assert bundle["system_review_graph"]["title"] == "Agentic repo"
+    assert bundle["code_review_graph_reference"]["status"] == "ready"
+    assert bundle["documentation_graph_context"]["summary"]["selected_nodes"] == 1
+
+
+def test_cli_and_mcp_load_repo_context_bundle(tmp_path, capsys):
+    manifest = tmp_path / "system_review_manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "title": "Small repo",
+                "systems": [],
+                "artifacts": [],
+                "schemas": [],
+                "decision_gates": [],
+                "workflows": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = main(["load-repo-context-bundle", "--manifest", str(manifest)])
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Small repo" in captured.out
+    assert "missing_input" in captured.out
+
+    tools = handle_message({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    assert tools is not None
+    names = [tool["name"] for tool in tools["result"]["tools"]]
+    assert "srg_load_repo_context_bundle" in names
+
+    response = handle_message(
+        {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": "srg_load_repo_context_bundle",
+                "arguments": {"manifest_path": str(manifest)},
+            },
+        }
+    )
+    assert response is not None
+    assert "Small repo" in response["result"]["content"][0]["text"]

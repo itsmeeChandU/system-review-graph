@@ -47,6 +47,7 @@ For local development from a checkout:
 | `srg_scan_repository` | Generate a starter manifest or large-repo atlas from a local repo. |
 | `srg_load_atlas_context` | Load a compact context bundle from a root atlas, blueprint sections, and optional child maps. |
 | `srg_load_documentation_graph_context` | Load a compact slice from documentation knowledge graph nodes/edges JSONL files. |
+| `srg_load_repo_context_bundle` | Load bounded SRG, documentation graph, and code-review graph context for agents. |
 
 ## Why MCP Matters For Atlases
 
@@ -128,6 +129,23 @@ Load a documentation graph slice for an agent:
 }
 ```
 
+Load a repo context bundle for an AI Development OS lane:
+
+```json
+{
+  "name": "srg_load_repo_context_bundle",
+  "arguments": {
+    "manifest_path": "reports/system-review-atlas/system_review_manifest.json",
+    "documentation_nodes_path": "/path/to/documentation_knowledge_graph_nodes.jsonl",
+    "documentation_edges_path": "/path/to/documentation_knowledge_graph_edges.jsonl",
+    "code_review_graph_path": "/path/to/code_review_graph_contract.json",
+    "start_node": "concept:agentic_workflow",
+    "max_nodes": 80,
+    "max_edges": 160
+  }
+}
+```
+
 ## Boundaries
 
 - The MCP server does not execute arbitrary shell commands.
@@ -135,4 +153,6 @@ Load a documentation graph slice for an agent:
 - Atlas scans are source-surface maps, not proof of runtime behavior.
 - Documentation graph context is a bounded slice; use narrower node/relation
   filters or load the source artifact when more detail is needed.
+- Repo context bundles are agent handoff packets, not runtime proof or
+  permission to bypass review, safety, legal, or release gates.
 - Keep private data, secrets, and production records out of manifests.
