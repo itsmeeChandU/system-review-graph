@@ -229,6 +229,27 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
                         "path": "system_review_graph/board_go_live_readiness_report.json",
                         "type": "board_go_live_readiness_report",
                         "producer": "repo proof or AI Development OS workflow",
+                    },
+                    {
+                        "id": "artifact:system_review_graph/operator_screenshot_manifest.json",
+                        "path": "system_review_graph/operator_screenshot_manifest.json",
+                        "type": "operator_screenshot_manifest",
+                        "producer": "repo proof or AI Development OS workflow",
+                    },
+                    {
+                        "id": (
+                            "artifact:system_review_graph/operator_screenshots/"
+                            "operator-dashboard.png"
+                        ),
+                        "path": "system_review_graph/operator_screenshots/operator-dashboard.png",
+                        "type": "operator_screenshot",
+                        "producer": "operator screenshot proof surface",
+                    },
+                    {
+                        "id": "artifact:docs/STARTUP_LIFECYCLE.md",
+                        "path": "docs/STARTUP_LIFECYCLE.md",
+                        "type": "startup_lifecycle_surface",
+                        "producer": "repo proof or AI Development OS workflow",
                     }
                 ],
                 "risk_ownership_hints": [],
@@ -280,6 +301,18 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
     )
     assert (
         "board_go_live_readiness_report"
+        in bundle["code_review_graph_reference"]["generated_artifact_types"]
+    )
+    assert (
+        "operator_screenshot_manifest"
+        in bundle["code_review_graph_reference"]["generated_artifact_types"]
+    )
+    assert (
+        "operator_screenshot"
+        in bundle["code_review_graph_reference"]["generated_artifact_types"]
+    )
+    assert (
+        "startup_lifecycle_surface"
         in bundle["code_review_graph_reference"]["generated_artifact_types"]
     )
     assert bundle["agentic_workflow_reference"]["status"] == "ready"
