@@ -190,6 +190,7 @@ def _load_repo_context_bundle(args: argparse.Namespace) -> int:
         if args.documentation_edges
         else None,
         code_review_graph_path=Path(args.code_review_graph) if args.code_review_graph else None,
+        agentic_workflow_path=Path(args.agentic_workflow) if args.agentic_workflow else None,
         start_node=args.start_node or "",
         node_type=args.node_type or "",
         relation=args.relation or "",
@@ -285,6 +286,11 @@ def main(argv: list[str] | None = None) -> int:
         "--code-review-graph",
         default="",
         help="Code-review graph contract JSON",
+    )
+    repo_context.add_argument(
+        "--agentic-workflow",
+        default="",
+        help="AI Development OS agentic execution manifest JSON",
     )
     repo_context.add_argument("--start-node", default="", help="Documentation graph node to expand")
     repo_context.add_argument("--node-type", default="", help="Documentation graph node type")

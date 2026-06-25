@@ -233,7 +233,8 @@ node IDs, typed edges, bounded context slices, and explicit proof boundaries so
 agents can audit or hand off work without rereading an entire repository.
 
 Load a full agent context bundle that combines an SRG manifest, optional
-documentation graph slice, and optional code-review graph contract:
+documentation graph slice, optional code-review graph contract, and optional
+AI Development OS execution manifest:
 
 ```bash
 system-review-graph load-repo-context-bundle \
@@ -241,12 +242,13 @@ system-review-graph load-repo-context-bundle \
   --documentation-nodes /path/to/documentation_knowledge_graph_nodes.jsonl \
   --documentation-edges /path/to/documentation_knowledge_graph_edges.jsonl \
   --code-review-graph /path/to/code_review_graph_contract.json \
+  --agentic-workflow /path/to/agentic_execution_manifest.json \
   --start-node concept:stock_selection
 ```
 
 The bundle is designed for AI Development OS style workers: stable IDs,
-bounded context, typed sections, and explicit proof boundaries before a lane is
-assigned.
+bounded context, typed sections, lane coordination references, and explicit
+proof boundaries before a lane is assigned.
 
 The scanner supports mixed-language repositories. It detects starter surfaces
 for C, C++, Java, C#, Python, JavaScript/TypeScript, Go, Rust, docs, tests, and

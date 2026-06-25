@@ -218,17 +218,40 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
         ),
         encoding="utf-8",
     )
+    workflow = tmp_path / "agentic_execution_manifest.json"
+    workflow.write_text(
+        json.dumps(
+            {
+                "name": "ai_development_os_agentic_execution",
+                "version": 1,
+                "slash_commands": [{"command": "/ados:lane"}],
+                "skills": [{"id": "ai-native-delivery"}],
+                "background_routines": [{"id": "branch_freshness_check"}],
+                "parallel_agent_lanes": [{"id": "workflow-coordinator"}],
+                "ci_cd_agent_jobs": [{"id": "workflow_manifest_ci"}],
+                "eval_loops": [{"id": "lane_packet_completeness"}],
+                "agent_supervision": {"coordinator_rules": []},
+                "multi_repo_orchestration": {"repos": [{"id": "ai-development-os"}]},
+                "handoff_schema": {"required_fields": ["lane"]},
+                "proof_boundaries": ["repo truth remains canonical"],
+            }
+        ),
+        encoding="utf-8",
+    )
 
     bundle = load_repo_context_bundle(
         manifest_path=manifest,
         documentation_nodes_path=nodes,
         documentation_edges_path=edges,
         code_review_graph_path=contract,
+        agentic_workflow_path=workflow,
         node_type="concept",
     )
 
     assert bundle["system_review_graph"]["title"] == "Agentic repo"
     assert bundle["code_review_graph_reference"]["status"] == "ready"
+    assert bundle["agentic_workflow_reference"]["status"] == "ready"
+    assert bundle["agentic_workflow_reference"]["summary"]["parallel_agent_lanes"] == 1
     assert bundle["documentation_graph_context"]["summary"]["selected_nodes"] == 1
 
 
@@ -248,16 +271,63 @@ def test_cli_and_mcp_load_repo_context_bundle(tmp_path, capsys):
         encoding="utf-8",
     )
 
-    exit_code = main(["load-repo-context-bundle", "--manifest", str(manifest)])
+    workflow = tmp_path / "agentic_execution_manifest.json"
+    workflow.write_text(
+        json.dumps(
+            {
+                "slash_commands": [],
+                "skills": [],
+                "background_routines": [],
+                "parallel_agent_lanes": [],
+                "ci_cd_agent_jobs": [],
+                "eval_loops": [],
+                "agent_supervision": {},
+                "multi_repo_orchestration": {},
+                "handoff_schema": {},
+                "proof_boundaries": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "load-repo-context-bundle",
+            "--manifest",
+            str(manifest),
+            "--agentic-workflow",
+            str(workflow),
+        ]
+    )
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Small repo" in captured.out
     assert "missing_input" in captured.out
+    assert "agentic_workflow_reference" in captured.out
 
     tools = handle_message({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
     assert tools is not None
     names = [tool["name"] for tool in tools["result"]["tools"]]
     assert "srg_load_repo_context_bundle" in names
+
+    response = handle_message(
+        {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": "srg_load_repo_context_bundle",
+                "arguments": {
+                    "manifest_path": str(manifest),
+                    "agentic_workflow_path": str(workflow),
+                },
+            },
+        }
+    )
+
+    assert response is not None
+    text = response["result"]["content"][0]["text"]
+    assert "agentic_workflow_reference" in text
 
     response = handle_message(
         {

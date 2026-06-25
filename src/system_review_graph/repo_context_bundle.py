@@ -18,6 +18,18 @@ REQUIRED_CODE_REVIEW_CONTRACT_SECTIONS = [
     "generated_artifacts",
     "risk_ownership_hints",
 ]
+REQUIRED_AGENTIC_WORKFLOW_SECTIONS = [
+    "slash_commands",
+    "skills",
+    "background_routines",
+    "parallel_agent_lanes",
+    "ci_cd_agent_jobs",
+    "eval_loops",
+    "agent_supervision",
+    "multi_repo_orchestration",
+    "handoff_schema",
+    "proof_boundaries",
+]
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -46,6 +58,7 @@ def _trim(payload: dict[str, Any], max_chars: int) -> tuple[dict[str, Any], bool
         "summary": payload.get("summary", {}),
         "system_review_graph": manifest,
         "code_review_graph_reference": payload.get("code_review_graph_reference", {}),
+        "agentic_workflow_reference": payload.get("agentic_workflow_reference", {}),
         "truncated": True,
         "next_valid_move": "Use narrower documentation graph filters or raise max_chars.",
     }, True
@@ -124,12 +137,61 @@ def _code_review_graph_reference(path: Path | None) -> dict[str, Any]:
     }
 
 
+def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
+    if path is None:
+        return {
+            "provided": False,
+            "status": "missing_input",
+            "next_valid_move": (
+                "Pass --agentic-workflow with the AI Development OS execution manifest."
+            ),
+        }
+    if not path.exists():
+        return {
+            "provided": True,
+            "path": str(path),
+            "status": "missing_file",
+            "next_valid_move": (
+                "Generate or locate the agentic execution manifest before lane assignment."
+            ),
+        }
+    payload = _read_json(path)
+    present = [section for section in REQUIRED_AGENTIC_WORKFLOW_SECTIONS if section in payload]
+    missing = [
+        section for section in REQUIRED_AGENTIC_WORKFLOW_SECTIONS if section not in payload
+    ]
+    orchestration = payload.get("multi_repo_orchestration") or {}
+    return {
+        "provided": True,
+        "path": str(path),
+        "status": "ready" if not missing else "partial",
+        "name": payload.get("name"),
+        "version": payload.get("version"),
+        "summary": {
+            "slash_commands": len(payload.get("slash_commands") or []),
+            "skills": len(payload.get("skills") or []),
+            "background_routines": len(payload.get("background_routines") or []),
+            "parallel_agent_lanes": len(payload.get("parallel_agent_lanes") or []),
+            "ci_cd_agent_jobs": len(payload.get("ci_cd_agent_jobs") or []),
+            "eval_loops": len(payload.get("eval_loops") or []),
+            "repos": len(orchestration.get("repos") or []),
+        },
+        "required_sections_present": present,
+        "required_sections_missing": missing,
+        "proof_boundary": (
+            "Agentic workflow data is lane coordination context. It does not "
+            "replace source inspection, generated artifacts, tests, or GitHub proof."
+        ),
+    }
+
+
 def load_repo_context_bundle(
     *,
     manifest_path: Path,
     documentation_nodes_path: Path | None = None,
     documentation_edges_path: Path | None = None,
     code_review_graph_path: Path | None = None,
+    agentic_workflow_path: Path | None = None,
     start_node: str = "",
     node_type: str = "",
     relation: str = "",
@@ -176,15 +238,19 @@ def load_repo_context_bundle(
                 documentation_nodes_path and documentation_edges_path
             ),
             "code_review_graph_included": bool(code_review_graph_path),
+            "agentic_workflow_included": bool(agentic_workflow_path),
         },
         "system_review_graph": _manifest_context(manifest_path),
         "documentation_graph_context": documentation_context,
         "code_review_graph_reference": _code_review_graph_reference(code_review_graph_path),
+        "agentic_workflow_reference": _agentic_workflow_reference(agentic_workflow_path),
         "proof_boundaries": [
             "SRG describes systems and gates from a sanitized manifest.",
             "Documentation graph slices are context windows, not complete source proof.",
             "Code-review graph contracts orient source inspection; source files "
             "and tests remain required.",
+            "Agentic workflow manifests define lane coordination; GitHub, source, "
+            "generated artifacts, and checks remain authoritative.",
         ],
         "next_moves": [
             "Open source files named in the bundle before editing.",
