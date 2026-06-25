@@ -121,12 +121,25 @@ def _code_review_graph_reference(path: Path | None) -> dict[str, Any]:
             "nodes": len(payload.get("nodes") or []),
             "edges": len(payload.get("edges") or []),
         }
+    generated_artifacts = payload.get("generated_artifacts") or []
+    generated_artifact_types = sorted(
+        {
+            str(row.get("type"))
+            for row in generated_artifacts
+            if isinstance(row, dict) and row.get("type")
+        }
+    )
     return {
         "provided": True,
         "path": str(path),
         "status": "ready" if not missing else "partial",
         "contract_version": payload.get("contract_version") or "legacy_source_graph",
         "summary": summary,
+        "generated_artifacts": generated_artifacts[:20],
+        "generated_artifact_types": generated_artifact_types[:40],
+        "startup_continuation_plan_present": (
+            "startup_continuation_plan" in generated_artifact_types
+        ),
         "required_sections_present": present,
         "required_sections_missing": missing,
         "proof_boundary": payload.get(
@@ -249,6 +262,9 @@ def load_repo_context_bundle(
             "Documentation graph slices are context windows, not complete source proof.",
             "Code-review graph contracts orient source inspection; source files "
             "and tests remain required.",
+            "Generated artifact references, including continuation plans, are "
+            "truth pointers; inspect the artifact and run proof commands before "
+            "completion claims.",
             "Agentic workflow manifests define lane coordination; GitHub, source, "
             "generated artifacts, and checks remain authoritative.",
         ],

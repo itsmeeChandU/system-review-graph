@@ -211,7 +211,14 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
                 "imports": [],
                 "edges": [],
                 "tests": [],
-                "generated_artifacts": [],
+                "generated_artifacts": [
+                    {
+                        "id": "artifact:system_review_graph/continuation_plan.json",
+                        "path": "system_review_graph/continuation_plan.json",
+                        "type": "startup_continuation_plan",
+                        "producer": "repo proof or AI Development OS workflow",
+                    }
+                ],
                 "risk_ownership_hints": [],
                 "proof_boundary": "structural only",
             }
@@ -250,6 +257,11 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
 
     assert bundle["system_review_graph"]["title"] == "Agentic repo"
     assert bundle["code_review_graph_reference"]["status"] == "ready"
+    assert bundle["code_review_graph_reference"]["startup_continuation_plan_present"] is True
+    assert (
+        "startup_continuation_plan"
+        in bundle["code_review_graph_reference"]["generated_artifact_types"]
+    )
     assert bundle["agentic_workflow_reference"]["status"] == "ready"
     assert bundle["agentic_workflow_reference"]["summary"]["parallel_agent_lanes"] == 1
     assert bundle["documentation_graph_context"]["summary"]["selected_nodes"] == 1
