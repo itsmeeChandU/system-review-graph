@@ -223,6 +223,12 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
                         "path": "system_review_graph/vc_pitch_readiness_report.json",
                         "type": "vc_pitch_readiness_report",
                         "producer": "repo proof or AI Development OS workflow",
+                    },
+                    {
+                        "id": "artifact:system_review_graph/board_go_live_readiness_report.json",
+                        "path": "system_review_graph/board_go_live_readiness_report.json",
+                        "type": "board_go_live_readiness_report",
+                        "producer": "repo proof or AI Development OS workflow",
                     }
                 ],
                 "risk_ownership_hints": [],
@@ -270,6 +276,10 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
     )
     assert (
         "vc_pitch_readiness_report"
+        in bundle["code_review_graph_reference"]["generated_artifact_types"]
+    )
+    assert (
+        "board_go_live_readiness_report"
         in bundle["code_review_graph_reference"]["generated_artifact_types"]
     )
     assert bundle["agentic_workflow_reference"]["status"] == "ready"
