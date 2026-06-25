@@ -231,6 +231,12 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
                         "producer": "repo proof or AI Development OS workflow",
                     },
                     {
+                        "id": "artifact:system_review_graph/operator_workflow_report.json",
+                        "path": "system_review_graph/operator_workflow_report.json",
+                        "type": "operator_workflow_report",
+                        "producer": "repo proof or AI Development OS workflow",
+                    },
+                    {
                         "id": "artifact:system_review_graph/operator_screenshot_manifest.json",
                         "path": "system_review_graph/operator_screenshot_manifest.json",
                         "type": "operator_screenshot_manifest",
@@ -301,6 +307,10 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
     )
     assert (
         "board_go_live_readiness_report"
+        in bundle["code_review_graph_reference"]["generated_artifact_types"]
+    )
+    assert (
+        "operator_workflow_report"
         in bundle["code_review_graph_reference"]["generated_artifact_types"]
     )
     assert (
