@@ -217,6 +217,12 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
                         "path": "system_review_graph/continuation_plan.json",
                         "type": "startup_continuation_plan",
                         "producer": "repo proof or AI Development OS workflow",
+                    },
+                    {
+                        "id": "artifact:system_review_graph/vc_pitch_readiness_report.json",
+                        "path": "system_review_graph/vc_pitch_readiness_report.json",
+                        "type": "vc_pitch_readiness_report",
+                        "producer": "repo proof or AI Development OS workflow",
                     }
                 ],
                 "risk_ownership_hints": [],
@@ -260,6 +266,10 @@ def test_repo_context_bundle_combines_manifest_docs_and_code_contract(tmp_path):
     assert bundle["code_review_graph_reference"]["startup_continuation_plan_present"] is True
     assert (
         "startup_continuation_plan"
+        in bundle["code_review_graph_reference"]["generated_artifact_types"]
+    )
+    assert (
+        "vc_pitch_readiness_report"
         in bundle["code_review_graph_reference"]["generated_artifact_types"]
     )
     assert bundle["agentic_workflow_reference"]["status"] == "ready"
