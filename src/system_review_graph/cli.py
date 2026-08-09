@@ -191,6 +191,7 @@ def _load_repo_context_bundle(args: argparse.Namespace) -> int:
         else None,
         code_review_graph_path=Path(args.code_review_graph) if args.code_review_graph else None,
         agentic_workflow_path=Path(args.agentic_workflow) if args.agentic_workflow else None,
+        project_os_path=Path(args.project_os) if args.project_os else None,
         start_node=args.start_node or "",
         node_type=args.node_type or "",
         relation=args.relation or "",
@@ -198,7 +199,14 @@ def _load_repo_context_bundle(args: argparse.Namespace) -> int:
         max_edges=args.max_edges,
         max_chars=args.max_chars,
     )
-    print(json.dumps(context, indent=2, sort_keys=True))
+    rendered = json.dumps(context, indent=2, sort_keys=True)
+    if args.out:
+        output = Path(args.out)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered + "\n", encoding="utf-8")
+        print(f"repo context bundle written: {output}")
+    else:
+        print(rendered)
     return 0
 
 
@@ -287,11 +295,18 @@ def main(argv: list[str] | None = None) -> int:
         default="",
         help="Code-review graph contract JSON",
     )
-    repo_context.add_argument(
+    workflow_group = repo_context.add_mutually_exclusive_group()
+    workflow_group.add_argument(
         "--agentic-workflow",
         default="",
         help="AI Development OS agentic execution manifest JSON",
     )
+    workflow_group.add_argument(
+        "--project-os",
+        default="",
+        help="AI Development OS per-project project.os.json contract",
+    )
+    repo_context.add_argument("--out", default="", help="Optional context bundle output path")
     repo_context.add_argument("--start-node", default="", help="Documentation graph node to expand")
     repo_context.add_argument("--node-type", default="", help="Documentation graph node type")
     repo_context.add_argument("--relation", default="", help="Documentation graph edge relation")

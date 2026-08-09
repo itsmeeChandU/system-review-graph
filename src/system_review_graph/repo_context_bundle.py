@@ -8,6 +8,8 @@ from typing import Any
 
 from system_review_graph.documentation_graph import load_documentation_graph_context
 
+BUNDLE_VERSION = "system-review-graph.repo-context-bundle.v1"
+
 REQUIRED_CODE_REVIEW_CONTRACT_SECTIONS = [
     "files",
     "modules",
@@ -29,6 +31,18 @@ REQUIRED_AGENTIC_WORKFLOW_SECTIONS = [
     "multi_repo_orchestration",
     "handoff_schema",
     "proof_boundaries",
+]
+REQUIRED_PROJECT_OS_SECTIONS = [
+    "project",
+    "architecture",
+    "code_review",
+    "workflow",
+    "verification",
+    "effects",
+    "artifacts",
+    "memory",
+    "release",
+    "operations",
 ]
 
 
@@ -54,6 +68,7 @@ def _trim(payload: dict[str, Any], max_chars: int) -> tuple[dict[str, Any], bool
     if len(text) <= max_chars:
         return trimmed, True
     return {
+        "bundle_version": payload.get("bundle_version"),
         "agent_context_contract": payload.get("agent_context_contract", {}),
         "summary": payload.get("summary", {}),
         "system_review_graph": manifest,
@@ -169,6 +184,36 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
             ),
         }
     payload = _read_json(path)
+    if payload.get("schema_version") == "ai-development-os.project.v1":
+        present = [section for section in REQUIRED_PROJECT_OS_SECTIONS if section in payload]
+        missing = [section for section in REQUIRED_PROJECT_OS_SECTIONS if section not in payload]
+        workflow = payload.get("workflow") or {}
+        verification = payload.get("verification") or {}
+        project = payload.get("project") or {}
+        return {
+            "provided": True,
+            "path": str(path),
+            "status": "ready" if not missing else "partial",
+            "manifest_kind": "project_os",
+            "name": project.get("name") or project.get("id"),
+            "version": payload.get("schema_version"),
+            "summary": {
+                "project_id": project.get("id"),
+                "profile": project.get("profile"),
+                "parallel_agent_lanes": len(workflow.get("lanes") or []),
+                "ci_cd_agent_jobs": len(verification.get("commands") or []),
+                "human_decisions": len(workflow.get("human_decisions") or []),
+                "active_work_limit": workflow.get("active_work_limit"),
+                "repos": 1,
+            },
+            "required_sections_present": present,
+            "required_sections_missing": missing,
+            "proof_boundary": (
+                "The Project OS contract defines project workflow and verification "
+                "requirements. It does not replace source inspection, generated "
+                "artifacts, test receipts, or independent acceptance."
+            ),
+        }
     present = [section for section in REQUIRED_AGENTIC_WORKFLOW_SECTIONS if section in payload]
     missing = [
         section for section in REQUIRED_AGENTIC_WORKFLOW_SECTIONS if section not in payload
@@ -178,6 +223,7 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
         "provided": True,
         "path": str(path),
         "status": "ready" if not missing else "partial",
+        "manifest_kind": "agentic_execution",
         "name": payload.get("name"),
         "version": payload.get("version"),
         "summary": {
@@ -205,6 +251,7 @@ def load_repo_context_bundle(
     documentation_edges_path: Path | None = None,
     code_review_graph_path: Path | None = None,
     agentic_workflow_path: Path | None = None,
+    project_os_path: Path | None = None,
     start_node: str = "",
     node_type: str = "",
     relation: str = "",
@@ -233,7 +280,9 @@ def load_repo_context_bundle(
             ),
         }
 
+    workflow_path = project_os_path or agentic_workflow_path
     payload = {
+        "bundle_version": BUNDLE_VERSION,
         "agent_context_contract": {
             "primary_users": ["agents", "LLMs", "review automation", "maintainers"],
             "use": (
@@ -252,11 +301,12 @@ def load_repo_context_bundle(
             ),
             "code_review_graph_included": bool(code_review_graph_path),
             "agentic_workflow_included": bool(agentic_workflow_path),
+            "project_os_included": bool(project_os_path),
         },
         "system_review_graph": _manifest_context(manifest_path),
         "documentation_graph_context": documentation_context,
         "code_review_graph_reference": _code_review_graph_reference(code_review_graph_path),
-        "agentic_workflow_reference": _agentic_workflow_reference(agentic_workflow_path),
+        "agentic_workflow_reference": _agentic_workflow_reference(workflow_path),
         "proof_boundaries": [
             "SRG describes systems and gates from a sanitized manifest.",
             "Documentation graph slices are context windows, not complete source proof.",

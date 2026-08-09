@@ -246,6 +246,17 @@ system-review-graph load-repo-context-bundle \
   --start-node concept:stock_selection
 ```
 
+For a project adopted by AI Development OS, pass its per-project contract
+directly and write one deterministic bundle for the agent:
+
+```bash
+system-review-graph load-repo-context-bundle \
+  --manifest system_review_graph/system_review_manifest.json \
+  --code-review-graph .project-os/code_review_graph_contract.json \
+  --project-os project.os.json \
+  --out .project-os/repo_context_bundle.json
+```
+
 The bundle is designed for AI Development OS style workers: stable IDs,
 bounded context, typed sections, lane coordination references, and explicit
 proof boundaries before a lane is assigned.

@@ -417,3 +417,88 @@ def test_cli_and_mcp_load_repo_context_bundle(tmp_path, capsys):
     )
     assert response is not None
     assert "Small repo" in response["result"]["content"][0]["text"]
+
+
+def test_repo_context_bundle_accepts_project_os_contract(tmp_path, capsys):
+    manifest = tmp_path / "system_review_manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "title": "Project OS example",
+                "systems": [],
+                "artifacts": [],
+                "schemas": [],
+                "decision_gates": [],
+                "workflows": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    project_os = tmp_path / "project.os.json"
+    project_os.write_text(
+        json.dumps(
+            {
+                "schema_version": "ai-development-os.project.v1",
+                "project": {"id": "example", "name": "Example", "profile": "standard"},
+                "architecture": {},
+                "code_review": {},
+                "workflow": {
+                    "active_work_limit": 1,
+                    "lanes": [{"id": "core"}],
+                    "human_decisions": [],
+                },
+                "verification": {"commands": [{"id": "tests"}]},
+                "effects": {"default": "closed"},
+                "artifacts": {},
+                "memory": {
+                    "canonical_source": "repository",
+                    "semantic_index": {"authoritative": False},
+                },
+                "release": {"require_independent_review": True},
+                "operations": {"external_effects_default": "closed"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "context" / "bundle.json"
+
+    exit_code = main(
+        [
+            "load-repo-context-bundle",
+            "--manifest",
+            str(manifest),
+            "--project-os",
+            str(project_os),
+            "--out",
+            str(output),
+        ]
+    )
+
+    assert exit_code == 0
+    assert output.exists()
+    bundle = json.loads(output.read_text(encoding="utf-8"))
+    assert bundle["bundle_version"] == "system-review-graph.repo-context-bundle.v1"
+    reference = bundle["agentic_workflow_reference"]
+    assert reference["status"] == "ready"
+    assert reference["manifest_kind"] == "project_os"
+    assert reference["summary"]["parallel_agent_lanes"] == 1
+    assert reference["summary"]["ci_cd_agent_jobs"] == 1
+    assert "repo context bundle written" in capsys.readouterr().out
+
+    response = handle_message(
+        {
+            "jsonrpc": "2.0",
+            "id": 7,
+            "method": "tools/call",
+            "params": {
+                "name": "srg_load_repo_context_bundle",
+                "arguments": {
+                    "manifest_path": str(manifest),
+                    "project_os_path": str(project_os),
+                },
+            },
+        }
+    )
+    assert response is not None
+    text = response["result"]["content"][0]["text"]
+    assert "project_os" in text
