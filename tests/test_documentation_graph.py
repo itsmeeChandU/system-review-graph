@@ -564,6 +564,8 @@ def test_repo_context_rejects_semantically_empty_project_os(tmp_path):
                     "release",
                     "operations",
                 )},
+                "workflow": {"active_work_limit": "one", "lanes": 7},
+                "verification": {"commands": "pytest"},
             }
         ),
         encoding="utf-8",

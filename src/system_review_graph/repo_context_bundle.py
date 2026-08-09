@@ -214,6 +214,7 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
         }:
             semantic_errors.append("project.id/profile is invalid")
         lanes = workflow.get("lanes")
+        safe_lanes = lanes if isinstance(lanes, list) else []
         if (
             not isinstance(workflow.get("active_work_limit"), int)
             or workflow.get("active_work_limit", 0) < 1
@@ -222,6 +223,7 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
         ):
             semantic_errors.append("workflow requires an active limit and at least one lane")
         commands = verification.get("commands")
+        safe_commands = commands if isinstance(commands, list) else []
         if not isinstance(commands, list) or not commands or not all(
             isinstance(row, dict) and row.get("id") and row.get("argv")
             for row in commands
@@ -267,9 +269,11 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
             "summary": {
                 "project_id": project.get("id"),
                 "profile": project.get("profile"),
-                "parallel_agent_lanes": len(lanes or []),
-                "ci_cd_agent_jobs": len(commands or []),
-                "human_decisions": len(workflow.get("human_decisions") or []),
+                "parallel_agent_lanes": len(safe_lanes),
+                "ci_cd_agent_jobs": len(safe_commands),
+                "human_decisions": len(workflow.get("human_decisions"))
+                if isinstance(workflow.get("human_decisions"), list)
+                else 0,
                 "active_work_limit": workflow.get("active_work_limit"),
                 "repos": 1,
             },
