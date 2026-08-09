@@ -199,11 +199,19 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
     if payload.get("schema_version") == PROJECT_OS_VERSION:
         present = [section for section in REQUIRED_PROJECT_OS_SECTIONS if section in payload]
         missing = [section for section in REQUIRED_PROJECT_OS_SECTIONS if section not in payload]
-        workflow = payload.get("workflow") or {}
-        verification = payload.get("verification") or {}
-        project = payload.get("project") or {}
-        kernel = payload.get("kernel") or {}
         semantic_errors: list[str] = []
+        sections: dict[str, dict[str, Any]] = {}
+        for section in REQUIRED_PROJECT_OS_SECTIONS:
+            value = payload.get(section)
+            if isinstance(value, dict):
+                sections[section] = value
+            else:
+                sections[section] = {}
+                semantic_errors.append(f"{section} must be an object")
+        workflow = sections["workflow"]
+        verification = sections["verification"]
+        project = sections["project"]
+        kernel = sections["kernel"]
         if kernel.get("version") != "ai-development-os.project-kernel.v1":
             semantic_errors.append("kernel.version is invalid")
         if not project.get("id") or project.get("profile") not in {
@@ -229,9 +237,9 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
             for row in commands
         ):
             semantic_errors.append("verification requires executable commands")
-        if (payload.get("effects") or {}).get("default") != "closed":
+        if sections["effects"].get("default") != "closed":
             semantic_errors.append("effects.default must be closed")
-        release = payload.get("release") or {}
+        release = sections["release"]
         if not all(
             release.get(field) is True
             for field in (
@@ -241,7 +249,7 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
             )
         ):
             semantic_errors.append("release proof policies must be enabled")
-        artifacts = payload.get("artifacts") or {}
+        artifacts = sections["artifacts"]
         if not all(
             artifacts.get(field)
             for field in (
@@ -251,7 +259,7 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
             )
         ):
             semantic_errors.append("completion artifact paths are missing")
-        if (payload.get("operations") or {}).get("external_effects_default") != "closed":
+        if sections["operations"].get("external_effects_default") != "closed":
             semantic_errors.append("operations.external_effects_default must be closed")
         return {
             "provided": True,

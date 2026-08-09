@@ -575,3 +575,23 @@ def test_repo_context_rejects_semantically_empty_project_os(tmp_path):
 
     assert reference["status"] == "invalid_contract"
     assert reference["semantic_errors"]
+
+    base = json.loads(project_os.read_text(encoding="utf-8"))
+    for section, value in (
+        ("workflow", "bad"),
+        ("verification", 7),
+        ("project", 7),
+        ("kernel", "bad"),
+        ("effects", "bad"),
+        ("artifacts", "bad"),
+        ("release", []),
+        ("operations", 7),
+    ):
+        adversarial = dict(base)
+        adversarial[section] = value
+        project_os.write_text(json.dumps(adversarial), encoding="utf-8")
+
+        rejected = _agentic_workflow_reference(project_os)
+
+        assert rejected["status"] == "invalid_contract"
+        assert f"{section} must be an object" in rejected["semantic_errors"]
