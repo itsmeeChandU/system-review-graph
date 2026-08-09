@@ -6,7 +6,11 @@ from system_review_graph.cli import main
 from system_review_graph.documentation_graph import load_documentation_graph_context
 from system_review_graph.mcp_server import handle_message
 from system_review_graph.render import render_markdown
-from system_review_graph.repo_context_bundle import load_repo_context_bundle
+from system_review_graph.repo_context_bundle import (
+    _agentic_workflow_reference,
+    _code_review_graph_reference,
+    load_repo_context_bundle,
+)
 from system_review_graph.validate import validate_manifest
 
 
@@ -417,3 +421,177 @@ def test_cli_and_mcp_load_repo_context_bundle(tmp_path, capsys):
     )
     assert response is not None
     assert "Small repo" in response["result"]["content"][0]["text"]
+
+
+def test_repo_context_bundle_accepts_project_os_contract(tmp_path, capsys):
+    manifest = tmp_path / "system_review_manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "title": "Project OS example",
+                "systems": [],
+                "artifacts": [],
+                "schemas": [],
+                "decision_gates": [],
+                "workflows": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    project_os = tmp_path / "project.os.json"
+    project_os.write_text(
+        json.dumps(
+            {
+                "schema_version": "ai-development-os.project.v1",
+                "kernel": {"version": "ai-development-os.project-kernel.v1"},
+                "project": {"id": "example", "name": "Example", "profile": "standard"},
+                "architecture": {},
+                "code_review": {},
+                "workflow": {
+                    "active_work_limit": 1,
+                    "lanes": [{"id": "core"}],
+                    "human_decisions": [],
+                },
+                "verification": {
+                    "commands": [{"id": "tests", "argv": ["python", "-m", "pytest"]}]
+                },
+                "effects": {"default": "closed"},
+                "artifacts": {
+                    "task_ledger": "PROJECT_WORK.jsonl",
+                    "verification_receipt": ".project-os/verification_receipt.json",
+                    "context_receipt": ".project-os/context_receipt.json",
+                },
+                "memory": {
+                    "canonical_source": "repository",
+                    "semantic_index": {"authoritative": False},
+                },
+                "release": {
+                    "require_pull_request": True,
+                    "require_independent_review": True,
+                    "require_exact_commit_receipt": True,
+                },
+                "operations": {"external_effects_default": "closed"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "context" / "bundle.json"
+
+    exit_code = main(
+        [
+            "load-repo-context-bundle",
+            "--manifest",
+            str(manifest),
+            "--project-os",
+            str(project_os),
+            "--out",
+            str(output),
+        ]
+    )
+
+    assert exit_code == 0
+    assert output.exists()
+    bundle = json.loads(output.read_text(encoding="utf-8"))
+    assert bundle["bundle_version"] == "system-review-graph.repo-context-bundle.v1"
+    reference = bundle["agentic_workflow_reference"]
+    assert reference["status"] == "ready"
+    assert reference["manifest_kind"] == "project_os"
+    assert reference["summary"]["parallel_agent_lanes"] == 1
+    assert reference["summary"]["ci_cd_agent_jobs"] == 1
+    assert "repo context bundle written" in capsys.readouterr().out
+
+    response = handle_message(
+        {
+            "jsonrpc": "2.0",
+            "id": 7,
+            "method": "tools/call",
+            "params": {
+                "name": "srg_load_repo_context_bundle",
+                "arguments": {
+                    "manifest_path": str(manifest),
+                    "project_os_path": str(project_os),
+                },
+            },
+        }
+    )
+    assert response is not None
+    text = response["result"]["content"][0]["text"]
+    assert "project_os" in text
+
+
+def test_repo_context_rejects_unknown_code_review_contract_version(tmp_path):
+    contract = tmp_path / "contract.json"
+    contract.write_text(
+        json.dumps(
+            {
+                "contract_version": "code-review-graph.agent-contract.v999",
+                **{section: [] for section in (
+                    "files",
+                    "modules",
+                    "symbols",
+                    "imports",
+                    "edges",
+                    "tests",
+                    "generated_artifacts",
+                    "risk_ownership_hints",
+                )},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    reference = _code_review_graph_reference(contract)
+
+    assert reference["status"] == "unsupported_version"
+
+
+def test_repo_context_rejects_semantically_empty_project_os(tmp_path):
+    project_os = tmp_path / "project.os.json"
+    project_os.write_text(
+        json.dumps(
+            {
+                "schema_version": "ai-development-os.project.v1",
+                **{section: {} for section in (
+                    "kernel",
+                    "project",
+                    "architecture",
+                    "code_review",
+                    "workflow",
+                    "verification",
+                    "effects",
+                    "artifacts",
+                    "memory",
+                    "release",
+                    "operations",
+                )},
+                "workflow": {"active_work_limit": "one", "lanes": 7},
+                "verification": {"commands": "pytest"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    reference = _agentic_workflow_reference(project_os)
+
+    assert reference["status"] == "invalid_contract"
+    assert reference["semantic_errors"]
+
+    base = json.loads(project_os.read_text(encoding="utf-8"))
+    for section, value in (
+        ("workflow", "bad"),
+        ("verification", 7),
+        ("project", 7),
+        ("kernel", "bad"),
+        ("effects", "bad"),
+        ("artifacts", "bad"),
+        ("release", []),
+        ("operations", 7),
+    ):
+        adversarial = dict(base)
+        adversarial[section] = value
+        project_os.write_text(json.dumps(adversarial), encoding="utf-8")
+
+        rejected = _agentic_workflow_reference(project_os)
+
+        assert rejected["status"] == "invalid_contract"
+        assert f"{section} must be an object" in rejected["semantic_errors"]
