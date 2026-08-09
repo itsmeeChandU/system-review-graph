@@ -9,6 +9,8 @@ from typing import Any
 from system_review_graph.documentation_graph import load_documentation_graph_context
 
 BUNDLE_VERSION = "system-review-graph.repo-context-bundle.v1"
+CODE_REVIEW_CONTRACT_VERSION = "code-review-graph.agent-contract.v1"
+PROJECT_OS_VERSION = "ai-development-os.project.v1"
 
 REQUIRED_CODE_REVIEW_CONTRACT_SECTIONS = [
     "files",
@@ -33,6 +35,7 @@ REQUIRED_AGENTIC_WORKFLOW_SECTIONS = [
     "proof_boundaries",
 ]
 REQUIRED_PROJECT_OS_SECTIONS = [
+    "kernel",
     "project",
     "architecture",
     "code_review",
@@ -144,11 +147,19 @@ def _code_review_graph_reference(path: Path | None) -> dict[str, Any]:
             if isinstance(row, dict) and row.get("type")
         }
     )
+    version = payload.get("contract_version")
+    unsupported_version = bool(version and version != CODE_REVIEW_CONTRACT_VERSION)
     return {
         "provided": True,
         "path": str(path),
-        "status": "ready" if not missing else "partial",
-        "contract_version": payload.get("contract_version") or "legacy_source_graph",
+        "status": (
+            "unsupported_version"
+            if unsupported_version
+            else "ready"
+            if not missing
+            else "partial"
+        ),
+        "contract_version": version or "legacy_source_graph",
         "summary": summary,
         "generated_artifacts": generated_artifacts[:20],
         "generated_artifact_types": generated_artifact_types[:40],
@@ -157,6 +168,7 @@ def _code_review_graph_reference(path: Path | None) -> dict[str, Any]:
         ),
         "required_sections_present": present,
         "required_sections_missing": missing,
+        "supported_contract_versions": [CODE_REVIEW_CONTRACT_VERSION],
         "proof_boundary": payload.get(
             "proof_boundary",
             "Code-review graph data is orientation context. Read source and run "
@@ -184,35 +196,104 @@ def _agentic_workflow_reference(path: Path | None) -> dict[str, Any]:
             ),
         }
     payload = _read_json(path)
-    if payload.get("schema_version") == "ai-development-os.project.v1":
+    if payload.get("schema_version") == PROJECT_OS_VERSION:
         present = [section for section in REQUIRED_PROJECT_OS_SECTIONS if section in payload]
         missing = [section for section in REQUIRED_PROJECT_OS_SECTIONS if section not in payload]
         workflow = payload.get("workflow") or {}
         verification = payload.get("verification") or {}
         project = payload.get("project") or {}
+        kernel = payload.get("kernel") or {}
+        semantic_errors: list[str] = []
+        if kernel.get("version") != "ai-development-os.project-kernel.v1":
+            semantic_errors.append("kernel.version is invalid")
+        if not project.get("id") or project.get("profile") not in {
+            "tiny",
+            "standard",
+            "complex",
+            "regulated",
+        }:
+            semantic_errors.append("project.id/profile is invalid")
+        lanes = workflow.get("lanes")
+        if (
+            not isinstance(workflow.get("active_work_limit"), int)
+            or workflow.get("active_work_limit", 0) < 1
+            or not isinstance(lanes, list)
+            or not lanes
+        ):
+            semantic_errors.append("workflow requires an active limit and at least one lane")
+        commands = verification.get("commands")
+        if not isinstance(commands, list) or not commands or not all(
+            isinstance(row, dict) and row.get("id") and row.get("argv")
+            for row in commands
+        ):
+            semantic_errors.append("verification requires executable commands")
+        if (payload.get("effects") or {}).get("default") != "closed":
+            semantic_errors.append("effects.default must be closed")
+        release = payload.get("release") or {}
+        if not all(
+            release.get(field) is True
+            for field in (
+                "require_pull_request",
+                "require_independent_review",
+                "require_exact_commit_receipt",
+            )
+        ):
+            semantic_errors.append("release proof policies must be enabled")
+        artifacts = payload.get("artifacts") or {}
+        if not all(
+            artifacts.get(field)
+            for field in (
+                "task_ledger",
+                "verification_receipt",
+                "context_receipt",
+            )
+        ):
+            semantic_errors.append("completion artifact paths are missing")
+        if (payload.get("operations") or {}).get("external_effects_default") != "closed":
+            semantic_errors.append("operations.external_effects_default must be closed")
         return {
             "provided": True,
             "path": str(path),
-            "status": "ready" if not missing else "partial",
+            "status": (
+                "invalid_contract"
+                if semantic_errors
+                else "ready"
+                if not missing
+                else "partial"
+            ),
             "manifest_kind": "project_os",
             "name": project.get("name") or project.get("id"),
             "version": payload.get("schema_version"),
             "summary": {
                 "project_id": project.get("id"),
                 "profile": project.get("profile"),
-                "parallel_agent_lanes": len(workflow.get("lanes") or []),
-                "ci_cd_agent_jobs": len(verification.get("commands") or []),
+                "parallel_agent_lanes": len(lanes or []),
+                "ci_cd_agent_jobs": len(commands or []),
                 "human_decisions": len(workflow.get("human_decisions") or []),
                 "active_work_limit": workflow.get("active_work_limit"),
                 "repos": 1,
             },
             "required_sections_present": present,
             "required_sections_missing": missing,
+            "semantic_errors": semantic_errors,
             "proof_boundary": (
                 "The Project OS contract defines project workflow and verification "
                 "requirements. It does not replace source inspection, generated "
                 "artifacts, test receipts, or independent acceptance."
             ),
+        }
+    schema_version = payload.get("schema_version")
+    if isinstance(schema_version, str) and schema_version.startswith(
+        "ai-development-os.project."
+    ):
+        return {
+            "provided": True,
+            "path": str(path),
+            "status": "unsupported_version",
+            "manifest_kind": "project_os",
+            "version": schema_version,
+            "supported_versions": [PROJECT_OS_VERSION],
+            "next_valid_move": "Upgrade the Project OS contract or this provider.",
         }
     present = [section for section in REQUIRED_AGENTIC_WORKFLOW_SECTIONS if section in payload]
     missing = [
